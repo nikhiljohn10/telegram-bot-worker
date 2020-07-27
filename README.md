@@ -1,5 +1,5 @@
 # Telegram Bot Worker
-A basic telegram ping bot using cloudflare workers
+A generic telegram bot using cloudflare workers and Telegram BOT API
 
 ### Features
 
