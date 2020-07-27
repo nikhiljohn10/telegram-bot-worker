@@ -6,7 +6,7 @@
 ////  License: MIT                                              ////
 ////////////////////////////////////////////////////////////////////
 
-
+// https://bot.nikz.workers.dev/MTA0NTE0MDQ5OTpBQUZ6QUtjR1UxSUs1VGJpRU8zanZ2cExuOElWMFRHczZibw
 
 //////////////////////////////////////////////////
 ////  Custom Cloudflare Environment Variables ////
@@ -62,7 +62,7 @@ const bot_configs = [{
 
 // Work in progress. Some bugs in logger exists.
 const logger_config = {
-  'enabled': false, // Enable/Disable logger
+  'enabled': true, // Enable/Disable logger
   'bot_name': 'BotLogger007Bot',
   'token': ENV_BotLogger007Bot,
   'chat_id': ENV_ADMIN_ID // Admin chat ID
@@ -75,9 +75,9 @@ const logger_config = {
 ///////////////////////////
 
 class Webhook {
-  constructor(url, access_key) {
+  constructor(url, token) {
     this.url = url
-    this.access_key = access_key
+    this.token = token
   }
 
   // trigger getMe command of BotAPI
@@ -86,7 +86,8 @@ class Webhook {
   }
 
   async set() {
-    return await this.execute(this.url + '/setWebhook?url=' + ENV_BOT_HOST_FQDN + this.access_key)
+    const access_key = await sha256(this.token)
+    return await this.execute(this.url + '/setWebhook?url=' + ENV_BOT_HOST_FQDN + access_key)
   }
 
   async get() {
@@ -146,22 +147,19 @@ class BotModel {
   constructor(config) {
     this.token = config.token
     this.commands = config.commands
-    this.url = 'https://api.telegram.org/bot' + this.token
-    this.webhook = new Webhook(this.url, config.access_key)
+    this.url = 'https://api.telegram.org/bot' + config.token
+    this.webhook = new Webhook(this.url, config.token)
   }
 
   // trigger sendAnimation command of BotAPI
-  async update(req) {
+  async update(request) {
     try {
-      const data = await req.json()
-      this.message = data.message
-
-
+      this.message = request.content.message
       if (this.message.hasOwnProperty('text')) {
         // process text
 
         // Test command and execute
-        if (!(await this.executeCommand(req))) {
+        if (!(await this.executeCommand(request))) {
           // Test is not a command
           await this.sendMessage(this.message.chat.id, "This is not a command")
         }
@@ -465,22 +463,24 @@ class Logger {
   constructor(config) {
     this.enabled = config.enabled
     this.chat_id = config.chat_id
-    this.access_key = btoa(config.token).slice(0, -2)
+    this.token = config.token
     this.url = 'https://api.telegram.org/bot' + config.token
-    this.webhook = new Webhook(this.url, this.access_key)
+    this.webhook = new Webhook(this.url, config.token)
+  }
+
+  async load() {
+    if (this.enabled) this.access_key = await sha256(this.token)
   }
 
   async sendLog(req) {
     if (this.enabled) {
-      const type = req.headers.get('content-type') || ''
       const url = this.getURL(JSON.stringify({
         'client': req.headers.get('cf-connecting-ip'),
         'method': req.method,
-        'type': type,
+        'type': req.type,
         'url': req.url,
-        'body': await this.processRequest(req, type)
+        'body': req.content
       }, null, 2))
-      console.log(url)
       await fetch(url)
     }
   }
@@ -490,29 +490,6 @@ class Logger {
       const text = ((typeof data) === "string") ? data : JSON.stringify(data, null, 2)
       const url = this.getURL(text)
       await fetch(url)
-    }
-  }
-
-  async processRequest(request, contentType) {
-    if (this.enabled) {
-      if (contentType.includes('application/json')) {
-        return await request.json()
-      } else if (contentType.includes('application/text')) {
-        return await request.text()
-      } else if (contentType.includes('text/html')) {
-        return await request.text()
-      } else if (contentType.includes('form')) {
-        const formData = await request.formData()
-        const body = {}
-        for (const entry of formData.entries()) {
-          body[entry[0]] = entry[1]
-        }
-        return body
-      } else {
-        return {
-          "error": "Invalid content type"
-        }
-      }
     }
   }
 
@@ -538,34 +515,89 @@ class Handler {
   constructor(configs) {
     this.configs = configs
     this.tokens = this.configs.map((item) => item.token)
-    this.access_keys = this.tokens.map((token) => btoa(token).slice(0, -2))
     if (logger_config.enabled) this.logger = new Logger(logger_config) // Optional
+    this.response = new Response()
   }
 
   // handles the request
   async handle(request) {
+    await this.logger.load()
+
     const url = new URL(request.url)
     const url_key = url.pathname.substring(1).replace(/\/$/, "")
-    const bot_id = this.access_keys.indexOf(url_key)
-    const contentType = request.headers.get('content-type') || ''
 
-    if (bot_id > -1) {
+    this.access_keys = await Promise.all(this.tokens.map(async (token) => await sha256(token)))
+    this.bot_id = this.access_keys.indexOf(url_key)
+
+
+    if (this.bot_id > -1) {
+      this.request = await this.processRequest(request)
+
       this.bot = new TelegramBot({
-        'token': this.tokens[bot_id], // Bot Token
-        'access_key': this.access_keys[bot_id], // Access Key
-        'commands': this.configs[bot_id].commands // Bot commands
+        'token': this.tokens[this.bot_id], // Bot Token
+        'access_key': this.access_keys[this.bot_id], // Access Key
+        'commands': this.configs[this.bot_id].commands // Bot commands
       })
-      if (request.method === 'POST' && contentType.includes('application/json')) return await this.bot.update(request)
-      else if (request.method === 'GET') return await this.bot.webhook.process(url)
-      else return this.error("Invalid method/content-type")
+
+      if (this.request.method === 'POST' && this.request.type.includes('application/json') && this.request.size > 6 && this.request.content.message) this.response = await this.bot.update(this.request)
+      else if (this.request.method === 'GET') this.response = await this.bot.webhook.process(url)
+      else this.response = this.error(this.request.content.error)
+
     } else if (request.method === 'GET' && url_key === this.logger.access_key) {
-      return await this.logger.webhook.process(url)
+      this.response = await this.logger.webhook.process(url)
+    } else {
+      this.response = this.error("Invalid access key")
     }
 
     // Log access keys to console if access key is not acceptable
     console.log(this.access_keys)
     console.log('Logger Access Key: ' + this.logger.access_key)
-    return this.error("Invalid access key")
+    await this.logger.sendLog(request)
+
+    return this.response
+  }
+
+  async processRequest(req) {
+    let request = req
+    request.size = parseInt(request.headers.get('content-length')) || 0
+    request.type = request.headers.get('content-type') || ''
+    if (request.size && request.type) request.content = await this.getContent(request)
+    else if (request.method == 'GET') request.content = {
+      message: 'Accessing webhook'
+    }
+    else request.content = {
+      message: '',
+      error: 'Invalid content type or body'
+    }
+    console.log(req)
+    return request
+  }
+
+  async getContent(request) {
+    try {
+      if (request.type.includes('application/json')) {
+        return await request.json()
+      } else if (request.type.includes('text/')) {
+        return await request.text()
+      } else if (request.type.includes('form')) {
+        const formData = await request.formData()
+        const body = {}
+        for (const entry of formData.entries()) {
+          body[entry[0]] = entry[1]
+        }
+        return body
+      } else {
+        const arrayBuff = await request.arrayBuffer()
+        const objectURL = URL.createObjectURL(arrayBuff)
+        return objectURL
+      }
+    } catch (error) {
+      console.error(error.message)
+      return {
+        message: '',
+        error: 'Invalid content/content type'
+      }
+    }
   }
 
   // handles error responses
@@ -605,6 +637,19 @@ function JSONResponse(data, status = 200) {
     }
   }
   return new Response(JSON.stringify(data, null, 2), init)
+}
+
+// SHA256 Hash function
+async function sha256(message) {
+  // encode as UTF-8
+  const msgBuffer = new TextEncoder().encode(message)
+  // hash the message
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer)
+  // convert ArrayBuffer to Array
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  // convert bytes to hex string
+  const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('')
+  return hashHex
 }
 
 // Stringify JSON and add <pre> tag HTML
