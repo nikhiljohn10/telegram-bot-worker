@@ -550,8 +550,8 @@ class Handler {
     }
 
     // Log access keys to console if access key is not acceptable
-    console.log(this.access_keys)
-    console.log('Logger Access Key: ' + this.logger.access_key)
+    for( const id in this.access_keys) console.log(this.configs[id].bot_name,'Access Link -',ENV_BOT_HOST_FQDN+this.access_keys[id])
+    console.log('Logger Bot Access Link: ' + ENV_BOT_HOST_FQDN+this.logger.access_key)
     await this.logger.sendLog(request)
 
     return this.response
