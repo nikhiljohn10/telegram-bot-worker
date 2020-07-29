@@ -6,7 +6,7 @@
 ////  License: MIT                                              ////
 ////////////////////////////////////////////////////////////////////
 
-// https://bot.nikz.workers.dev/MTA0NTE0MDQ5OTpBQUZ6QUtjR1UxSUs1VGJpRU8zanZ2cExuOElWMFRHczZibw
+
 
 //////////////////////////////////////////////////
 ////  Custom Cloudflare Environment Variables ////
