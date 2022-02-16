@@ -1,6 +1,6 @@
 # moonitor
 
-serverless telegram bot on cf workers to monitor a cryptocurrency address
+serverless telegram bot on cf workers
 
 [`worker.js`](https://github.com/codebam/moonitor/blob/master/src/worker.js) is
 the content of Nikhil John's
