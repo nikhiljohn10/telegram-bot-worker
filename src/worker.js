@@ -29,6 +29,7 @@ const commands = {
   toss: async (bot, req, args) => await bot.toss(req, args),
   balance: async (bot, req, args) => await bot.balance(req, args),
   epoch: async (bot, req, args) => await bot.epoch(req, args),
+  kanye: async (bot, req, args) => await bot.kanye(req, args),
 };
 
 ///////////////////////////
@@ -422,6 +423,15 @@ class TelegramBot extends BotModel {
     super(config);
   }
 
+  // bot command: /kanye
+  async kanye(req, args) {
+    const request = new Request("https://api.kanye.rest");
+
+    await fetch(request)
+      .then((response) => response.json())
+      .then((json) => this.sendMessage(this.message.chat.id, json.quote));
+  }
+
   // bot command: /epoch
   async epoch(req, args) {
     await this.sendMessage(this.message.chat.id, new Date().getTime());
@@ -636,6 +646,7 @@ export default {
           "/toss": commands.toss,
           "/balance": commands.balance,
           "/epoch": commands.epoch,
+          "/kanye": commands.kanye,
         },
       },
     ];
