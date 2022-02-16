@@ -16,8 +16,6 @@
 ////  Custom Cloudflare Environment Variables ////
 //////////////////////////////////////////////////
 
-const ENV_BOT_HOST_FQDN = "https://moonitor.codebam.workers.dev/";
-
 /////////////////////////////
 ////  Bot Configurations ////
 /////////////////////////////
@@ -35,607 +33,6 @@ const commands = {
   doge: async (bot, req, args) => await bot.doge(req, args),
   roll: async (bot, req, args) => await bot.roll(req, args),
 };
-
-///////////////////////////
-////  Webhook Endpoint ////
-///////////////////////////
-
-class Webhook {
-  constructor(url, token) {
-    this.url = url;
-    this.token = token;
-  }
-
-  // trigger getMe command of BotAPI
-  async getMe() {
-    return await this.execute(this.url + "/getMe");
-  }
-
-  async set() {
-    const access_key = await sha256(this.token);
-    const max_connections = 100;
-    const allowed_updates = ["message"];
-    return await this.execute(
-      this.url +
-        `/setWebhook?url=${
-          ENV_BOT_HOST_FQDN + access_key
-        }?max_connections=${max_connections}?allowed_updates=${allowed_updates}`
-    );
-  }
-
-  async get() {
-    return await this.execute(this.url + "/getWebhookInfo");
-  }
-
-  async delete() {
-    return await this.execute(this.url + "/deleteWebhook");
-  }
-
-  async execute(url) {
-    const response = await fetch(url);
-    const result = await response.json();
-    return JSONResponse(result);
-  }
-
-  async process(url) {
-    const command = url.searchParams.get("command");
-    if (command == undefined) {
-      return this.error("No command found", 404);
-    }
-
-    // handles the url commands
-    switch (command) {
-      case "setWebhook":
-        return await this.set();
-      case "getWebhook":
-        return await this.get();
-      case "delWebhook":
-        return await this.delete();
-      case "getMe":
-        return await this.getMe();
-      case "":
-        return this.error("No command found", 404);
-      default:
-        return this.error("Invalid command", 400);
-    }
-  }
-
-  // handles error responses
-  error(message, status = 403) {
-    return JSONResponse(
-      {
-        error: message,
-      },
-      status
-    );
-  }
-}
-
-////////////////////////////
-////  Generic Bot Class ////
-////////////////////////////
-
-class BotModel {
-  constructor(config) {
-    this.token = config.token;
-    this.commands = config.commands;
-    this.url = "https://api.telegram.org/bot" + config.token;
-    this.webhook = new Webhook(this.url, config.token);
-  }
-
-  // trigger sendAnimation command of BotAPI
-  async update(request) {
-    try {
-      this.message = request.content.message;
-      if (this.message.hasOwnProperty("text")) {
-        // process text
-
-        // Test command and execute
-        if (!(await this.executeCommand(request))) {
-          // don't send messages on invalid commands
-        }
-      } else if (this.message.hasOwnProperty("photo")) {
-        // process photo
-        console.log(this.message.photo);
-      } else if (this.message.hasOwnProperty("video")) {
-        // process video
-        console.log(this.message.video);
-      } else if (this.message.hasOwnProperty("animation")) {
-        // process animation
-        console.log(this.message.animation);
-      } else if (this.message.hasOwnProperty("locaiton")) {
-        // process locaiton
-        console.log(this.message.locaiton);
-      } else if (this.message.hasOwnProperty("poll")) {
-        // process poll
-        console.log(this.message.poll);
-      } else if (this.message.hasOwnProperty("contact")) {
-        // process contact
-        console.log(this.message.contact);
-      } else if (this.message.hasOwnProperty("dice")) {
-        // process dice
-        console.log(this.message.dice);
-      } else if (this.message.hasOwnProperty("sticker")) {
-        // process sticker
-        console.log(this.message.sticker);
-      } else if (this.message.hasOwnProperty("reply_to_message")) {
-        // process reply of a message
-        console.log(this.message.reply_to_message);
-      } else {
-        // process unknown type
-        console.log(this.message);
-      }
-    } catch (error) {
-      console.error(error);
-      return JSONResponse(error.message);
-    }
-    // return 200 OK response to every update request
-    return new Response("True", {
-      status: 200,
-    });
-  }
-
-  // execute the custom bot commands from bot configurations
-  async executeCommand(req) {
-    let cmdArray = this.message.text.split(" ");
-    const command = cmdArray.shift();
-    const isCommand = Object.keys(this.commands).includes(command);
-    if (isCommand) {
-      await this.commands[command](this, req, cmdArray);
-      return true;
-    }
-    return false;
-  }
-
-  // trigger sendMessage command of BotAPI
-  async sendMessage(
-    chat_id,
-    text,
-    parse_mode = "",
-    disable_web_page_preview = false,
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url = this.url + "/sendMessage?chat_id=" + chat_id + "&text=" + text;
-
-    url = addURLOptions(url, {
-      parse_mode: parse_mode,
-      disable_web_page_preview: disable_web_page_preview,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger forwardMessage command of BotAPI
-  async forwardMessage(
-    chat_id,
-    from_chat_id,
-    disable_notification = false,
-    message_id
-  ) {
-    let url =
-      this.url +
-      "/sendMessage?chat_id=" +
-      chat_id +
-      "&from_chat_id=" +
-      from_chat_id +
-      "&message_id=" +
-      message_id;
-    if (disable_notification)
-      url += "&disable_notification=" + disable_notification;
-
-    url = addURLOptions(url, {
-      disable_notification: disable_notification,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger sendPhoto command of BotAPI
-  async sendPhoto(
-    chat_id,
-    photo,
-    caption = "",
-    parse_mode = "",
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url = this.url + "/sendPhoto?chat_id=" + chat_id + "&photo=" + photo;
-
-    url = addURLOptions(url, {
-      caption: caption,
-      parse_mode: parse_mode,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger sendVideo command of BotAPI
-  async sendVideo(
-    chat_id,
-    video,
-    duration = 0,
-    width = 0,
-    height = 0,
-    thumb = "",
-    caption = "",
-    parse_mode = "",
-    supports_streaming = false,
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url = this.url + "/sendVideo?chat_id=" + chat_id + "&video=" + video;
-
-    url = addURLOptions(url, {
-      duration: duration,
-      width: width,
-      height: height,
-      thumb: thumb,
-      caption: caption,
-      parse_mode: parse_mode,
-      supports_streaming: supports_streaming,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger sendAnimation command of BotAPI
-  async sendAnimation(
-    chat_id,
-    animation,
-    duration = 0,
-    width = 0,
-    height = 0,
-    thumb = "",
-    caption = "",
-    parse_mode = "",
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url =
-      this.url +
-      "/sendAnimation?chat_id=" +
-      chat_id +
-      "&animation=" +
-      animation;
-
-    url = addURLOptions(url, {
-      duration: duration,
-      width: width,
-      height: height,
-      thumb: thumb,
-      caption: caption,
-      parse_mode: parse_mode,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger sendLocation command of BotAPI
-  async sendLocation(
-    chat_id,
-    latitude,
-    longitude,
-    live_period = 0,
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url =
-      this.url +
-      "/sendLocation?chat_id=" +
-      chat_id +
-      "&latitude=" +
-      latitude +
-      "&longitude=" +
-      longitude;
-
-    url = addURLOptions(url, {
-      live_period: live_period,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger senPoll command of BotAPI
-  async sendPoll(
-    chat_id,
-    question,
-    options,
-    is_anonymous = "", // Use 'false' to set it instead of Boolean false
-    type = "",
-    allows_multiple_answers = false,
-    correct_option_id = 0,
-    explanation = "",
-    explanation_parse_mode = "",
-    open_period = 0,
-    close_date = 0,
-    is_closed = false,
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url =
-      this.url +
-      "/sendPoll?chat_id=" +
-      chat_id +
-      "&question=" +
-      question +
-      "&options=" +
-      options;
-
-    url = addURLOptions(url, {
-      is_anonymous: is_anonymous,
-      type: type,
-      allows_multiple_answers: allows_multiple_answers,
-      correct_option_id: correct_option_id,
-      explanation: explanation,
-      explanation_parse_mode: explanation_parse_mode,
-      open_period: open_period,
-      close_date: close_date,
-      is_closed: is_closed,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // trigger senDice command of BotAPI
-  async sendDice(
-    chat_id,
-    emoji = "",
-    disable_notification = false,
-    reply_to_message_id = 0
-  ) {
-    let url = this.url + "/sendDice?chat_id=" + chat_id;
-
-    url = addURLOptions(url, {
-      emoji: emoji,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-
-    await fetch(url);
-  }
-
-  // bot api command to get user profile photos
-  async getUserProfilePhotos(user_id, offset = 0, limit = 0) {
-    let url = this.url + "/getUserProfilePhotos?user_id=" + user_id;
-
-    url = addURLOptions(url, {
-      offset: offset,
-      limit: limit,
-    });
-
-    const response = await fetch(url);
-    const result = await response.json();
-    return result.result.photos;
-  }
-}
-
-/////////////////////////////////
-////  Telegram Bot Endpoint ////
-////////////////////////////////
-
-class TelegramBot extends BotModel {
-  constructor(config) {
-    super(config);
-  }
-
-  // bot command: /kanye
-  async kanye(req, args) {
-    const request = new Request("https://api.kanye.rest");
-
-    await fetch(request)
-      .then((response) => response.json())
-      .then((json) => this.sendMessage(this.message.chat.id, json.quote));
-  }
-
-  // bot command: /joke
-  async joke(req, args) {
-    const request = new Request("https://v2.jokeapi.dev/joke/Any");
-
-    await fetch(request)
-      .then((response) => response.json())
-      .then((json) =>
-        this.sendMessage(
-          this.message.chat.id,
-          json.setup +
-            "\n\n" +
-            "<tg-spoiler>" +
-            json.delivery +
-            "</tg-spoiler>",
-          "HTML"
-        )
-      );
-  }
-
-  // bot command: /bored
-  async doge(req, args) {
-    const request = new Request("https://shibe.online/api/shibes");
-
-    await fetch(request)
-      .then((response) => response.json())
-      .then((json) => this.sendPhoto(this.message.chat.id, json[0]));
-  }
-
-  // bot command: /bored
-  async bored(req, args) {
-    const request = new Request("https://boredapi.com/api/activity/");
-
-    await fetch(request)
-      .then((response) => response.json())
-      .then((json) => this.sendMessage(this.message.chat.id, json.activity));
-  }
-
-  // bot command: /epoch
-  async epoch(req, args) {
-    await this.sendMessage(this.message.chat.id, new Date().getTime());
-  }
-
-  // bot command: /balance
-  async balance(req, args) {
-    const request = new Request(
-      `https://blockchain.info/balance?active=${args[0]}`
-    );
-
-    await fetch(request)
-      .then((response) => response.json())
-      .then((json) =>
-        this.sendMessage(
-          this.message.chat.id,
-          (parseInt(json[args[0]].final_balance) / 100000000).toString() +
-            " BTC"
-        )
-      );
-  }
-
-  // bot command: /roll
-  async roll(req, args) {
-    const outcome = Math.floor(Math.random() * (6 - 1 + 1) + 1);
-    await this.sendMessage(this.message.chat.id, "you rolled a " + outcome);
-  }
-
-  // bot command: /toss
-  async toss(req, args) {
-    const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
-    await this.sendMessage(this.message.chat.id, outcome);
-  }
-
-  // bot command: /ping
-  async ping(req, args) {
-    const text = args.length < 1 ? "pong" : args.join(" ");
-    await this.sendMessage(this.message.chat.id, text);
-  }
-
-  // bot command: /chatInfo
-  async getChatInfo(req, args) {
-    await this.sendMessage(
-      this.message.chat.id,
-      logJSONinHTML(this.message.chat),
-      "HTML"
-    );
-  }
-
-  // Send all the profile pictures to user_id
-  async sendAllProfilePhotos(chat_id, user_id) {
-    const profilePhotos = await this.getUserProfilePhotos(user_id);
-    for (const item of profilePhotos) {
-      await this.sendPhoto(chat_id, item[0].file_id);
-    }
-  }
-}
-
-//////////////////////////
-////  Request Handler ////
-//////////////////////////
-
-class Handler {
-  constructor(configs) {
-    this.configs = configs;
-    this.tokens = this.configs.map((item) => item.token);
-    this.response = new Response();
-  }
-
-  // handles the request
-  async handle(request) {
-    const url = new URL(request.url);
-    const url_key = url.pathname.substring(1).replace(/\/$/, "");
-
-    this.access_keys = await Promise.all(
-      this.tokens.map(async (token) => await sha256(token))
-    );
-    this.bot_id = this.access_keys.indexOf(url_key);
-
-    console.log({ bot_id: this.bot_id });
-    if (this.bot_id > -1) {
-      this.request = await this.processRequest(request);
-
-      this.bot = new TelegramBot({
-        token: this.tokens[this.bot_id], // Bot Token
-        access_key: this.access_keys[this.bot_id], // Access Key
-        commands: this.configs[this.bot_id].commands, // Bot commands
-      });
-
-      if (
-        this.request.method === "POST" &&
-        this.request.size > 6 &&
-        this.request.content.message
-      )
-        this.response = await this.bot.update(this.request);
-      else if (this.request.method === "GET") {
-        this.response = await this.bot.webhook.process(url);
-        await this.bot.webhook.set();
-      } else this.response = this.error(this.request.content.error);
-    } else {
-      this.response = this.error("Invalid access key");
-    }
-
-    // Log access keys to console if access key is not acceptable
-    for (const id in this.access_keys)
-      console.log(
-        this.configs[id].bot_name,
-        "Access Link:",
-        ENV_BOT_HOST_FQDN + this.access_keys[id]
-      );
-
-    return this.response;
-  }
-
-  async processRequest(req) {
-    let request = req;
-    request.size = parseInt(request.headers["content-length"]) || 0;
-    request.type = request.headers["content-type"] || "";
-    if (request.cf) request.content = await this.getContent(request);
-    else if (request.method == "GET")
-      request.content = {
-        message: "Accessing webhook",
-      };
-    else
-      request.content = {
-        message: "",
-        error: "Invalid content type or body",
-      };
-    console.log(req);
-    return request;
-  }
-
-  async getContent(request) {
-    if (request.type.includes("application/json")) {
-      return await request.json;
-    } else if (request.type.includes("text/")) {
-      return await request.text;
-    } else if (request.type.includes("form")) {
-      const formData = await request.formData;
-      const body = {};
-      for (const entry of formData.entries()) {
-        body[entry[0]] = entry[1];
-      }
-      return body;
-    } else {
-      return await request.arrayBuffer;
-    }
-  }
-
-  // handles error responses
-  error(message, status = 403) {
-    return JSONResponse(
-      {
-        error: message,
-      },
-      status
-    );
-  }
-}
 
 ////////////////////////////
 ////  Utility functions ////
@@ -685,14 +82,611 @@ function addURLOptions(urlstr, options = {}) {
   return url;
 }
 
+const getBaseURL = (url_string) => {
+  const url = new URL(url_string);
+  return `${url.protocol}//${url.host}/`;
+};
+
 export default {
   fetch: async (request, env, context) => {
-    console.log(env.ENV_CCMoonitorBot);
+    console.log(env.SECRET_TELEGRAM_API_TOKEN);
+    const WORKER_URL = getBaseURL(request.url);
+    console.log(WORKER_URL);
+
+    class Webhook {
+      constructor(url, token) {
+        this.url = url;
+        this.token = token;
+      }
+
+      // trigger getMe command of BotAPI
+      async getMe() {
+        return await this.execute(this.url + "/getMe");
+      }
+
+      async set() {
+        const access_key = await sha256(this.token);
+        const max_connections = 100;
+        const allowed_updates = ["message"];
+        return await this.execute(
+          this.url +
+            `/setWebhook?url=${
+              env.WORKER_URL + access_key
+            }?max_connections=${max_connections}?allowed_updates=${allowed_updates}`
+        );
+      }
+
+      async get() {
+        return await this.execute(this.url + "/getWebhookInfo");
+      }
+
+      async delete() {
+        return await this.execute(this.url + "/deleteWebhook");
+      }
+
+      async execute(url) {
+        const response = await fetch(url);
+        const result = await response.json();
+        return JSONResponse(result);
+      }
+
+      async process(url) {
+        const command = url.searchParams.get("command");
+        if (command == undefined) {
+          return this.error("No command found", 404);
+        }
+
+        // handles the url commands
+        switch (command) {
+          case "setWebhook":
+            return await this.set();
+          case "getWebhook":
+            return await this.get();
+          case "delWebhook":
+            return await this.delete();
+          case "getMe":
+            return await this.getMe();
+          case "":
+            return this.error("No command found", 404);
+          default:
+            return this.error("Invalid command", 400);
+        }
+      }
+
+      // handles error responses
+      error(message, status = 403) {
+        return JSONResponse(
+          {
+            error: message,
+          },
+          status
+        );
+      }
+    }
+
+    class BotModel {
+      constructor(config) {
+        this.token = config.token;
+        this.commands = config.commands;
+        this.url = "https://api.telegram.org/bot" + config.token;
+        this.webhook = new Webhook(this.url, config.token);
+      }
+
+      // trigger sendAnimation command of BotAPI
+      async update(request) {
+        try {
+          this.message = request.content.message;
+          if (this.message.hasOwnProperty("text")) {
+            // process text
+
+            // Test command and execute
+            if (!(await this.executeCommand(request))) {
+              // don't send messages on invalid commands
+            }
+          } else if (this.message.hasOwnProperty("photo")) {
+            // process photo
+            console.log(this.message.photo);
+          } else if (this.message.hasOwnProperty("video")) {
+            // process video
+            console.log(this.message.video);
+          } else if (this.message.hasOwnProperty("animation")) {
+            // process animation
+            console.log(this.message.animation);
+          } else if (this.message.hasOwnProperty("locaiton")) {
+            // process locaiton
+            console.log(this.message.locaiton);
+          } else if (this.message.hasOwnProperty("poll")) {
+            // process poll
+            console.log(this.message.poll);
+          } else if (this.message.hasOwnProperty("contact")) {
+            // process contact
+            console.log(this.message.contact);
+          } else if (this.message.hasOwnProperty("dice")) {
+            // process dice
+            console.log(this.message.dice);
+          } else if (this.message.hasOwnProperty("sticker")) {
+            // process sticker
+            console.log(this.message.sticker);
+          } else if (this.message.hasOwnProperty("reply_to_message")) {
+            // process reply of a message
+            console.log(this.message.reply_to_message);
+          } else {
+            // process unknown type
+            console.log(this.message);
+          }
+        } catch (error) {
+          console.error(error);
+          return JSONResponse(error.message);
+        }
+        // return 200 OK response to every update request
+        return new Response("True", {
+          status: 200,
+        });
+      }
+
+      // execute the custom bot commands from bot configurations
+      async executeCommand(req) {
+        let cmdArray = this.message.text.split(" ");
+        const command = cmdArray.shift();
+        const isCommand = Object.keys(this.commands).includes(command);
+        if (isCommand) {
+          await this.commands[command](this, req, cmdArray);
+          return true;
+        }
+        return false;
+      }
+
+      // trigger sendMessage command of BotAPI
+      async sendMessage(
+        chat_id,
+        text,
+        parse_mode = "",
+        disable_web_page_preview = false,
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url + "/sendMessage?chat_id=" + chat_id + "&text=" + text;
+
+        url = addURLOptions(url, {
+          parse_mode: parse_mode,
+          disable_web_page_preview: disable_web_page_preview,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger forwardMessage command of BotAPI
+      async forwardMessage(
+        chat_id,
+        from_chat_id,
+        disable_notification = false,
+        message_id
+      ) {
+        let url =
+          this.url +
+          "/sendMessage?chat_id=" +
+          chat_id +
+          "&from_chat_id=" +
+          from_chat_id +
+          "&message_id=" +
+          message_id;
+        if (disable_notification)
+          url += "&disable_notification=" + disable_notification;
+
+        url = addURLOptions(url, {
+          disable_notification: disable_notification,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger sendPhoto command of BotAPI
+      async sendPhoto(
+        chat_id,
+        photo,
+        caption = "",
+        parse_mode = "",
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url + "/sendPhoto?chat_id=" + chat_id + "&photo=" + photo;
+
+        url = addURLOptions(url, {
+          caption: caption,
+          parse_mode: parse_mode,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger sendVideo command of BotAPI
+      async sendVideo(
+        chat_id,
+        video,
+        duration = 0,
+        width = 0,
+        height = 0,
+        thumb = "",
+        caption = "",
+        parse_mode = "",
+        supports_streaming = false,
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url + "/sendVideo?chat_id=" + chat_id + "&video=" + video;
+
+        url = addURLOptions(url, {
+          duration: duration,
+          width: width,
+          height: height,
+          thumb: thumb,
+          caption: caption,
+          parse_mode: parse_mode,
+          supports_streaming: supports_streaming,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger sendAnimation command of BotAPI
+      async sendAnimation(
+        chat_id,
+        animation,
+        duration = 0,
+        width = 0,
+        height = 0,
+        thumb = "",
+        caption = "",
+        parse_mode = "",
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url +
+          "/sendAnimation?chat_id=" +
+          chat_id +
+          "&animation=" +
+          animation;
+
+        url = addURLOptions(url, {
+          duration: duration,
+          width: width,
+          height: height,
+          thumb: thumb,
+          caption: caption,
+          parse_mode: parse_mode,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger sendLocation command of BotAPI
+      async sendLocation(
+        chat_id,
+        latitude,
+        longitude,
+        live_period = 0,
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url +
+          "/sendLocation?chat_id=" +
+          chat_id +
+          "&latitude=" +
+          latitude +
+          "&longitude=" +
+          longitude;
+
+        url = addURLOptions(url, {
+          live_period: live_period,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger senPoll command of BotAPI
+      async sendPoll(
+        chat_id,
+        question,
+        options,
+        is_anonymous = "", // Use 'false' to set it instead of Boolean false
+        type = "",
+        allows_multiple_answers = false,
+        correct_option_id = 0,
+        explanation = "",
+        explanation_parse_mode = "",
+        open_period = 0,
+        close_date = 0,
+        is_closed = false,
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url =
+          this.url +
+          "/sendPoll?chat_id=" +
+          chat_id +
+          "&question=" +
+          question +
+          "&options=" +
+          options;
+
+        url = addURLOptions(url, {
+          is_anonymous: is_anonymous,
+          type: type,
+          allows_multiple_answers: allows_multiple_answers,
+          correct_option_id: correct_option_id,
+          explanation: explanation,
+          explanation_parse_mode: explanation_parse_mode,
+          open_period: open_period,
+          close_date: close_date,
+          is_closed: is_closed,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // trigger senDice command of BotAPI
+      async sendDice(
+        chat_id,
+        emoji = "",
+        disable_notification = false,
+        reply_to_message_id = 0
+      ) {
+        let url = this.url + "/sendDice?chat_id=" + chat_id;
+
+        url = addURLOptions(url, {
+          emoji: emoji,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        });
+
+        await fetch(url);
+      }
+
+      // bot api command to get user profile photos
+      async getUserProfilePhotos(user_id, offset = 0, limit = 0) {
+        let url = this.url + "/getUserProfilePhotos?user_id=" + user_id;
+
+        url = addURLOptions(url, {
+          offset: offset,
+          limit: limit,
+        });
+
+        const response = await fetch(url);
+        const result = await response.json();
+        return result.result.photos;
+      }
+    }
+
+    class TelegramBot extends BotModel {
+      constructor(config) {
+        super(config);
+      }
+
+      // bot command: /kanye
+      async kanye(req, args) {
+        const request = new Request("https://api.kanye.rest");
+
+        await fetch(request)
+          .then((response) => response.json())
+          .then((json) => this.sendMessage(this.message.chat.id, json.quote));
+      }
+
+      // bot command: /joke
+      async joke(req, args) {
+        const request = new Request("https://v2.jokeapi.dev/joke/Any");
+
+        await fetch(request)
+          .then((response) => response.json())
+          .then((json) =>
+            this.sendMessage(
+              this.message.chat.id,
+              json.setup +
+                "\n\n" +
+                "<tg-spoiler>" +
+                json.delivery +
+                "</tg-spoiler>",
+              "HTML"
+            )
+          );
+      }
+
+      // bot command: /bored
+      async doge(req, args) {
+        const request = new Request("https://shibe.online/api/shibes");
+
+        await fetch(request)
+          .then((response) => response.json())
+          .then((json) => this.sendPhoto(this.message.chat.id, json[0]));
+      }
+
+      // bot command: /bored
+      async bored(req, args) {
+        const request = new Request("https://boredapi.com/api/activity/");
+
+        await fetch(request)
+          .then((response) => response.json())
+          .then((json) =>
+            this.sendMessage(this.message.chat.id, json.activity)
+          );
+      }
+
+      // bot command: /epoch
+      async epoch(req, args) {
+        await this.sendMessage(this.message.chat.id, new Date().getTime());
+      }
+
+      // bot command: /balance
+      async balance(req, args) {
+        const request = new Request(
+          `https://blockchain.info/balance?active=${args[0]}`
+        );
+
+        await fetch(request)
+          .then((response) => response.json())
+          .then((json) =>
+            this.sendMessage(
+              this.message.chat.id,
+              (parseInt(json[args[0]].final_balance) / 100000000).toString() +
+                " BTC"
+            )
+          );
+      }
+
+      // bot command: /roll
+      async roll(req, args) {
+        const outcome = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+        await this.sendMessage(this.message.chat.id, "you rolled a " + outcome);
+      }
+
+      // bot command: /toss
+      async toss(req, args) {
+        const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
+        await this.sendMessage(this.message.chat.id, outcome);
+      }
+
+      // bot command: /ping
+      async ping(req, args) {
+        const text = args.length < 1 ? "pong" : args.join(" ");
+        await this.sendMessage(this.message.chat.id, text);
+      }
+
+      // bot command: /chatInfo
+      async getChatInfo(req, args) {
+        await this.sendMessage(
+          this.message.chat.id,
+          logJSONinHTML(this.message.chat),
+          "HTML"
+        );
+      }
+
+      // Send all the profile pictures to user_id
+      async sendAllProfilePhotos(chat_id, user_id) {
+        const profilePhotos = await this.getUserProfilePhotos(user_id);
+        for (const item of profilePhotos) {
+          await this.sendPhoto(chat_id, item[0].file_id);
+        }
+      }
+    }
+
+    class Handler {
+      constructor(configs) {
+        this.configs = configs;
+        this.tokens = this.configs.map((item) => item.token);
+        this.response = new Response();
+      }
+
+      // handles the request
+      async handle(request) {
+        const url = new URL(request.url);
+        const url_key = url.pathname.substring(1).replace(/\/$/, "");
+
+        this.access_keys = await Promise.all(
+          this.tokens.map(async (token) => await sha256(token))
+        );
+        this.bot_id = this.access_keys.indexOf(url_key);
+
+        console.log({ bot_id: this.bot_id });
+        if (this.bot_id > -1) {
+          this.request = await this.processRequest(request);
+
+          this.bot = new TelegramBot({
+            token: this.tokens[this.bot_id], // Bot Token
+            access_key: this.access_keys[this.bot_id], // Access Key
+            commands: this.configs[this.bot_id].commands, // Bot commands
+          });
+
+          if (
+            this.request.method === "POST" &&
+            this.request.size > 6 &&
+            this.request.content.message
+          )
+            this.response = await this.bot.update(this.request);
+          else if (this.request.method === "GET") {
+            this.response = await this.bot.webhook.process(url);
+            await this.bot.webhook.set();
+          } else this.response = this.error(this.request.content.error);
+        } else {
+          this.response = this.error("Invalid access key");
+        }
+
+        // Log access keys to console if access key is not acceptable
+        for (const id in this.access_keys)
+          console.log(
+            this.configs[id].bot_name,
+            "Access Link:",
+            env.WORKER_URL + this.access_keys[id]
+          );
+
+        return this.response;
+      }
+
+      async processRequest(req) {
+        let request = req;
+        request.size = parseInt(request.headers["content-length"]) || 0;
+        request.type = request.headers["content-type"] || "";
+        if (request.cf) request.content = await this.getContent(request);
+        else if (request.method == "GET")
+          request.content = {
+            message: "Accessing webhook",
+          };
+        else
+          request.content = {
+            message: "",
+            error: "Invalid content type or body",
+          };
+        console.log(req);
+        return request;
+      }
+
+      async getContent(request) {
+        if (request.type.includes("application/json")) {
+          return await request.json;
+        } else if (request.type.includes("text/")) {
+          return await request.text;
+        } else if (request.type.includes("form")) {
+          const formData = await request.formData;
+          const body = {};
+          for (const entry of formData.entries()) {
+            body[entry[0]] = entry[1];
+          }
+          return body;
+        } else {
+          return await request.arrayBuffer;
+        }
+      }
+
+      // handles error responses
+      error(message, status = 403) {
+        return JSONResponse(
+          {
+            error: message,
+          },
+          status
+        );
+      }
+    }
 
     const bot_configs = [
       {
         bot_name: "CCMooniterBot",
-        token: env.ENV_CCMoonitorBot,
+        token: env.SECRET_TELEGRAM_API_TOKEN,
         commands: {
           "/chatInfo": commands.chatInfo,
           "/ping": commands.ping,

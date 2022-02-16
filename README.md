@@ -14,3 +14,19 @@ To fork this repo:
 - `wrangler secret put ENV_CCMoonitorBot` and set it to your API key
 - `wrangler publish`
 - done!
+
+To use the deploy button:
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/codebam/moonitor)
+
+- click the deploy button and fork the repo
+- Navigate to your new **GitHub repository &gt; Settings &gt; Secrets** and add the following secrets:
+
+   ```yaml
+   - Name: CF_API_TOKEN (should be added automatically)
+   - Name: CF_ACCOUNT_ID (should be added automatically)
+
+   - Name: SECRET_TELEGRAM_API_TOKEN
+   - Value: your-telegram-api-key
+   ```
+
+- Push to `master` to trigger a deploy
