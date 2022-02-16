@@ -53,8 +53,13 @@ class Webhook {
 
   async set() {
     const access_key = await sha256(this.token);
+    const max_connections = 100;
+    const allowed_updates = ["message"];
     return await this.execute(
-      this.url + "/setWebhook?url=" + ENV_BOT_HOST_FQDN + access_key
+      this.url +
+        `/setWebhook?url=${
+          ENV_BOT_HOST_FQDN + access_key
+        }?max_connections=${max_connections}?allowed_updates=${allowed_updates}`
     );
   }
 
@@ -682,6 +687,8 @@ function addURLOptions(urlstr, options = {}) {
 
 export default {
   fetch: async (request, env, context) => {
+    console.log(env.ENV_CCMoonitorBot);
+
     const bot_configs = [
       {
         bot_name: "CCMooniterBot",
