@@ -451,7 +451,7 @@ class TelegramBot extends BotModel {
 
   // bot command: /bored
   async doge(req, args) {
-    const request = new Request("http://shibe.online/api/shibes");
+    const request = new Request("https://shibe.online/api/shibes");
 
     await fetch(request)
       .then((response) => response.json())
