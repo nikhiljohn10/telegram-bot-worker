@@ -33,6 +33,7 @@ const commands = {
   bored: async (bot, req, args) => await bot.bored(req, args),
   joke: async (bot, req, args) => await bot.joke(req, args),
   doge: async (bot, req, args) => await bot.doge(req, args),
+  roll: async (bot, req, args) => await bot.roll(req, args),
 };
 
 ///////////////////////////
@@ -494,9 +495,15 @@ class TelegramBot extends BotModel {
       );
   }
 
+  // bot command: /roll
+  async roll(req, args) {
+    const outcome = Math.floor(Math.random() * (6 - 1 + 1) + 1);
+    await this.sendMessage(this.message.chat.id, "you rolled a " + outcome);
+  }
+
   // bot command: /toss
   async toss(req, args) {
-    const outcome = Math.floor(Math.random() * 2) == 0 ? "Heads" : "Tails";
+    const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
     await this.sendMessage(this.message.chat.id, outcome);
   }
 
@@ -690,6 +697,7 @@ export default {
           "/bored": commands.bored,
           "/joke": commands.joke,
           "/doge": commands.doge,
+          "/roll": commands.roll,
         },
       },
     ];
