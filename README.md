@@ -11,7 +11,7 @@ To fork this repo:
 
 - click fork
 - rename the bot in `src/worker.js`
-- `wrangler secret put ENV_CCMoonitorBot` and set it to your API key
+- `wrangler secret put SECRET_TELEGRAM_API_TOKEN` and set it to your API key
 - `wrangler publish`
 - done!
 
