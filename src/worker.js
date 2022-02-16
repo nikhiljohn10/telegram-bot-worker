@@ -444,7 +444,12 @@ class TelegramBot extends BotModel {
       .then((json) =>
         this.sendMessage(
           this.message.chat.id,
-          json.setup + "\n\n" + json.delivery
+          json.setup +
+            "\n\n" +
+            "<tg-spoiler>" +
+            json.delivery +
+            "</tg-spoiler>",
+          "HTML"
         )
       );
   }
