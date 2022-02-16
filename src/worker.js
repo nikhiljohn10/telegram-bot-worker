@@ -16,7 +16,6 @@
 ////  Custom Cloudflare Environment Variables ////
 //////////////////////////////////////////////////
 
-const ENV_ADMIN_ID = 69148517; // ( The chat_id of the admin telegram user which can be optained using /chatInfo command)
 const ENV_BOT_HOST_FQDN = "https://moonitor.codebam.workers.dev/";
 const ENV_CCMoonitorBot = "5247233206:AAFrvU8JEchYAaS93MJFuEsStJUXCA5SeOM";
 
