@@ -10,7 +10,6 @@ It is modified and my modifications are licensed with the Apache license.
 To fork this repo:
 
 - click fork
-- rename the bot in `src/worker.js`
 - `wrangler secret put SECRET_TELEGRAM_API_TOKEN` and set it to your API key
 - `wrangler publish`
 - done!
