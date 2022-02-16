@@ -28,6 +28,7 @@ const commands = {
   ping: async (bot, req, args) => await bot.ping(req, args),
   toss: async (bot, req, args) => await bot.toss(req, args),
   balance: async (bot, req, args) => await bot.balance(req, args),
+  epoch: async (bot, req, args) => await bot.epoch(req, args),
 };
 
 ///////////////////////////
@@ -421,6 +422,11 @@ class TelegramBot extends BotModel {
     super(config);
   }
 
+  // bot command: /epoch
+  async epoch(req, args) {
+    await this.sendMessage(this.message.chat.id, new Date().getTime());
+  }
+
   // bot command: /balance
   async balance(req, args) {
     const request = new Request(
@@ -629,6 +635,7 @@ export default {
           "/ping": commands.ping,
           "/toss": commands.toss,
           "/balance": commands.balance,
+          "/epoch": commands.epoch,
         },
       },
     ];
