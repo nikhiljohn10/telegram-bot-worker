@@ -29,6 +29,7 @@ const commands = {
   chatInfo: async (bot, req, args) => await bot.getChatInfo(req, args),
   ping: async (bot, req, args) => await bot.ping(req, args),
   toss: async (bot, req, args) => await bot.toss(req, args),
+  balance: async (bot, req, args) => await bot.balance(req, args),
 };
 
 // Configurations
@@ -40,6 +41,7 @@ const bot_configs = [
       "/chatInfo": commands.chatInfo,
       "/ping": commands.ping,
       "/toss": commands.toss,
+      "/balance": commands.balance,
     },
   },
 ];
@@ -435,6 +437,23 @@ class TelegramBot extends BotModel {
     super(config);
   }
 
+  // bot command: /balance
+  async balance(req, args) {
+    const request = new Request(
+      `https://blockchain.info/balance?active=${args[0]}`
+    );
+
+    await fetch(request)
+      .then((response) => response.json())
+      .then((json) =>
+        this.sendMessage(
+          this.message.chat.id,
+          (parseInt(json[args[0]].final_balance) / 100000000).toString() +
+            " BTC"
+        )
+      );
+  }
+
   // bot command: /toss
   async toss(req, args) {
     const outcome = Math.floor(Math.random() * 2) == 0 ? "Heads" : "Tails";
@@ -489,7 +508,6 @@ class Handler {
     console.log({ bot_id: this.bot_id });
     if (this.bot_id > -1) {
       this.request = await this.processRequest(request);
-      console.log({ request_type: this.request.type });
 
       this.bot = new TelegramBot({
         token: this.tokens[this.bot_id], // Bot Token
