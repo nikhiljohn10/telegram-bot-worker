@@ -30,6 +30,8 @@ const commands = {
   balance: async (bot, req, args) => await bot.balance(req, args),
   epoch: async (bot, req, args) => await bot.epoch(req, args),
   kanye: async (bot, req, args) => await bot.kanye(req, args),
+  bored: async (bot, req, args) => await bot.bored(req, args),
+  joke: async (bot, req, args) => await bot.joke(req, args),
 };
 
 ///////////////////////////
@@ -432,6 +434,29 @@ class TelegramBot extends BotModel {
       .then((json) => this.sendMessage(this.message.chat.id, json.quote));
   }
 
+  // bot command: /joke
+  async joke(req, args) {
+    const request = new Request("https://v2.jokeapi.dev/joke/Any");
+
+    await fetch(request)
+      .then((response) => response.json())
+      .then((json) =>
+        this.sendMessage(
+          this.message.chat.id,
+          json.setup + "\n\n" + json.delivery
+        )
+      );
+  }
+
+  // bot command: /bored
+  async bored(req, args) {
+    const request = new Request("https://boredapi.com/api/activity/");
+
+    await fetch(request)
+      .then((response) => response.json())
+      .then((json) => this.sendMessage(this.message.chat.id, json.activity));
+  }
+
   // bot command: /epoch
   async epoch(req, args) {
     await this.sendMessage(this.message.chat.id, new Date().getTime());
@@ -647,6 +672,8 @@ export default {
           "/balance": commands.balance,
           "/epoch": commands.epoch,
           "/kanye": commands.kanye,
+          "/bored": commands.bored,
+          "/joke": commands.joke,
         },
       },
     ];
