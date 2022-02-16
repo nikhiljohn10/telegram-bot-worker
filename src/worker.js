@@ -127,8 +127,7 @@ class BotModel {
 
         // Test command and execute
         if (!(await this.executeCommand(request))) {
-          // Test is not a command
-          await this.sendMessage(this.message.chat.id, "This is not a command");
+          // don't send messages on invalid commands
         }
       } else if (this.message.hasOwnProperty("photo")) {
         // process photo
