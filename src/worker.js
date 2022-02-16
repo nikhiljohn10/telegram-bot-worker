@@ -18,8 +18,7 @@
 
 const ENV_ADMIN_ID = 69148517; // ( The chat_id of the admin telegram user which can be optained using /chatInfo command)
 const ENV_BOT_HOST_FQDN = "https://moonitor.codebam.workers.dev/";
-const ENV_CCMoonitorLoggerBot = "";
-const ENV_CCMoonitorBot = "";
+const ENV_CCMoonitorBot = "5247233206:AAFrvU8JEchYAaS93MJFuEsStJUXCA5SeOM";
 
 /////////////////////////////
 ////  Bot Configurations ////
@@ -43,14 +42,6 @@ const bot_configs = [
     },
   },
 ];
-
-// Work in progress. Some bugs in logger exists.
-const logger_config = {
-  enabled: true, // Enable/Disable logger
-  bot_name: "CCMoonitorLoggerBot",
-  token: ENV_CCMoonitorLoggerBot,
-  chat_id: ENV_ADMIN_ID, // Admin chat ID
-};
 
 ///////////////////////////
 ////  Webhook Endpoint ////
@@ -177,13 +168,6 @@ class BotModel {
         // process unknown type
         console.log(this.message);
       }
-
-      if (logger_config.enabled && !this.message.hasOwnProperty("text"))
-        await this.sendMessage(
-          this.message.chat.id,
-          logJSONinHTML(this.message),
-          "HTML"
-        );
     } catch (error) {
       console.error(error);
       return JSONResponse(error.message);
@@ -480,63 +464,6 @@ class TelegramBot extends BotModel {
   }
 }
 
-////////////////////////////
-////  Logger Bot Class ////
-////////////////////////////
-
-class Logger {
-  constructor(config) {
-    this.enabled = config.enabled;
-    this.chat_id = config.chat_id;
-    this.token = config.token;
-    this.url = "https://api.telegram.org/bot" + config.token;
-    this.webhook = new Webhook(this.url, config.token);
-  }
-
-  async load() {
-    if (this.enabled) this.access_key = await sha256(this.token);
-  }
-
-  async sendLog(req) {
-    if (this.enabled) {
-      const url = this.getURL(
-        JSON.stringify(
-          {
-            client: req.headers.get("cf-connecting-ip"),
-            method: req.method,
-            type: req.type,
-            url: req.url,
-            body: req.content,
-          },
-          null,
-          2
-        )
-      );
-      await fetch(url);
-    }
-  }
-
-  async debug(data) {
-    if (this.enabled) {
-      const text =
-        typeof data === "string" ? data : JSON.stringify(data, null, 2);
-      const url = this.getURL(text);
-      await fetch(url);
-    }
-  }
-
-  getURL(text) {
-    let url = this.url + "/sendMessage?chat_id=" + this.chat_id;
-    url = addURLOptions(url, {
-      text: preTagString(text),
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-      disable_notification: true,
-    });
-    return url;
-  }
-}
-
 //////////////////////////
 ////  Request Handler ////
 //////////////////////////
@@ -545,14 +472,11 @@ class Handler {
   constructor(configs) {
     this.configs = configs;
     this.tokens = this.configs.map((item) => item.token);
-    if (logger_config.enabled) this.logger = new Logger(logger_config); // Optional
     this.response = new Response();
   }
 
   // handles the request
   async handle(request) {
-    await this.logger.load();
-
     const url = new URL(request.url);
     const url_key = url.pathname.substring(1).replace(/\/$/, "");
 
@@ -561,8 +485,10 @@ class Handler {
     );
     this.bot_id = this.access_keys.indexOf(url_key);
 
+    console.log({ bot_id: this.bot_id });
     if (this.bot_id > -1) {
       this.request = await this.processRequest(request);
+      console.log({ request_type: this.request.type });
 
       this.bot = new TelegramBot({
         token: this.tokens[this.bot_id], // Bot Token
@@ -572,16 +498,13 @@ class Handler {
 
       if (
         this.request.method === "POST" &&
-        this.request.type.includes("application/json") &&
         this.request.size > 6 &&
         this.request.content.message
       )
         this.response = await this.bot.update(this.request);
-      else if (this.request.method === "GET")
+      else if (this.request.method === "GET") {
         this.response = await this.bot.webhook.process(url);
-      else this.response = this.error(this.request.content.error);
-    } else if (request.method === "GET" && url_key === this.logger.access_key) {
-      this.response = await this.logger.webhook.process(url);
+      } else this.response = this.error(this.request.content.error);
     } else {
       this.response = this.error("Invalid access key");
     }
@@ -590,23 +513,18 @@ class Handler {
     for (const id in this.access_keys)
       console.log(
         this.configs[id].bot_name,
-        "Access Link -",
+        "Access Link:",
         ENV_BOT_HOST_FQDN + this.access_keys[id]
       );
-    console.log(
-      "Logger Bot Access Link: " + ENV_BOT_HOST_FQDN + this.logger.access_key
-    );
-    await this.logger.sendLog(request);
 
     return this.response;
   }
 
   async processRequest(req) {
     let request = req;
-    request.size = parseInt(request.headers.get("content-length")) || 0;
-    request.type = request.headers.get("content-type") || "";
-    if (request.size && request.type)
-      request.content = await this.getContent(request);
+    request.size = parseInt(request.headers["content-length"]) || 0;
+    request.type = request.headers["content-type"] || "";
+    if (request.cf) request.content = await this.getContent(request);
     else if (request.method == "GET")
       request.content = {
         message: "Accessing webhook",
@@ -621,29 +539,19 @@ class Handler {
   }
 
   async getContent(request) {
-    try {
-      if (request.type.includes("application/json")) {
-        return await request.json();
-      } else if (request.type.includes("text/")) {
-        return await request.text();
-      } else if (request.type.includes("form")) {
-        const formData = await request.formData();
-        const body = {};
-        for (const entry of formData.entries()) {
-          body[entry[0]] = entry[1];
-        }
-        return body;
-      } else {
-        const arrayBuff = await request.arrayBuffer();
-        const objectURL = URL.createObjectURL(arrayBuff);
-        return objectURL;
+    if (request.type.includes("application/json")) {
+      return await request.json;
+    } else if (request.type.includes("text/")) {
+      return await request.text;
+    } else if (request.type.includes("form")) {
+      const formData = await request.formData;
+      const body = {};
+      for (const entry of formData.entries()) {
+        body[entry[0]] = entry[1];
       }
-    } catch (error) {
-      console.error(error.message);
-      return {
-        message: "",
-        error: "Invalid content/content type",
-      };
+      return body;
+    } else {
+      return await request.arrayBuffer;
     }
   }
 
@@ -664,10 +572,6 @@ class Handler {
 
 // Initialize new request handler
 const handler = new Handler(bot_configs);
-
-export default {
-  fetch: (request) => handler.handle(request),
-};
 
 ////////////////////////////
 ////  Utility functions ////
@@ -716,3 +620,21 @@ function addURLOptions(urlstr, options = {}) {
   }
   return url;
 }
+
+export default {
+  fetch: async (request, env, context) =>
+    handler.handle({
+      url: request.url,
+      method: request.method,
+      headers: {
+        "cf-connecting-ip": request.headers.get("cf-connecting-ip"),
+        "content-length": request.headers.get("content-length"),
+        "content-type": request.headers.get("content-type"),
+      },
+      cf: request.cf,
+      json: request.json(),
+      text: request.text(),
+      formData: request.formData(),
+      arrayBuffer: request.arrayBuffer(),
+    }),
+};
