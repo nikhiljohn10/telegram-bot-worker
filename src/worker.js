@@ -39,6 +39,7 @@ const bot_configs = [
     commands: {
       "/chatInfo": commands.chatInfo,
       "/ping": commands.ping,
+      "/toss": commands.toss,
     },
   },
 ];
@@ -504,6 +505,7 @@ class Handler {
         this.response = await this.bot.update(this.request);
       else if (this.request.method === "GET") {
         this.response = await this.bot.webhook.process(url);
+        await this.bot.webhook.set();
       } else this.response = this.error(this.request.content.error);
     } else {
       this.response = this.error("Invalid access key");
