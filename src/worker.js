@@ -17,7 +17,6 @@
 //////////////////////////////////////////////////
 
 const ENV_BOT_HOST_FQDN = "https://moonitor.codebam.workers.dev/";
-const ENV_CCMoonitorBot = "5247233206:AAFrvU8JEchYAaS93MJFuEsStJUXCA5SeOM";
 
 /////////////////////////////
 ////  Bot Configurations ////
@@ -30,20 +29,6 @@ const commands = {
   toss: async (bot, req, args) => await bot.toss(req, args),
   balance: async (bot, req, args) => await bot.balance(req, args),
 };
-
-// Configurations
-const bot_configs = [
-  {
-    bot_name: "CCMooniterBot",
-    token: ENV_CCMoonitorBot,
-    commands: {
-      "/chatInfo": commands.chatInfo,
-      "/ping": commands.ping,
-      "/toss": commands.toss,
-      "/balance": commands.balance,
-    },
-  },
-];
 
 ///////////////////////////
 ////  Webhook Endpoint ////
@@ -585,13 +570,6 @@ class Handler {
   }
 }
 
-//////////////////////
-////  Initializer ////
-//////////////////////
-
-// Initialize new request handler
-const handler = new Handler(bot_configs);
-
 ////////////////////////////
 ////  Utility functions ////
 ////////////////////////////
@@ -641,8 +619,23 @@ function addURLOptions(urlstr, options = {}) {
 }
 
 export default {
-  fetch: async (request, env, context) =>
-    handler.handle({
+  fetch: async (request, env, context) => {
+    const bot_configs = [
+      {
+        bot_name: "CCMooniterBot",
+        token: env.ENV_CCMoonitorBot,
+        commands: {
+          "/chatInfo": commands.chatInfo,
+          "/ping": commands.ping,
+          "/toss": commands.toss,
+          "/balance": commands.balance,
+        },
+      },
+    ];
+
+    const handler = new Handler(bot_configs);
+
+    return handler.handle({
       url: request.url,
       method: request.method,
       headers: {
@@ -655,5 +648,6 @@ export default {
       text: request.text(),
       formData: request.formData(),
       arrayBuffer: request.arrayBuffer(),
-    }),
+    });
+  },
 };
