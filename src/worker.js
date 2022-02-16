@@ -32,6 +32,7 @@ const commands = {
   kanye: async (bot, req, args) => await bot.kanye(req, args),
   bored: async (bot, req, args) => await bot.bored(req, args),
   joke: async (bot, req, args) => await bot.joke(req, args),
+  doge: async (bot, req, args) => await bot.doge(req, args),
 };
 
 ///////////////////////////
@@ -449,6 +450,15 @@ class TelegramBot extends BotModel {
   }
 
   // bot command: /bored
+  async doge(req, args) {
+    const request = new Request("http://shibe.online/api/shibes");
+
+    await fetch(request)
+      .then((response) => response.json())
+      .then((json) => this.sendPhoto(this.message.chat.id, json[0]));
+  }
+
+  // bot command: /bored
   async bored(req, args) {
     const request = new Request("https://boredapi.com/api/activity/");
 
@@ -674,6 +684,7 @@ export default {
           "/kanye": commands.kanye,
           "/bored": commands.bored,
           "/joke": commands.joke,
+          "/doge": commands.doge,
         },
       },
     ];
