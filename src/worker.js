@@ -622,9 +622,9 @@ export default {
           this.message.chat.id,
           "<pre>" +
             JSON.stringify(
-              Array.from({ length: args[0] ?? 100 }, () => Math.random()).map(
-                (x) => x.toFixed(2)
-              )
+              Array.from({ length: args[0] ?? 100 }, () =>
+                Math.random()
+              ).map((x) => x.toFixed(2))
             ) +
             "</pre>",
           "HTML"
@@ -645,9 +645,8 @@ export default {
       async roll(req, args) {
         const outcome = Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1);
         const content = (username, outcome) =>
-          `@${username} rolled a ${
-            args[0] ?? 6
-          } sided die. it landed on ${outcome}`;
+          `@${username} rolled a ${args[0] ??
+            6} sided die. it landed on ${outcome}`;
         console.log({ req });
 
         if (req.content.inline_query) {
