@@ -620,11 +620,14 @@ export default {
       async numbers(req, args) {
         this.sendMessage(
           this.message.chat.id,
-          JSON.stringify(
-            Array.from({ length: args[0] ?? 100 }, () => Math.random()).map(
-              (x) => x.toFixed(2)
-            )
-          )
+          "<code>" +
+            JSON.stringify(
+              Array.from({ length: args[0] ?? 100 }, () => Math.random()).map(
+                (x) => x.toFixed(2)
+              )
+            ) +
+            "</code>",
+          "HTML"
         );
       }
 
@@ -665,7 +668,11 @@ export default {
       // bot command: /commandList
       async commandList(req, args) {
         const content = JSON.stringify(Object.keys(commands));
-        await this.sendMessage(this.message.chat.id, content);
+        await this.sendMessage(
+          this.message.chat.id,
+          "<code>" + content + "</code>",
+          "HTML"
+        );
       }
 
       // bot command: /toss
