@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "moonitor",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "description": "serverless telegram bot on cf workers to monitor a cryptocurrency address",
   "main": "./dist/worker.mjs",
   "module": "./dist/worker.mjs",
