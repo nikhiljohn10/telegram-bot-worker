@@ -121,9 +121,9 @@ export default {
         const allowed_updates = ["message"];
         return await this.execute(
           this.url +
-            `/setWebhook?url=${
+            `/setWebhook?url=${encodeURIComponent(
               WORKER_URL + access_key
-            }?max_connections=${max_connections}?allowed_updates=${allowed_updates}?drop_pending=True`
+            )}&max_connections=${max_connections}&allowed_updates=${allowed_updates}&drop_pending=True`
         );
       }
 
