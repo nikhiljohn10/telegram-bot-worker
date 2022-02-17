@@ -121,7 +121,7 @@ export default {
         return await this.execute(
           this.url +
             `/setWebhook?url=${
-              env.WORKER_URL + access_key
+              WORKER_URL + access_key
             }?max_connections=${max_connections}?allowed_updates=${allowed_updates}`
         );
       }
@@ -135,9 +135,13 @@ export default {
       }
 
       async execute(url) {
-        const response = await fetch(url);
-        const result = await response.json();
-        return JSONResponse(result);
+        return await fetch(url)
+          .then((response) => response.json())
+          .then((json) => {
+            console.log(json);
+            return json;
+          })
+          .then((json) => JSONResponse(json));
       }
 
       async process(url) {
