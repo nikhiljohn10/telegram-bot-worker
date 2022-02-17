@@ -33,6 +33,7 @@ const commands = {
   doge: async (bot, req, args) => await bot.doge(req, args),
   roll: async (bot, req, args) => await bot.roll(req, args),
   recursion: async (bot, req, args) => await bot.recursion(req, args),
+  numbers: async (bot, req, args) => await bot.numbers(req, args),
   commandList: async (bot, req, args) => await bot.commandList(req, args),
 };
 
@@ -615,6 +616,18 @@ export default {
           });
       }
 
+      // bot command: /numbers
+      async numbers(req, args) {
+        this.sendMessage(
+          this.message.chat.id,
+          JSON.stringify(
+            Array.from({ length: args[0] ?? 100 }, () => Math.random()).map(
+              (x) => x.toFixed(2)
+            )
+          )
+        );
+      }
+
       // bot command: /recursion
       async recursion(req, args) {
         const content = "/recursion";
@@ -807,6 +820,7 @@ export default {
           "/doge": commands.doge,
           "/roll": commands.roll,
           "/recursion": commands.recursion,
+          "/numbers": commands.numbers,
           "/commandList": commands.commandList,
         },
       },
