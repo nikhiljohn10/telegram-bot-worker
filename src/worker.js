@@ -534,7 +534,14 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) => this.sendMessage(this.message.chat.id, json.quote));
+          .then((json) => `Kanye says... ${json.quote}`)
+          .then((content) => {
+            if (req.content.inline_query) {
+              this.answerInlineQuery(req.content.inline_query.id, [content]);
+            } else {
+              this.sendMessage(this.message.chat.id, content);
+            }
+          });
       }
 
       // bot command: /joke
