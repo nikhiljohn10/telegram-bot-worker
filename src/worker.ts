@@ -288,33 +288,25 @@ export default {
       }
 
       // trigger answerInlineQuery command of BotAPI
-      async answerInlineQuery(inline_query_id, results, cache_time = 0) {
-        let url =
-          this.url +
-          "/answerInlineQuery?inline_query_id=" +
-          inline_query_id +
-          "&results=" +
-          encodeURIComponent(
+      answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
+        fetch(
+          `${
+            this.url
+          }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
             JSON.stringify([InlineQueryResultArticle(results)])
-          ) +
-          "&cache_time=" +
-          cache_time;
-        console.log({ url });
-        const response = fetch(url);
-        console.log({ inline_query_response: await response });
-      }
+          )}&cache_time=${cache_time}`
+        );
 
       // trigger sendMessage command of BotAPI
-      async sendMessage(
+      sendMessage = async (
         chat_id,
         text,
         parse_mode = "",
         disable_web_page_preview = false,
         disable_notification = false,
         reply_to_message_id = 0
-      ) {
-        let url =
-          this.url + "/sendMessage?chat_id=" + chat_id + "&text=" + text;
+      ) => {
+        let url = `${this.url}/sendMessage?chat_id=${chat_id}&text=${text}`;
 
         url = addURLOptions(url, {
           parse_mode: parse_mode,
@@ -323,8 +315,8 @@ export default {
           reply_to_message_id: reply_to_message_id,
         });
 
-        await fetch(url);
-      }
+        return fetch(url);
+      };
 
       // trigger forwardMessage command of BotAPI
       async forwardMessage(
