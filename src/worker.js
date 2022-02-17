@@ -551,8 +551,11 @@ export default {
 
       // bot command: /roll
       async roll(req, args) {
-        const outcome = Math.floor(Math.random() * (6 - 1 + 1) + 1);
-        await this.sendMessage(this.message.chat.id, "you rolled a " + outcome);
+        const outcome = Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1);
+        await this.sendMessage(
+          this.message.chat.id,
+          `@${this.message.from.username} rolled a ${outcome}`
+        );
       }
 
       // bot command: /toss
@@ -631,7 +634,7 @@ export default {
           console.log(
             this.configs[id].bot_name,
             "Access Link:",
-            env.WORKER_URL + this.access_keys[id]
+            WORKER_URL + this.access_keys[id]
           );
 
         return this.response;
