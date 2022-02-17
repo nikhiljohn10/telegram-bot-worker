@@ -620,13 +620,13 @@ export default {
       async numbers(req, args) {
         this.sendMessage(
           this.message.chat.id,
-          "<code>" +
+          "<pre>" +
             JSON.stringify(
               Array.from({ length: args[0] ?? 100 }, () => Math.random()).map(
                 (x) => x.toFixed(2)
               )
             ) +
-            "</code>",
+            "</pre>",
           "HTML"
         );
       }
@@ -670,7 +670,7 @@ export default {
         const content = JSON.stringify(Object.keys(commands));
         await this.sendMessage(
           this.message.chat.id,
-          "<code>" + content + "</code>",
+          "<pre>" + content + "</pre>",
           "HTML"
         );
       }
