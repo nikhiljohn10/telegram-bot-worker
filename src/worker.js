@@ -49,6 +49,16 @@ function JSONResponse(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), init);
 }
 
+// Generate InlineQueryResultArticle
+const InlineQueryResultArticle = (content) => ({
+  type: "article",
+  id: sha256(content).toString(),
+  title: content.toString(),
+  input_message_content: {
+    message_text: content.toString(),
+  },
+});
+
 // SHA256 Hash function
 async function sha256(message) {
   // encode as UTF-8
@@ -172,12 +182,21 @@ export default {
         this.webhook = new Webhook(this.url, config.token);
       }
 
-      // trigger sendAnimation command of BotAPI
       async update(request) {
-        try {
-          this.message = request.content.message;
+        console.log("processing update");
+        this.content = request.content;
+        this.message = request.content.message;
+
+        if (this.content.hasOwnProperty("inline_query")) {
+          console.log("update has inline_query");
+          console.log("passing update to executeInlineCommand");
+          if (!(await this.executeInlineCommand(request))) {
+            // don't send messages on invalid commands
+          }
+        } else if (this.content.hasOwnProperty("message")) {
           if (this.message.hasOwnProperty("text")) {
-            // process text
+            console.log("update has text");
+            console.log("passing update to executeCommand");
 
             // Test command and execute
             if (!(await this.executeCommand(request))) {
@@ -210,18 +229,31 @@ export default {
           } else if (this.message.hasOwnProperty("reply_to_message")) {
             // process reply of a message
             console.log(this.message.reply_to_message);
-          } else {
-            // process unknown type
-            console.log(this.message);
           }
-        } catch (error) {
-          console.error(error);
-          return JSONResponse(error.message);
+        } else {
+          // process unknown type
+          console.log(this.content);
         }
+
         // return 200 OK response to every update request
         return new Response("True", {
           status: 200,
         });
+      }
+
+      // execute the inline custom bot commands from bot configurations
+      async executeInlineCommand(req) {
+        let inlinecmdArray = req.content.inline_query.query.split(" ");
+        const inline_command = inlinecmdArray.shift();
+        const isinlineCommand = Object.keys(this.commands).includes(
+          inline_command
+        );
+        console.log({ isinlineCommand });
+        if (isinlineCommand) {
+          await this.commands[inline_command](this, req, inlinecmdArray);
+          return true;
+        }
+        return false;
       }
 
       // execute the custom bot commands from bot configurations
@@ -234,6 +266,23 @@ export default {
           return true;
         }
         return false;
+      }
+
+      // trigger answerInlineQuery command of BotAPI
+      async answerInlineQuery(inline_query_id, results, cache_time = 0) {
+        let url =
+          this.url +
+          "/answerInlineQuery?inline_query_id=" +
+          inline_query_id +
+          "&results=" +
+          encodeURIComponent(
+            JSON.stringify([InlineQueryResultArticle(results)])
+          ) +
+          "&cache_time=" +
+          cache_time;
+        console.log({ url });
+        const response = fetch(url);
+        console.log({ inline_query_response: await response });
       }
 
       // trigger sendMessage command of BotAPI
@@ -552,10 +601,25 @@ export default {
       // bot command: /roll
       async roll(req, args) {
         const outcome = Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1);
-        await this.sendMessage(
-          this.message.chat.id,
-          `@${this.message.from.username} rolled a ${outcome}`
-        );
+        const content = (username, outcome) =>
+          `@${username} rolled a ${
+            args[0] ?? 6
+          } sided die. it landed on ${outcome}`;
+        console.log({ req });
+
+        if (req.content.inline_query) {
+          console.log("answering inline query");
+          const username = req.content.inline_query.from.username;
+          await this.answerInlineQuery(req.content.inline_query.id, [
+            content(username, outcome),
+          ]);
+        } else {
+          const username = this.message.from.username;
+          await this.sendMessage(
+            this.message.chat.id,
+            content(username, outcome)
+          );
+        }
       }
 
       // bot command: /toss
@@ -615,16 +679,23 @@ export default {
             commands: this.configs[this.bot_id].commands, // Bot commands
           });
 
-          if (
-            this.request.method === "POST" &&
-            this.request.size > 6 &&
-            this.request.content.message
-          )
+          console.log({
+            method: this.request.method,
+            size: this.request.size,
+            content: this.request.content.message,
+          });
+
+          if (this.request.method === "POST" && this.request.size > 6) {
             this.response = await this.bot.update(this.request);
-          else if (this.request.method === "GET") {
+          } else if (this.request.method === "GET") {
+            console.log("processing get request");
+            console.log("updating webhook");
             this.response = await this.bot.webhook.process(url);
             await this.bot.webhook.set();
-          } else this.response = this.error(this.request.content.error);
+          } else {
+            console.log("invalid request recieved");
+            this.response = this.error(this.request.content.error);
+          }
         } else {
           this.response = this.error("Invalid access key");
         }
@@ -677,6 +748,7 @@ export default {
 
       // handles error responses
       error(message, status = 403) {
+        console.error(message);
         return JSONResponse(
           {
             error: message,
