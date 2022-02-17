@@ -3,6 +3,7 @@
     "target": "es2021",
     "module": "commonjs",
     "lib": ["es2021"],
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
+    "esModuleInterop": true
   }
 }

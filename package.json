@@ -18,7 +18,6 @@
   "dependencies": {
     "@cloudflare/workers-types": "^3.4.0",
     "esbuild": "^0.14.22",
-    "moment": "^2.29.1",
     "typescript": "^4.5.5"
   }
 }
