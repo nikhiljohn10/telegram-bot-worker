@@ -596,13 +596,15 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) =>
-            this.sendMessage(
-              this.message.chat.id,
-              (parseInt(json[args[0]].final_balance) / 100000000).toString() +
-                " BTC"
-            )
-          );
+          .then((json) => (json[args[0]]?.final_balance ?? 0) / 100000000)
+          .then((balance) => {
+            const content = `${args[0]}\n\n${balance.toString()} BTC`;
+            if (req.content.inline_query) {
+              this.answerInlineQuery(req.content.inline_query.id, [content]);
+            } else {
+              this.sendMessage(this.message.chat.id, content);
+            }
+          });
       }
 
       // bot command: /roll
