@@ -101,12 +101,15 @@ const getBaseURL = (url_string) => {
 };
 
 export default {
-  fetch: async (request, env, context) => {
+  async fetch(request, env, context) {
     console.log(env.SECRET_TELEGRAM_API_TOKEN);
     const WORKER_URL = getBaseURL(request.url);
     console.log(WORKER_URL);
 
     class Webhook {
+      url: string;
+      token: string;
+
       constructor(url, token) {
         this.url = url;
         this.token = token;
@@ -182,6 +185,13 @@ export default {
     }
 
     class BotModel {
+      token: string;
+      commands: any;
+      url: string;
+      webhook: Webhook;
+      content: any;
+      message: any;
+
       constructor(config) {
         this.token = config.token;
         this.commands = config.commands;
@@ -526,9 +536,9 @@ export default {
           limit: limit,
         });
 
-        const response = await fetch(url);
-        const result = await response.json();
-        return result.result.photos;
+        return fetch(url)
+          .then((response) => response.json())
+          .then((json: any) => json.result.photos);
       }
     }
 
@@ -543,7 +553,7 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) => `Kanye says... ${json.quote}`)
+          .then((json: any) => `Kanye says... ${json.quote}`)
           .then((content) => {
             if (req.content.inline_query) {
               this.answerInlineQuery(req.content.inline_query.id, [content]);
@@ -559,7 +569,7 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) =>
+          .then((json: any) =>
             this.sendMessage(
               this.message.chat.id,
               json.setup +
@@ -587,7 +597,7 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) =>
+          .then((json: any) =>
             this.sendMessage(this.message.chat.id, json.activity)
           );
       }
@@ -605,7 +615,7 @@ export default {
 
         await fetch(request)
           .then((response) => response.json())
-          .then((json) => (json[args[0]]?.final_balance ?? 0) / 100000000)
+          .then((json: any) => (json[args[0]]?.final_balance ?? 0) / 100000000)
           .then((balance) => {
             const content = `${args[0]}\n\n${balance.toString()} BTC`;
             if (req.content.inline_query) {
@@ -705,6 +715,14 @@ export default {
     }
 
     class Handler {
+      configs: any;
+      tokens: [string];
+      response: Response;
+      access_keys: string[];
+      bot_id: Number;
+      request: any;
+      bot: TelegramBot;
+
       constructor(configs) {
         this.configs = configs;
         this.tokens = this.configs.map((item) => item.token);
@@ -726,9 +744,9 @@ export default {
           this.request = await this.processRequest(request);
 
           this.bot = new TelegramBot({
-            token: this.tokens[this.bot_id], // Bot Token
-            access_key: this.access_keys[this.bot_id], // Access Key
-            commands: this.configs[this.bot_id].commands, // Bot commands
+            token: this.tokens[this.bot_id.toString()], // Bot Token
+            access_key: this.access_keys[this.bot_id.toString()], // Access Key
+            commands: this.configs[this.bot_id.toString()].commands, // Bot commands
           });
 
           console.log({

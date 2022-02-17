@@ -7,11 +7,9 @@ route = ""
 zone_id = ""
 compatibility_date = "2022-02-16"
 
+[build]
+command = "npm install && npm run build"
+
 [build.upload]
 format = "modules"
-dir = "./src"
-main = "./worker.js" # becomes "./src/worker.js"
-
-[[build.upload.rules]]
-type = "ESModule"
-globs = ["**/*.js"]
+main = "./worker.mjs"

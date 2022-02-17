@@ -3,14 +3,22 @@
   "name": "moonitor",
   "version": "1.0.0",
   "description": "serverless telegram bot on cf workers to monitor a cryptocurrency address",
-  "main": "worker.js",
+  "main": "./dist/worker.mjs",
+  "module": "./dist/worker.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write '**/*.{js,css,json,md}'"
+    "build": "node build.js",
+    "dev": "miniflare --watch --debug"
   },
   "author": "codebam",
   "license": "(MIT OR Apache-2.0)",
   "devDependencies": {
+    "miniflare": "^2.3.0",
     "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^3.4.0",
+    "esbuild": "^0.14.22",
+    "moment": "^2.29.1",
+    "typescript": "^4.5.5"
   }
 }
