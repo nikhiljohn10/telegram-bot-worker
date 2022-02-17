@@ -32,6 +32,7 @@ const commands = {
   joke: async (bot, req, args) => await bot.joke(req, args),
   doge: async (bot, req, args) => await bot.doge(req, args),
   roll: async (bot, req, args) => await bot.roll(req, args),
+  commandList: async (bot, req, args) => await bot.commandList(req, args),
 };
 
 ////////////////////////////
@@ -122,7 +123,7 @@ export default {
           this.url +
             `/setWebhook?url=${
               WORKER_URL + access_key
-            }?max_connections=${max_connections}?allowed_updates=${allowed_updates}`
+            }?max_connections=${max_connections}?allowed_updates=${allowed_updates}?drop_pending=True`
         );
       }
 
@@ -265,7 +266,9 @@ export default {
         let cmdArray = this.message.text.split(" ");
         const command = cmdArray.shift();
         const isCommand = Object.keys(this.commands).includes(command);
+        console.log({ command, isCommand });
         if (isCommand) {
+          console.log({ this_commands: this.commands });
           await this.commands[command](this, req, cmdArray);
           return true;
         }
@@ -635,6 +638,12 @@ export default {
         }
       }
 
+      // bot command: /commandList
+      async commandList(req, args) {
+        const content = JSON.stringify(Object.keys(commands));
+        await this.sendMessage(this.message.chat.id, content);
+      }
+
       // bot command: /toss
       async toss(req, args) {
         const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
@@ -786,6 +795,7 @@ export default {
           "/joke": commands.joke,
           "/doge": commands.doge,
           "/roll": commands.roll,
+          "/commandList": commands.commandList,
         },
       },
     ];
