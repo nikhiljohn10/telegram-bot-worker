@@ -2,7 +2,7 @@
   "private": true,
   "name": "moonitor",
   "version": "0.5.0",
-  "description": "serverless telegram bot on cf workers to monitor a cryptocurrency address",
+  "description": "serverless telegram bot on cf workers",
   "main": "./dist/worker.mjs",
   "module": "./dist/worker.mjs",
   "scripts": {
