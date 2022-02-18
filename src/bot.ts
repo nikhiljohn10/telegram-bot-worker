@@ -16,7 +16,7 @@ export default class Bot {
   }
 
   async update(request) {
-    console.log(request.content);
+    console.log({ content: request.content });
     if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
         // don't send messages on invalid commands
@@ -81,14 +81,18 @@ export default class Bot {
   }
 
   // trigger answerInlineQuery command of BotAPI
-  answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
-    fetch(
-      `${
-        this.api
-      }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
-        JSON.stringify([InlineQueryResultArticle(results)])
-      )}&cache_time=${cache_time}`
-    );
+  answerInlineQuery = async (inline_query_id, results, cache_time = 0) => {
+    const url = `${
+      this.api
+    }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
+      JSON.stringify([InlineQueryResultArticle(results)])
+    )}&cache_time=${cache_time}`;
+
+    return fetch(url).then((response) => {
+      console.log({ response });
+      return response;
+    });
+  };
 
   // trigger sendMessage command of BotAPI
   sendMessage = async (
@@ -108,7 +112,11 @@ export default class Bot {
       reply_to_message_id: reply_to_message_id,
     });
 
-    return fetch(url);
+    console.log({ url });
+    return fetch(url).then((response) => {
+      console.log({ response });
+      return response;
+    });
   };
 
   // trigger forwardMessage command of BotAPI
