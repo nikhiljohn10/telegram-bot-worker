@@ -28,7 +28,9 @@ export default class TelegramBot extends Bot {
 
   // bot command: /joke
   async joke(req, args) {
-    const request = new Request("https://v2.jokeapi.dev/joke/Any");
+    const request = new Request(
+      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist"
+    );
 
     return await fetch(request)
       .then((response) => response.json())
