@@ -16,6 +16,7 @@ export default class Bot {
   }
 
   async update(request) {
+    console.log(request.content);
     if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
         // don't send messages on invalid commands
