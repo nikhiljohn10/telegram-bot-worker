@@ -24,7 +24,7 @@ export default class Webhook {
       this.api +
         `/setWebhook?url=${encodeURIComponent(
           this.url + access_key
-        )}&max_connections=${max_connections}&allowed_updates=${allowed_updates}&drop_pending=True`
+        )}&max_connections=${max_connections}&allowed_updates=${allowed_updates}`
     );
   }
 
