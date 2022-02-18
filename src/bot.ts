@@ -1,4 +1,5 @@
 import Webhook from "./webhook";
+import { InlineQueryResultArticle, addURLOptions } from "./libs";
 
 export default class Bot {
   token: string;
