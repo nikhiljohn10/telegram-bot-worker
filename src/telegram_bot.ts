@@ -10,14 +10,18 @@ export default class TelegramBot extends Bot {
   async kanye(req, args) {
     const request = new Request("https://api.kanye.rest");
 
-    await fetch(request)
+    return await fetch(request)
       .then((response) => response.json())
       .then((json: any) => `Kanye says... ${json.quote}`)
       .then((content) => {
         if (req.content.inline_query) {
-          this.answerInlineQuery(req.content.inline_query.id, [content], 0);
+          return this.answerInlineQuery(
+            req.content.inline_query.id,
+            [content],
+            0
+          );
         } else {
-          this.sendMessage(req.content.message.chat.id, content);
+          return this.sendMessage(req.content.message.chat.id, content);
         }
       });
   }
@@ -26,19 +30,19 @@ export default class TelegramBot extends Bot {
   async joke(req, args) {
     const request = new Request("https://v2.jokeapi.dev/joke/Any");
 
-    await fetch(request)
+    return await fetch(request)
       .then((response) => response.json())
       .then((json: any) => {
         const content = `${json.setup}\n\n<tg-spoiler>${json.delivery}</tg-spoiler>`;
         if (req.content.inline_query) {
-          this.answerInlineQuery(
+          return this.answerInlineQuery(
             req.content.inline_query.id,
             [content],
             0,
             "HTML"
           );
         } else {
-          this.sendMessage(req.content.message.chat.id, content, "HTML");
+          return this.sendMessage(req.content.message.chat.id, content, "HTML");
         }
       });
   }
