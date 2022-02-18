@@ -1,3 +1,10 @@
+[build]
+command = "npm install && npm run build"
+
+[build.upload]
+format = "modules"
+main = "./worker.mjs"
+
 name = "moonitor"
 type = "javascript"
 
@@ -6,10 +13,3 @@ workers_dev = true
 route = ""
 zone_id = ""
 compatibility_date = "2022-02-16"
-
-[build]
-command = "npm install && npm run build"
-
-[build.upload]
-format = "modules"
-main = "./worker.mjs"
