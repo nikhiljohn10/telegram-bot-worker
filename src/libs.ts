@@ -10,7 +10,7 @@ export function JSONResponse(data, status = 200) {
 }
 
 // Generate InlineQueryResultArticle
-export const InlineQueryResultArticle = async (content, parse_mode = "") =>
+export const InlineQueryResultArticle = (content, parse_mode = "") =>
   sha256(content).then((id) => ({
     type: "article",
     id: id.toString(),
