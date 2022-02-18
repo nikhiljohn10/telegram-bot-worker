@@ -15,7 +15,11 @@ export default class TelegramBot extends Bot {
       .then((json: any) => `Kanye says... ${json.quote}`)
       .then((content) => {
         if (req.content.inline_query) {
-          this.answerInlineQuery(req.content.inline_query.id, [content]);
+          this.answerInlineQuery(
+            req.content.inline_query.id,
+            [content],
+            10 * 60 // 10 minutes
+          );
         } else {
           this.sendMessage(req.content.message.chat.id, content);
         }
@@ -80,7 +84,11 @@ export default class TelegramBot extends Bot {
       .then((balance) => {
         const content = `${args[0]}\n\n${balance.toString()} BTC`;
         if (req.content.inline_query) {
-          this.answerInlineQuery(req.content.inline_query.id, [content]);
+          this.answerInlineQuery(
+            req.content.inline_query.id,
+            [content],
+            7 * 60 // 7 minutes
+          );
         } else {
           this.sendMessage(req.content.message.chat.id, content);
         }
