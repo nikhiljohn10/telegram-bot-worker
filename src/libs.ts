@@ -10,15 +10,16 @@ export function JSONResponse(data, status = 200) {
 }
 
 // Generate InlineQueryResultArticle
-export const InlineQueryResultArticle = (content, parse_mode = "") => ({
-  type: "article",
-  id: sha256(content).toString(),
-  title: content.toString(),
-  input_message_content: {
-    message_text: content.toString(),
-    parse_mode: parse_mode,
-  },
-});
+export const InlineQueryResultArticle = async (content, parse_mode = "") =>
+  sha256(content).then((id) => ({
+    type: "article",
+    id: id.toString(),
+    title: content.toString(),
+    input_message_content: {
+      message_text: content.toString(),
+      parse_mode: parse_mode,
+    },
+  }));
 
 // SHA256 Hash function
 export async function sha256(message) {
