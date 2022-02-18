@@ -17,6 +17,7 @@ export default class Bot {
 
   async update(request) {
     console.log({ content: request.content });
+    console.log({ hasOwn: hasOwn(request.content, "message") });
     if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
         // don't send messages on invalid commands
@@ -88,6 +89,7 @@ export default class Bot {
       JSON.stringify([InlineQueryResultArticle(results)])
     )}&cache_time=${cache_time}`;
 
+    console.log({ url });
     return fetch(url).then((response) => {
       console.log({ response });
       return response;
