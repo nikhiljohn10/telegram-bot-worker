@@ -36,6 +36,7 @@ export default class Handler {
         access_key: this.access_keys[this.bot_id.toString()], // Access Key
         commands: this.configs[this.bot_id.toString()].commands, // Bot commands
         url: worker_url, // worker url
+        kv: this.configs[this.bot_id.toString()].kv, // kv storage
       });
 
       if (this.request.method === "POST" && this.request.size > 6) {

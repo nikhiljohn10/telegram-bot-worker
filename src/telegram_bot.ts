@@ -45,9 +45,7 @@ export default class TelegramBot extends Bot {
   doge = async (req, args) =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
-      .then((json) =>
-        req.content.sendPhoto(req.content.message.chat.id, json[0])
-      );
+      .then((json) => this.sendPhoto(req.content.message.chat.id, json[0]));
 
   // bot command: /bored
   bored = async (req, args) =>
@@ -88,8 +86,8 @@ export default class TelegramBot extends Bot {
   // bot command: /set
   _set = async (req, args) =>
     this.kv
-      .set(args[0], args[1])
-      .then(this.sendMessage(req.content.message.chat_id, `set ${args[0]}`));
+      .put(args[0], args[1])
+      .then(this.sendMessage(req.content.message.chat.id, `set ${args[0]}`));
 
   _average = (numbers: number[]) =>
     parseFloat(

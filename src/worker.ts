@@ -33,6 +33,8 @@ export default {
           "/recursion": commands.recursion,
           "/numbers": commands.numbers,
           "/average": commands.average,
+          "/get": commands._get,
+          "/set": commands._set,
           "/commandlist": commands.commandList,
         },
         kv: env.KV_BOT_STORAGE,
