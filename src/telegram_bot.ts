@@ -94,7 +94,11 @@ export default class TelegramBot extends Bot {
   }
 
   _average = (numbers: number[]) =>
-    numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0;
+    parseFloat(
+      (
+        numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0
+      ).toFixed(2)
+    );
 
   // bot command: /average
   average = async (req, args) =>
