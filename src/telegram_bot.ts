@@ -93,12 +93,15 @@ export default class TelegramBot extends Bot {
       });
   }
 
-  _average = (numbers) =>
+  _average = (numbers: number[]) =>
     numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0;
 
   // bot command: /average
   average = async (req, args) =>
-    this.sendMessage(req.content.message.chat.id, this._average(this._numbers));
+    this.sendMessage(
+      req.content.message.chat.id,
+      this._average(this._numbers())
+    );
 
   _numbers = (count = 100): number[] =>
     Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
