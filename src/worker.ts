@@ -17,8 +17,8 @@ export default {
   fetch: async (request: Request, env, context) =>
     new Handler([
       {
-        bot_name: "ccmooniterbot",
-        token: env.secret_telegram_api_token,
+        bot_name: "CCMooniterbot",
+        token: env.SECRET_TELEGRAM_API_TOKEN,
         commands: {
           "/chatinfo": commands.chatInfo,
           "/ping": commands.ping,
