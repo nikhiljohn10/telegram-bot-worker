@@ -17,7 +17,7 @@ export default {
   fetch: async (request: Request, env, context) =>
     new Handler([
       {
-        bot_name: "CCMooniterbot",
+        bot_name: "CCMooniterBot",
         token: env.SECRET_TELEGRAM_API_TOKEN,
         commands: {
           "/chatinfo": commands.chatInfo,
@@ -35,6 +35,7 @@ export default {
           "/average": commands.average,
           "/commandlist": commands.commandList,
         },
+        kv: context.KV_BOT_STORAGE,
       },
     ]).handle({
       url: request.url,

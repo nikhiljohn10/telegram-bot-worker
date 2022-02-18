@@ -93,6 +93,8 @@ export default class TelegramBot extends Bot {
       });
   }
 
+  get = async (req, args) => await kv.get(args[0]);
+
   _average = (numbers: number[]) =>
     parseFloat(
       (
@@ -104,7 +106,7 @@ export default class TelegramBot extends Bot {
   average = async (req, args) =>
     this.sendMessage(
       req.content.message.chat.id,
-      this._average(this._numbers())
+      this._average(this._numbers(100))
     );
 
   _numbers = (count = 100): number[] =>

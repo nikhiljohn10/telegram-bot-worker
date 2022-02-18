@@ -7,12 +7,15 @@ export default class Bot {
   commands: any;
   api: string;
   webhook: Webhook;
+  kv: any;
 
   constructor(config) {
     this.token = config.token;
     this.commands = config.commands;
     this.api = "https://api.telegram.org/bot" + config.token;
     this.webhook = new Webhook(this.api, config.token, config.url);
+    this.kv = config.kv;
+    console.log({ kv: this.kv });
   }
 
   async update(request) {
@@ -109,7 +112,9 @@ export default class Bot {
     disable_notification = false,
     reply_to_message_id = 0
   ) => {
-    let url = `${this.api}/sendMessage?chat_id=${chat_id}&text=${text}`;
+    let url = `${
+      this.api
+    }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
 
     url = addURLOptions(url, {
       parse_mode: parse_mode,
