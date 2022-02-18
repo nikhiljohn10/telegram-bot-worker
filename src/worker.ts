@@ -32,6 +32,7 @@ export default {
           "/roll": commands.roll,
           "/recursion": commands.recursion,
           "/numbers": commands.numbers,
+          "/average": commands.average,
           "/commandlist": commands.commandList,
         },
       },

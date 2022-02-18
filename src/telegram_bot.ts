@@ -95,17 +95,23 @@ export default class TelegramBot extends Bot {
       });
   }
 
+  _average = (numbers) =>
+    numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0;
+
+  // bot command: /average
+  average = async (req, args) =>
+    this.sendMessage(req.content.message.chat.id, this._average(this._numbers));
+
+  _numbers = (count = 100) =>
+    Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
+      x.toFixed(2)
+    );
+
   // bot command: /numbers
   async numbers(req, args) {
     this.sendMessage(
       req.content.message.chat.id,
-      "<pre>" +
-        JSON.stringify(
-          Array.from({ length: args[0] ?? 100 }, () => Math.random()).map((x) =>
-            x.toFixed(2)
-          )
-        ) +
-        "</pre>",
+      "<pre>" + JSON.stringify(this._numbers(args[0])) + "</pre>",
       "HTML"
     );
   }

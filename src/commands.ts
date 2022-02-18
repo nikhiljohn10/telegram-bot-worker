@@ -11,5 +11,6 @@ export default {
   roll: async (bot, req, args) => await bot.roll(req, args),
   recursion: async (bot, req, args) => await bot.recursion(req, args),
   numbers: async (bot, req, args) => await bot.numbers(req, args),
+  average: async (bot, req, args) => await bot.average(req, args),
   commandList: async (bot, req, args) => await bot.commandList(req, args),
 };
