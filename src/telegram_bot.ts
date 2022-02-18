@@ -15,11 +15,7 @@ export default class TelegramBot extends Bot {
       .then((json: any) => `Kanye says... ${json.quote}`)
       .then((content) => {
         if (req.content.inline_query) {
-          this.answerInlineQuery(
-            req.content.inline_query.id,
-            [content],
-            10 * 60 // 10 minutes
-          );
+          this.answerInlineQuery(req.content.inline_query.id, [content], 0);
         } else {
           this.sendMessage(req.content.message.chat.id, content);
         }
