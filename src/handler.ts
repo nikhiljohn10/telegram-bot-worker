@@ -18,7 +18,7 @@ export default class Handler {
   }
 
   // handles the request
-  async handle(request) {
+  handle = async (request) => {
     const url = new URL(request.url);
     const url_key = url.pathname.substring(1).replace(/\/$/, "");
     const worker_url = getBaseURL(request.url);
@@ -59,9 +59,9 @@ export default class Handler {
       );
 
     return this.response;
-  }
+  };
 
-  async processRequest(req) {
+  processRequest = async (req) => {
     req.size = parseInt(req.headers["content-length"]) || 0;
     req.type = req.headers["content-type"] || "";
     if (req.cf) req.content = await this.getContent(req);
@@ -75,32 +75,31 @@ export default class Handler {
         error: "Invalid content type or body",
       };
     return req;
-  }
+  };
 
-  async getContent(request) {
+  getContent = async (request) => {
     if (request.type.includes("application/json")) {
-      return await request.json;
+      return request.json;
     } else if (request.type.includes("text/")) {
-      return await request.text;
+      return request.text;
     } else if (request.type.includes("form")) {
-      const formData = await request.formData;
+      const formData = request.formData;
       const body = {};
       for (const entry of formData.entries()) {
         body[entry[0]] = entry[1];
       }
       return body;
     } else {
-      return await request.arrayBuffer;
+      return request.arrayBuffer;
     }
-  }
+  };
 
   // handles error responses
-  error(message, status = 403) {
-    return JSONResponse(
+  error = (message, status = 403) =>
+    JSONResponse(
       {
         error: message,
       },
       status
     );
-  }
 }

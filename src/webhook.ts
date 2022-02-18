@@ -12,42 +12,34 @@ export default class Webhook {
   }
 
   // trigger getMe command of BotAPI
-  async getMe() {
-    return await this.execute(this.api + "/getMe");
-  }
+  getMe = () => this.execute(this.api + "/getMe");
 
-  async set() {
+  set = async () => {
     const access_key = await sha256(this.token);
     const max_connections = 100;
     const allowed_updates = ["message"];
-    return await this.execute(
+    return this.execute(
       this.api +
         `/setWebhook?url=${encodeURIComponent(
           this.url + access_key
         )}&max_connections=${max_connections}&allowed_updates=${allowed_updates}`
     );
-  }
+  };
 
-  async get() {
-    return await this.execute(this.api + "/getWebhookInfo");
-  }
+  get = async () => this.execute(this.api + "/getWebhookInfo");
 
-  async delete() {
-    return await this.execute(this.api + "/deleteWebhook");
-  }
+  delete = async () => this.execute(this.api + "/deleteWebhook");
 
-  async execute(url) {
-    return await fetch(url)
+  execute = async (url) =>
+    fetch(url)
       .then((response) => response.json())
       .then((json) => JSONResponse(json));
-  }
 
-  async process(url) {
+  process = async (url) => {
     const command = url.searchParams.get("command");
     if (command == undefined) {
       return this.error("No command found", 404);
     }
-
     // handles the url commands
     switch (command) {
       case "setWebhook":
@@ -63,15 +55,14 @@ export default class Webhook {
       default:
         return this.error("Invalid command", 400);
     }
-  }
+  };
 
   // handles error responses
-  error(message, status = 403) {
-    return JSONResponse(
+  error = (message, status = 403) =>
+    JSONResponse(
       {
         error: message,
       },
       status
     );
-  }
 }

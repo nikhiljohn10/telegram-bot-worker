@@ -1,15 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 
 // Generate JSON response
-export function JSONResponse(data, status = 200) {
-  const init = {
+export const JSONResponse = (data, status = 200) =>
+  new Response(JSON.stringify(data, null, 2), {
     status: status,
     headers: {
       "content-type": "application/json",
     },
-  };
-  return new Response(JSON.stringify(data, null, 2), init);
-}
+  });
 
 // Generate InlineQueryResultArticle
 export const InlineQueryResultArticle = (content, parse_mode = "") => ({
@@ -23,7 +21,7 @@ export const InlineQueryResultArticle = (content, parse_mode = "") => ({
 });
 
 // SHA256 Hash function
-export async function sha256(message: string) {
+export const sha256 = async (message: string) => {
   // encode as UTF-8
   const msgBuffer = new TextEncoder().encode(message);
   // hash the message
@@ -35,25 +33,22 @@ export async function sha256(message: string) {
     .map((b) => ("00" + b.toString(16)).slice(-2))
     .join("");
   return hashHex;
-}
+};
 
 // Stringify JSON and add <pre> tag HTML
-export function logJSONinHTML(data) {
-  return preTagString(JSON.stringify(data, null, 2));
-}
+export const logJSONinHTML = (data) =>
+  preTagString(JSON.stringify(data, null, 2));
 
-export function preTagString(str) {
-  return "<pre>" + str + "</pre>";
-}
+export const preTagString = (str) => "<pre>" + str + "</pre>";
 
 // Add options in URL
-export function addURLOptions(urlstr, options = {}) {
+export const addURLOptions = (urlstr, options = {}) => {
   let url = urlstr;
   for (const key of Object.keys(options)) {
     if (options[key]) url += "&" + key + "=" + options[key];
   }
   return url;
-}
+};
 
 // get the base url for a given url string
 export const getBaseURL = (url_string) => {
