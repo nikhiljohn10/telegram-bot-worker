@@ -6,8 +6,6 @@ export default class Bot {
   commands: any;
   api: string;
   webhook: Webhook;
-  content: any;
-  message: any;
 
   constructor(config) {
     this.token = config.token;
@@ -17,36 +15,33 @@ export default class Bot {
   }
 
   async update(request) {
-    this.content = request.content;
-    this.message = request.content.message;
-
-    if (this.content.hasOwnProperty("inline_query")) {
+    if (request.content.hasOwnProperty("inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
         // don't send messages on invalid commands
       }
-    } else if (this.content.hasOwnProperty("message")) {
-      if (this.message.hasOwnProperty("text")) {
+    } else if (request.content.hasOwnProperty("message")) {
+      if (request.content.message.hasOwnProperty("text")) {
         // Test command and execute
         if (!(await this.executeCommand(request))) {
           // don't send messages on invalid commands
         }
-      } else if (this.message.hasOwnProperty("photo")) {
+      } else if (request.content.message.hasOwnProperty("photo")) {
         // process photo
-      } else if (this.message.hasOwnProperty("video")) {
+      } else if (request.content.message.hasOwnProperty("video")) {
         // process video
-      } else if (this.message.hasOwnProperty("animation")) {
+      } else if (request.content.message.hasOwnProperty("animation")) {
         // process animation
-      } else if (this.message.hasOwnProperty("locaiton")) {
+      } else if (request.content.message.hasOwnProperty("locaiton")) {
         // process locaiton
-      } else if (this.message.hasOwnProperty("poll")) {
+      } else if (request.content.message.hasOwnProperty("poll")) {
         // process poll
-      } else if (this.message.hasOwnProperty("contact")) {
+      } else if (request.content.message.hasOwnProperty("contact")) {
         // process contact
-      } else if (this.message.hasOwnProperty("dice")) {
+      } else if (request.content.message.hasOwnProperty("dice")) {
         // process dice
-      } else if (this.message.hasOwnProperty("sticker")) {
+      } else if (request.content.message.hasOwnProperty("sticker")) {
         // process sticker
-      } else if (this.message.hasOwnProperty("reply_to_message")) {
+      } else if (request.content.message.hasOwnProperty("reply_to_message")) {
         // process reply of a message
       }
     } else {
@@ -60,24 +55,24 @@ export default class Bot {
   }
 
   // execute the inline custom bot commands from bot configurations
-  async executeInlineCommand(req) {
-    let inlinecmdArray = req.content.inline_query.query.split(" ");
+  async executeInlineCommand(request) {
+    let inlinecmdArray = request.content.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
     if (isinlineCommand) {
-      await this.commands[inline_command](this, req, inlinecmdArray);
+      await this.commands[inline_command](this, request, inlinecmdArray);
       return true;
     }
     return false;
   }
 
   // execute the custom bot commands from bot configurations
-  async executeCommand(req) {
-    let cmdArray = this.message.text.split(" ");
+  async executeCommand(request) {
+    let cmdArray = request.content.message.text.split(" ");
     const command = cmdArray.shift();
     const isCommand = Object.keys(this.commands).includes(command);
     if (isCommand) {
-      await this.commands[command](this, req, cmdArray);
+      await this.commands[command](this, request, cmdArray);
       return true;
     }
     return false;

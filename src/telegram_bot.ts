@@ -1,4 +1,5 @@
 import Bot from "./bot";
+import { logJSONinHTML } from "./libs";
 
 export default class TelegramBot extends Bot {
   constructor(config) {
@@ -16,7 +17,7 @@ export default class TelegramBot extends Bot {
         if (req.content.inline_query) {
           this.answerInlineQuery(req.content.inline_query.id, [content]);
         } else {
-          this.sendMessage(this.message.chat.id, content);
+          this.sendMessage(req.content.message.chat.id, content);
         }
       });
   }
@@ -29,7 +30,7 @@ export default class TelegramBot extends Bot {
       .then((response) => response.json())
       .then((json: any) =>
         this.sendMessage(
-          this.message.chat.id,
+          req.content.message.chat.id,
           json.setup +
             "\n\n" +
             "<tg-spoiler>" +
@@ -46,7 +47,9 @@ export default class TelegramBot extends Bot {
 
     await fetch(request)
       .then((response) => response.json())
-      .then((json) => this.sendPhoto(this.message.chat.id, json[0]));
+      .then((json) =>
+        req.content.sendPhoto(req.content.message.chat.id, json[0])
+      );
   }
 
   // bot command: /bored
@@ -56,13 +59,16 @@ export default class TelegramBot extends Bot {
     await fetch(request)
       .then((response) => response.json())
       .then((json: any) =>
-        this.sendMessage(this.message.chat.id, json.activity)
+        req.content.sendMessage(req.content.message.chat.id, json.activity)
       );
   }
 
   // bot command: /epoch
   async epoch(req, args) {
-    await this.sendMessage(this.message.chat.id, new Date().getTime());
+    await req.content.sendMessage(
+      req.content.message.chat.id,
+      new Date().getTime()
+    );
   }
 
   // bot command: /balance
@@ -79,7 +85,7 @@ export default class TelegramBot extends Bot {
         if (req.content.inline_query) {
           this.answerInlineQuery(req.content.inline_query.id, [content]);
         } else {
-          this.sendMessage(this.message.chat.id, content);
+          req.content.sendMessage(req.content.message.chat.id, content);
         }
       });
   }
@@ -87,7 +93,7 @@ export default class TelegramBot extends Bot {
   // bot command: /numbers
   async numbers(req, args) {
     this.sendMessage(
-      this.message.chat.id,
+      req.content.message.chat.id,
       "<pre>" +
         JSON.stringify(
           Array.from({ length: args[0] ?? 100 }, () => Math.random()).map((x) =>
@@ -104,7 +110,7 @@ export default class TelegramBot extends Bot {
     const content = "/recursion";
     await Promise.all(
       Array.from({ length: 15 }, () =>
-        this.sendMessage(this.message.chat.id, content)
+        req.content.sendMessage(req.content.message.chat.id, content)
       )
     );
   }
@@ -122,16 +128,19 @@ export default class TelegramBot extends Bot {
         content(username, outcome),
       ]);
     } else {
-      const username = this.message.from.username;
-      await this.sendMessage(this.message.chat.id, content(username, outcome));
+      const username = req.content.message.from.username;
+      await req.content.sendMessage(
+        req.content.message.chat.id,
+        content(username, outcome)
+      );
     }
   }
 
   // bot command: /commandList
   async commandList(req, args) {
-    const content = JSON.stringify(Object.keys(commands));
+    const content = JSON.stringify(Object.keys(this.commands));
     await this.sendMessage(
-      this.message.chat.id,
+      req.content.message.chat.id,
       "<pre>" + content + "</pre>",
       "HTML"
     );
@@ -140,20 +149,20 @@ export default class TelegramBot extends Bot {
   // bot command: /toss
   async toss(req, args) {
     const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
-    await this.sendMessage(this.message.chat.id, outcome);
+    await req.content.sendMessage(req.content.message.chat.id, outcome);
   }
 
   // bot command: /ping
   async ping(req, args) {
     const text = args.length < 1 ? "pong" : args.join(" ");
-    await this.sendMessage(this.message.chat.id, text);
+    await req.content.sendMessage(req.content.message.chat.id, text);
   }
 
   // bot command: /chatInfo
   async getChatInfo(req, args) {
     await this.sendMessage(
-      this.message.chat.id,
-      logJSONinHTML(this.message.chat),
+      req.content.message.chat.id,
+      logJSONinHTML(req.content.message.chat),
       "HTML"
     );
   }
