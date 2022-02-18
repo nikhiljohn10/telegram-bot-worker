@@ -6,7 +6,7 @@ export default class Handler {
   tokens: [string];
   response: Response;
   access_keys: string[];
-  bot_id: Number;
+  bot_id: number;
   request: any;
   bot: TelegramBot;
   url: string;
@@ -62,20 +62,19 @@ export default class Handler {
   }
 
   async processRequest(req) {
-    let request = req;
-    request.size = parseInt(request.headers["content-length"]) || 0;
-    request.type = request.headers["content-type"] || "";
-    if (request.cf) request.content = await this.getContent(request);
-    else if (request.method == "GET")
-      request.content = {
+    req.size = parseInt(req.headers["content-length"]) || 0;
+    req.type = req.headers["content-type"] || "";
+    if (req.cf) req.content = await this.getContent(req);
+    else if (req.method == "GET")
+      req.content = {
         message: "Accessing webhook",
       };
     else
-      request.content = {
+      req.content = {
         message: "",
         error: "Invalid content type or body",
       };
-    return request;
+    return req;
   }
 
   async getContent(request) {

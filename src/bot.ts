@@ -1,5 +1,6 @@
 import Webhook from "./webhook";
 import { InlineQueryResultArticle, addURLOptions } from "./libs";
+import hasOwn from "core-js-pure/es/object/has-own";
 
 export default class Bot {
   token: string;
@@ -15,33 +16,33 @@ export default class Bot {
   }
 
   async update(request) {
-    if (request.content.hasOwnProperty("inline_query")) {
+    if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
         // don't send messages on invalid commands
       }
-    } else if (request.content.hasOwnProperty("message")) {
-      if (request.content.message.hasOwnProperty("text")) {
+    } else if (hasOwn(request.content, "message")) {
+      if (hasOwn(request.content, "text")) {
         // Test command and execute
         if (!(await this.executeCommand(request))) {
           // don't send messages on invalid commands
         }
-      } else if (request.content.message.hasOwnProperty("photo")) {
+      } else if (hasOwn(request.content, "photo")) {
         // process photo
-      } else if (request.content.message.hasOwnProperty("video")) {
+      } else if (hasOwn(request.content, "video")) {
         // process video
-      } else if (request.content.message.hasOwnProperty("animation")) {
+      } else if (hasOwn(request.content, "animation")) {
         // process animation
-      } else if (request.content.message.hasOwnProperty("locaiton")) {
+      } else if (hasOwn(request.content, "location")) {
         // process locaiton
-      } else if (request.content.message.hasOwnProperty("poll")) {
+      } else if (hasOwn(request.content, "poll")) {
         // process poll
-      } else if (request.content.message.hasOwnProperty("contact")) {
+      } else if (hasOwn(request.content, "contact")) {
         // process contact
-      } else if (request.content.message.hasOwnProperty("dice")) {
+      } else if (hasOwn(request.content, "dice")) {
         // process dice
-      } else if (request.content.message.hasOwnProperty("sticker")) {
+      } else if (hasOwn(request.content, "sticker")) {
         // process sticker
-      } else if (request.content.message.hasOwnProperty("reply_to_message")) {
+      } else if (hasOwn(request.content, "reply_to_message")) {
         // process reply of a message
       }
     } else {
@@ -56,7 +57,7 @@ export default class Bot {
 
   // execute the inline custom bot commands from bot configurations
   async executeInlineCommand(request) {
-    let inlinecmdArray = request.content.inline_query.query.split(" ");
+    const inlinecmdArray = request.content.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
     if (isinlineCommand) {
@@ -68,7 +69,7 @@ export default class Bot {
 
   // execute the custom bot commands from bot configurations
   async executeCommand(request) {
-    let cmdArray = request.content.message.text.split(" ");
+    const cmdArray = request.content.message.text.split(" ");
     const command = cmdArray.shift();
     const isCommand = Object.keys(this.commands).includes(command);
     if (isCommand) {

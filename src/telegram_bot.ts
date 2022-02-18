@@ -102,9 +102,9 @@ export default class TelegramBot extends Bot {
   average = async (req, args) =>
     this.sendMessage(req.content.message.chat.id, this._average(this._numbers));
 
-  _numbers = (count = 100) =>
+  _numbers = (count = 100): number[] =>
     Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
-      x.toFixed(2)
+      parseFloat(x.toFixed(2))
     );
 
   // bot command: /numbers
