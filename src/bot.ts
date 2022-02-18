@@ -18,7 +18,7 @@ export default class Bot {
     console.log({ kv: this.kv });
   }
 
-  async update(request) {
+  update = async (request) => {
     console.log({ content: request.content });
     if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
@@ -52,15 +52,14 @@ export default class Bot {
     } else {
       // process unknown type
     }
-
     // return 200 OK response to every update request
     return new Response("True", {
       status: 200,
     });
-  }
+  };
 
   // execute the inline custom bot commands from bot configurations
-  async executeInlineCommand(request) {
+  executeInlineCommand = async (request) => {
     const inlinecmdArray = request.content.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
@@ -69,10 +68,10 @@ export default class Bot {
       return true;
     }
     return false;
-  }
+  };
 
   // execute the custom bot commands from bot configurations
-  async executeCommand(request) {
+  executeCommand = async (request) => {
     const cmdArray = request.content.message.text.split(" ");
     const command = cmdArray.shift();
     const isCommand = Object.keys(this.commands).includes(command);
@@ -81,7 +80,7 @@ export default class Bot {
       return true;
     }
     return false;
-  }
+  };
 
   // trigger answerInlineQuery command of BotAPI
   answerInlineQuery = async (
@@ -95,7 +94,6 @@ export default class Bot {
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
       JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
-
     console.log({ url });
     return fetch(url).then((response) => {
       console.log({ response });
@@ -115,14 +113,12 @@ export default class Bot {
     let url = `${
       this.api
     }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
-
     url = addURLOptions(url, {
       parse_mode: parse_mode,
       disable_web_page_preview: disable_web_page_preview,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
     console.log({ url });
     return fetch(url).then((response) => {
       console.log({ response });
@@ -151,8 +147,7 @@ export default class Bot {
     url = addURLOptions(url, {
       disable_notification: disable_notification,
     });
-
-    await fetch(url);
+    return fetch(url);
   };
 
   // trigger sendPhoto command of BotAPI
@@ -165,19 +160,17 @@ export default class Bot {
     reply_to_message_id = 0
   ) => {
     let url = this.api + "/sendPhoto?chat_id=" + chat_id + "&photo=" + photo;
-
     url = addURLOptions(url, {
       caption: caption,
       parse_mode: parse_mode,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
+    return fetch(url);
   };
 
   // trigger sendVideo command of BotAPI
-  async sendVideo(
+  sendVideo = async (
     chat_id,
     video,
     duration = 0,
@@ -189,9 +182,8 @@ export default class Bot {
     supports_streaming = false,
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url = this.api + "/sendVideo?chat_id=" + chat_id + "&video=" + video;
-
     url = addURLOptions(url, {
       duration: duration,
       width: width,
@@ -203,12 +195,11 @@ export default class Bot {
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
-  }
+    return fetch(url);
+  };
 
   // trigger sendAnimation command of BotAPI
-  async sendAnimation(
+  sendAnimation = async (
     chat_id,
     animation,
     duration = 0,
@@ -219,14 +210,13 @@ export default class Bot {
     parse_mode = "",
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url =
       this.api +
       "/sendAnimation?chat_id=" +
       chat_id +
       "&animation=" +
       animation;
-
     url = addURLOptions(url, {
       duration: duration,
       width: width,
@@ -237,19 +227,18 @@ export default class Bot {
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
-  }
+    return fetch(url);
+  };
 
   // trigger sendLocation command of BotAPI
-  async sendLocation(
+  sendLocation = async (
     chat_id,
     latitude,
     longitude,
     live_period = 0,
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url =
       this.api +
       "/sendLocation?chat_id=" +
@@ -258,18 +247,16 @@ export default class Bot {
       latitude +
       "&longitude=" +
       longitude;
-
     url = addURLOptions(url, {
       live_period: live_period,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
-  }
+    return fetch(url);
+  };
 
   // trigger senPoll command of BotAPI
-  async sendPoll(
+  sendPoll = async (
     chat_id,
     question,
     options,
@@ -284,7 +271,7 @@ export default class Bot {
     is_closed = false,
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url =
       this.api +
       "/sendPoll?chat_id=" +
@@ -307,39 +294,34 @@ export default class Bot {
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
-  }
+    return fetch(url);
+  };
 
   // trigger senDice command of BotAPI
-  async sendDice(
+  sendDice = async (
     chat_id,
     emoji = "",
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url = this.api + "/sendDice?chat_id=" + chat_id;
-
     url = addURLOptions(url, {
       emoji: emoji,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-
-    await fetch(url);
-  }
+    return fetch(url);
+  };
 
   // bot api command to get user profile photos
-  async getUserProfilePhotos(user_id, offset = 0, limit = 0) {
+  getUserProfilePhotos = async (user_id, offset = 0, limit = 0) => {
     let url = this.api + "/getUserProfilePhotos?user_id=" + user_id;
-
     url = addURLOptions(url, {
       offset: offset,
       limit: limit,
     });
-
     return fetch(url)
       .then((response) => response.json())
       .then((json: any) => json.result.photos);
-  }
+  };
 }

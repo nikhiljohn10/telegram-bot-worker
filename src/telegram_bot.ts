@@ -7,10 +7,8 @@ export default class TelegramBot extends Bot {
   }
 
   // bot command: /kanye
-  async kanye(req, args) {
-    const request = new Request("https://api.kanye.rest");
-
-    return await fetch(request)
+  kanye = async (req, args) =>
+    fetch("https://api.kanye.rest")
       .then((response) => response.json())
       .then((json: any) => `Kanye says... ${json.quote}`)
       .then((content) => {
@@ -24,15 +22,10 @@ export default class TelegramBot extends Bot {
           return this.sendMessage(req.content.message.chat.id, content);
         }
       });
-  }
 
   // bot command: /joke
-  async joke(req, args) {
-    const request = new Request(
-      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist"
-    );
-
-    return await fetch(request)
+  joke = async (req, args) =>
+    fetch("https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist")
       .then((response) => response.json())
       .then((json: any) => {
         const content = `${json.setup}\n\n<tg-spoiler>${json.delivery}</tg-spoiler>`;
@@ -47,42 +40,30 @@ export default class TelegramBot extends Bot {
           return this.sendMessage(req.content.message.chat.id, content, "HTML");
         }
       });
-  }
 
-  // bot command: /bored
-  async doge(req, args) {
-    const request = new Request("https://shibe.online/api/shibes");
-
-    await fetch(request)
+  // bot command: /doge
+  doge = async (req, args) =>
+    fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then((json) =>
         req.content.sendPhoto(req.content.message.chat.id, json[0])
       );
-  }
 
   // bot command: /bored
-  async bored(req, args) {
-    const request = new Request("https://boredapi.com/api/activity/");
-
-    await fetch(request)
+  bored = async (req, args) =>
+    fetch("https://boredapi.com/api/activity/")
       .then((response) => response.json())
       .then((json: any) =>
         this.sendMessage(req.content.message.chat.id, json.activity)
       );
-  }
 
   // bot command: /epoch
-  async epoch(req, args) {
-    await this.sendMessage(req.content.message.chat.id, new Date().getTime());
-  }
+  epoch = async (req, args) =>
+    this.sendMessage(req.content.message.chat.id, new Date().getTime());
 
   // bot command: /balance
-  async balance(req, args) {
-    const request = new Request(
-      `https://blockchain.info/balance?active=${args[0]}`
-    );
-
-    await fetch(request)
+  balance = async (req, args) =>
+    fetch(`https://blockchain.info/balance?active=${args[0]}`)
       .then((response) => response.json())
       .then((json: any) => (json[args[0]]?.final_balance ?? 0) / 100000000)
       .then((balance) => {
@@ -97,9 +78,8 @@ export default class TelegramBot extends Bot {
           this.sendMessage(req.content.message.chat.id, content);
         }
       });
-  }
 
-  get = async (req, args) => await kv.get(args[0]);
+  get = async (req, args) => await this.kv.get(args[0]);
 
   _average = (numbers: number[]) =>
     parseFloat(
@@ -121,26 +101,23 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /numbers
-  async numbers(req, args) {
+  numbers = async (req, args) =>
     this.sendMessage(
       req.content.message.chat.id,
       "<pre>" + JSON.stringify(this._numbers(args[0])) + "</pre>",
       "HTML"
     );
-  }
 
   // bot command: /recursion
-  async recursion(req, args) {
-    const content = "/recursion";
-    await Promise.all(
+  recursion = async (req, args) =>
+    Promise.all(
       Array.from({ length: 15 }, () =>
-        this.sendMessage(req.content.message.chat.id, content)
+        this.sendMessage(req.content.message.chat.id, "/recursion")
       )
     );
-  }
 
   // bot command: /roll
-  async roll(req, args) {
+  roll = async (req, args) => {
     const outcome = Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1);
     const content = (username, outcome) =>
       `@${username} rolled a ${args[0] ??
@@ -148,54 +125,51 @@ export default class TelegramBot extends Bot {
 
     if (req.content.inline_query) {
       const username = req.content.inline_query.from.username;
-      await this.answerInlineQuery(req.content.inline_query.id, [
+      return this.answerInlineQuery(req.content.inline_query.id, [
         content(username, outcome),
       ]);
     } else {
       const username = req.content.message.from.username;
-      await this.sendMessage(
+      return this.sendMessage(
         req.content.message.chat.id,
         content(username, outcome)
       );
     }
-  }
+  };
 
   // bot command: /commandList
-  async commandList(req, args) {
-    const content = JSON.stringify(Object.keys(this.commands));
-    await this.sendMessage(
+  commandList = async (req, args) =>
+    this.sendMessage(
       req.content.message.chat.id,
-      "<pre>" + content + "</pre>",
+      `<pre>${JSON.stringify(Object.keys(this.commands))}</pre>`,
       "HTML"
     );
-  }
 
   // bot command: /toss
-  async toss(req, args) {
-    const outcome = Math.floor(Math.random() * 2) == 0 ? "heads" : "tails";
-    await this.sendMessage(req.content.message.chat.id, outcome);
-  }
+  toss = async (req, args) =>
+    this.sendMessage(
+      req.content.message.chat.id,
+      Math.floor(Math.random() * 2) == 0 ? "heads" : "tails"
+    );
 
   // bot command: /ping
-  async ping(req, args) {
-    const text = args.length < 1 ? "pong" : args.join(" ");
-    await this.sendMessage(req.content.message.chat.id, text);
-  }
+  ping = async (req, args) =>
+    this.sendMessage(
+      req.content.message.chat.id,
+      args.length < 1 ? "pong" : args.join(" ")
+    );
 
   // bot command: /chatInfo
-  async getChatInfo(req, args) {
-    await this.sendMessage(
+  getChatInfo = async (req, args) =>
+    this.sendMessage(
       req.content.message.chat.id,
       logJSONinHTML(req.content.message.chat),
       "HTML"
     );
-  }
 
   // Send all the profile pictures to user_id
-  async sendAllProfilePhotos(chat_id, user_id) {
-    const profilePhotos = await this.getUserProfilePhotos(user_id);
-    for (const item of profilePhotos) {
-      await this.sendPhoto(chat_id, item[0].file_id);
-    }
-  }
+  sendAllProfilePhotos = async (chat_id, user_id) =>
+    this.getUserProfilePhotos(user_id).then((photos) =>
+      photos.map((photo) => this.sendPhoto(chat_id, photo[0].file_id))
+    );
 }
