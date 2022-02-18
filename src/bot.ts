@@ -121,12 +121,12 @@ export default class Bot {
   };
 
   // trigger forwardMessage command of BotAPI
-  async forwardMessage(
+  forwardMessage = async (
     chat_id,
     from_chat_id,
     disable_notification = false,
     message_id
-  ) {
+  ) => {
     let url =
       this.api +
       "/sendMessage?chat_id=" +
@@ -143,17 +143,17 @@ export default class Bot {
     });
 
     await fetch(url);
-  }
+  };
 
   // trigger sendPhoto command of BotAPI
-  async sendPhoto(
+  sendPhoto = async (
     chat_id,
     photo,
     caption = "",
     parse_mode = "",
     disable_notification = false,
     reply_to_message_id = 0
-  ) {
+  ) => {
     let url = this.api + "/sendPhoto?chat_id=" + chat_id + "&photo=" + photo;
 
     url = addURLOptions(url, {
@@ -164,7 +164,7 @@ export default class Bot {
     });
 
     await fetch(url);
-  }
+  };
 
   // trigger sendVideo command of BotAPI
   async sendVideo(
