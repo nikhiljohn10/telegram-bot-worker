@@ -90,7 +90,7 @@ export default class Bot {
     const url = `${
       this.api
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
-      JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
+      JSON.stringify([await InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
 
     console.log({ url });

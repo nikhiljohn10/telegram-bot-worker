@@ -10,8 +10,8 @@ export function JSONResponse(data, status = 200) {
 }
 
 // Generate InlineQueryResultArticle
-export const InlineQueryResultArticle = (content, parse_mode = "") =>
-  sha256(content).then((id) => ({
+export const InlineQueryResultArticle = async (content, parse_mode = "") =>
+  sha256(content.toString()).then((id) => ({
     type: "article",
     id: id.toString(),
     title: content.toString(),
@@ -22,7 +22,7 @@ export const InlineQueryResultArticle = (content, parse_mode = "") =>
   }));
 
 // SHA256 Hash function
-export async function sha256(message) {
+export async function sha256(message: string) {
   // encode as UTF-8
   const msgBuffer = new TextEncoder().encode(message);
   // hash the message
