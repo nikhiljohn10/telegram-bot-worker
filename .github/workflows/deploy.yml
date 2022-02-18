@@ -1,17 +1,27 @@
-name: Deploy
-
+name: Build
 on:
   push:
-    branches:
-      - master
-
+  pull_request:
+  repository_dispatch:
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - uses: actions/checkout@v2
-      - name: Publish
-        uses: cloudflare/wrangler-action@1.3.0
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+    deploy:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v2
+        - name: Publish
+          uses: cloudflare/wrangler-action@1.3.0
+          with:
+            apiToken: ${{ secrets.CF_API_TOKEN }}
+            preCommands: |
+              wrangler kv:namespace create KV_BOT_STORAGE
+              apt-get update && apt-get install -y jq
+              export KV_NAMESPACE_ID=$(wrangler kv:namespace list | jq -c 'map(select(.title | contains("KV_BOT_STORAGE")))' | jq -r ".[0].id")
+              echo "[env.production]" >> wrangler.toml
+              echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=\"${KV_NAMESPACE_ID}\"}]" >> wrangler.toml
+              [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
+            secrets: |
+              SECRET_TELEGRAM_API_TOKEN
+            environment: production
+          env:
+            CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
