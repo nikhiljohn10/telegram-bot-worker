@@ -22,6 +22,5 @@ jobs:
               [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
             secrets: |
               SECRET_TELEGRAM_API_TOKEN
-            environment: production
           env:
             SECRET_TELEGRAM_API_TOKEN: ${{ secrets.SECRET_TELEGRAM_API_TOKEN }}
