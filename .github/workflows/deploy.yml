@@ -19,7 +19,7 @@ jobs:
             apt-get update && apt-get install -y jq
             export KV_NAMESPACE_ID=$(wrangler kv:namespace list | jq -c 'map(select(.title | contains("KV_BOT_STORAGE")))' | jq -r ".[0].id")
             echo "[env.production]" >> wrangler.toml
-            echo "kv_namespaces = [{binding=\"KV_STATUS_PAGE\", id=\"${KV_NAMESPACE_ID}\"}]" >> wrangler.toml
+            echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=\"${KV_NAMESPACE_ID}\"}]" >> wrangler.toml
             [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
           secrets: |
             SECRET_TELEGRAM_API_TOKEN
