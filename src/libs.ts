@@ -12,7 +12,7 @@ export function JSONResponse(data, status = 200) {
 }
 
 // Generate InlineQueryResultArticle
-export const InlineQueryResultArticle = async (content, parse_mode = "") => ({
+export const InlineQueryResultArticle = (content, parse_mode = "") => ({
   type: "article",
   id: uuidv4(),
   title: content.toString(),
