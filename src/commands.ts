@@ -1,0 +1,15 @@
+export default {
+  chatInfo: async (bot, req, args) => await bot.getChatInfo(req, args),
+  ping: async (bot, req, args) => await bot.ping(req, args),
+  toss: async (bot, req, args) => await bot.toss(req, args),
+  balance: async (bot, req, args) => await bot.balance(req, args),
+  epoch: async (bot, req, args) => await bot.epoch(req, args),
+  kanye: async (bot, req, args) => await bot.kanye(req, args),
+  bored: async (bot, req, args) => await bot.bored(req, args),
+  joke: async (bot, req, args) => await bot.joke(req, args),
+  doge: async (bot, req, args) => await bot.doge(req, args),
+  roll: async (bot, req, args) => await bot.roll(req, args),
+  recursion: async (bot, req, args) => await bot.recursion(req, args),
+  numbers: async (bot, req, args) => await bot.numbers(req, args),
+  commandList: async (bot, req, args) => await bot.commandList(req, args),
+};
