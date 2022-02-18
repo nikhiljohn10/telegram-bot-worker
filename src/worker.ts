@@ -35,7 +35,7 @@ export default {
           "/average": commands.average,
           "/commandlist": commands.commandList,
         },
-        kv: context.KV_BOT_STORAGE,
+        kv: env.KV_BOT_STORAGE,
       },
     ]).handle({
       url: request.url,

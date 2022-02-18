@@ -12,5 +12,7 @@ export default {
   recursion: async (bot, req, args) => await bot.recursion(req, args),
   numbers: async (bot, req, args) => await bot.numbers(req, args),
   average: async (bot, req, args) => await bot.average(req, args),
+  _get: async (bot, req, args) => await bot._get(req, args),
+  _set: async (bot, req, args) => await bot._set(req, args),
   commandList: async (bot, req, args) => await bot.commandList(req, args),
 };

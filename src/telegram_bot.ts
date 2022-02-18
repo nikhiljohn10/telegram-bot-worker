@@ -79,7 +79,17 @@ export default class TelegramBot extends Bot {
         }
       });
 
-  get = async (req, args) => await this.kv.get(args[0]);
+  // bot command: /get
+  _get = async (req, args) =>
+    await this.kv
+      .get(args[0])
+      .then((value) => this.sendMessage(req.content.message.chat_id, value));
+
+  // bot command: /set
+  _set = async (req, args) =>
+    this.kv
+      .set(args[0], args[1])
+      .then(this.sendMessage(req.content.message.chat_id, `set ${args[0]}`));
 
   _average = (numbers: number[]) =>
     parseFloat(
