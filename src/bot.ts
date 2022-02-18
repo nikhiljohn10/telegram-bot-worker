@@ -15,7 +15,6 @@ export default class Bot {
     this.api = "https://api.telegram.org/bot" + config.token;
     this.webhook = new Webhook(this.api, config.token, config.url);
     this.kv = config.kv;
-    console.log({ kv: this.kv });
   }
 
   update = async (request) => {

@@ -79,9 +79,9 @@ export default class TelegramBot extends Bot {
 
   // bot command: /get
   _get = async (req, args) =>
-    await this.kv
+    this.kv
       .get(args[0])
-      .then((value) => this.sendMessage(req.content.message.chat_id, value));
+      .then((value) => this.sendMessage(req.content.message.chat.id, value));
 
   // bot command: /set
   _set = async (req, args) =>
