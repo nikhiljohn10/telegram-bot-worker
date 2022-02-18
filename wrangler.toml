@@ -7,9 +7,6 @@ route = ""
 zone_id = ""
 compatibility_date = "2022-02-16"
 
-[build]
-command = "npm install && npm run build"
-
-[build.upload]
-format = "modules"
-main = "./worker.mjs"
+build.command = "npm install && npm run build"
+build.upload.format = "modules"
+build.upload.main = "./worker.mjs"
