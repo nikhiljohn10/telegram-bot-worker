@@ -14,13 +14,13 @@ import commands from "./commands";
 import Handler from "./handler";
 
 export default {
-  fetch: async (request: Request, env, context) => {
-    const bot_configs = [
+  fetch: async (request: Request, env, context) =>
+    new Handler([
       {
-        bot_name: "CCMooniterBot",
-        token: env.SECRET_TELEGRAM_API_TOKEN,
+        bot_name: "ccmooniterbot",
+        token: env.secret_telegram_api_token,
         commands: {
-          "/chatInfo": commands.chatInfo,
+          "/chatinfo": commands.chatInfo,
           "/ping": commands.ping,
           "/toss": commands.toss,
           "/balance": commands.balance,
@@ -32,14 +32,10 @@ export default {
           "/roll": commands.roll,
           "/recursion": commands.recursion,
           "/numbers": commands.numbers,
-          "/commandList": commands.commandList,
+          "/commandlist": commands.commandList,
         },
       },
-    ];
-
-    const handler = new Handler(bot_configs);
-
-    return handler.handle({
+    ]).handle({
       url: request.url,
       method: request.method,
       headers: {
@@ -52,6 +48,5 @@ export default {
       text: request.text(),
       formData: request.formData(),
       arrayBuffer: request.arrayBuffer(),
-    });
-  },
+    }),
 };
