@@ -81,11 +81,16 @@ export default class Bot {
   }
 
   // trigger answerInlineQuery command of BotAPI
-  answerInlineQuery = async (inline_query_id, results, cache_time = 0) => {
+  answerInlineQuery = async (
+    inline_query_id,
+    results,
+    cache_time = 0,
+    parse_mode = ""
+  ) => {
     const url = `${
       this.api
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
-      JSON.stringify([InlineQueryResultArticle(results)])
+      JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
 
     console.log({ url });

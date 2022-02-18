@@ -35,7 +35,12 @@ export default class TelegramBot extends Bot {
       .then((json: any) => {
         const content = `${json.setup}\n\n<tg-spoiler>${json.delivery}</tg-spoiler>`;
         if (req.content.inline_query) {
-          this.answerInlineQuery(req.content.inline_query.id, [content]);
+          this.answerInlineQuery(
+            req.content.inline_query.id,
+            [content],
+            0,
+            "HTML"
+          );
         } else {
           this.sendMessage(req.content.message.chat.id, content, "HTML");
         }
