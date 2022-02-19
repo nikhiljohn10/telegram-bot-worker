@@ -17,37 +17,36 @@ export default class Bot {
     this.kv = config.kv;
   }
 
-  update = async (request): Promise<Response> => {
-    console.log({ content: request.content });
-    if (hasOwn(request.content, "inline_query")) {
-      if (!(await this.executeInlineCommand(request))) {
+  update = async (request, content): Promise<Response> => {
+    if (hasOwn(content, "inline_query")) {
+      if (!(await this.executeInlineCommand(request, content))) {
         // don't send messages on invalid commands
       }
-    } else if (hasOwn(request.content, "message")) {
-      if (hasOwn(request.content.message, "text")) {
+    } else if (hasOwn(content, "message")) {
+      if (hasOwn(content.message, "text")) {
         // Test command and execute
-        console.log("--- response");
-        await this.executeCommand(request)
-          .then((response) => console.log(response.json()))
+        this.executeCommand(request, content)
+          .then((response) =>
+            response.json().then((json) => console.log({ response: json }))
+          )
           .catch(console.error);
-        console.log("response ---");
-      } else if (hasOwn(request.content, "photo")) {
+      } else if (hasOwn(content, "photo")) {
         // process photo
-      } else if (hasOwn(request.content, "video")) {
+      } else if (hasOwn(content, "video")) {
         // process video
-      } else if (hasOwn(request.content, "animation")) {
+      } else if (hasOwn(content, "animation")) {
         // process animation
-      } else if (hasOwn(request.content, "location")) {
+      } else if (hasOwn(content, "location")) {
         // process locaiton
-      } else if (hasOwn(request.content, "poll")) {
+      } else if (hasOwn(content, "poll")) {
         // process poll
-      } else if (hasOwn(request.content, "contact")) {
+      } else if (hasOwn(content, "contact")) {
         // process contact
-      } else if (hasOwn(request.content, "dice")) {
+      } else if (hasOwn(content, "dice")) {
         // process dice
-      } else if (hasOwn(request.content, "sticker")) {
+      } else if (hasOwn(content, "sticker")) {
         // process sticker
-      } else if (hasOwn(request.content, "reply_to_message")) {
+      } else if (hasOwn(content, "reply_to_message")) {
         // process reply of a message
       }
     } else {
@@ -60,8 +59,8 @@ export default class Bot {
   };
 
   // execute the inline custom bot commands from bot configurations
-  executeInlineCommand = async (request) => {
-    const inlinecmdArray = request.content.inline_query.query.split(" ");
+  executeInlineCommand = async (request, content) => {
+    const inlinecmdArray = content.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
     if (isinlineCommand) {
@@ -72,8 +71,8 @@ export default class Bot {
   };
 
   // execute the custom bot commands from bot configurations
-  executeCommand = async (request): Promise<Response> => {
-    const cmdArray = request.content.message.text.split(" ");
+  executeCommand = async (request, content): Promise<Response> => {
+    const cmdArray = content.message.text.split(" ");
     const command = cmdArray.shift();
     if (Object.keys(this.commands).includes(command)) {
       return this.commands[command](this, request, cmdArray);
@@ -93,11 +92,7 @@ export default class Bot {
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
       JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
-    console.log({ url });
-    return fetch(url).then((response) => {
-      console.log({ response });
-      return response;
-    });
+    return fetch(url);
   };
 
   // trigger sendMessage command of BotAPI
@@ -118,10 +113,7 @@ export default class Bot {
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-    console.log({ url });
-    return fetch(url).then((response) => {
-      return response;
-    });
+    return fetch(url);
   };
 
   // trigger forwardMessage command of BotAPI

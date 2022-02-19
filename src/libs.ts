@@ -38,7 +38,4 @@ export const addURLOptions = (urlstr, options = {}) => {
 };
 
 // get the base url for a given url string
-export const getBaseURL = (url_string) => {
-  const url = new URL(url_string);
-  return `${url.protocol}//${url.host}/`;
-};
+export const getBaseURL = (url_string) => `${new URL(url_string).origin}/`;

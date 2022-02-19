@@ -15,7 +15,7 @@ export default class Webhook {
   getMe = () => this.execute(this.api + "/getMe");
 
   set = async () => {
-    const access_key = await sha256(this.token);
+    const access_key = sha256(this.token.toString());
     const max_connections = 100;
     const allowed_updates = ["message"];
     return this.execute(

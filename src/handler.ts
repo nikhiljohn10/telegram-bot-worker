@@ -6,53 +6,80 @@ export default class Handler {
   access_keys: string[];
   bot_id: number;
   request: Request;
-  bot: TelegramBot;
   url: string;
 
   constructor(configs) {
     this.configs = configs;
   }
 
-  // handles the request
-  handle = async (request: Request): Promise<Response> => {
-    request.json().then(console.log);
-    const url = new URL(request.url);
-    const url_key = url.pathname.substring(1).replace(/\/$/, "");
-    const worker_url = getBaseURL(request.url);
-    const access_keys = this.configs.reduce(
+  getResponse = async (request, bot): Promise<Response> =>
+    (bot.token &&
+      bot.webhook
+        .process(new URL(request.url))
+        .then((response) => {
+          const access_keys = this.configs.reduce(
+            (previous, bot_config) => ({
+              ...previous,
+              [sha256(bot_config.token).toString()]: bot_config,
+            }),
+            {}
+          );
+          Object.keys(access_keys).forEach((key) => {
+            console.log(
+              `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
+            );
+          });
+          return response;
+        })
+        .then(() => bot.webhook.set())) ||
+    this.responses.default();
+
+  postResponse = async (request, bot): Promise<Response> =>
+    (bot.token &&
+      request
+        .json()
+        .then(
+          (content) =>
+            (console.log({ json: content }) === undefined || true) &&
+            bot.update(request, content)
+        )) ??
+    this.responses.default();
+
+  defaultResponse = (): Response => this.error("Invalid request");
+
+  responses = {
+    GET: this.getResponse,
+    POST: this.postResponse,
+    default: this.defaultResponse,
+  };
+
+  getAccessKeys = (): Map<string, Map<string, string>> =>
+    this.configs.reduce(
       (previous, bot_config) => ({
         ...previous,
         [sha256(bot_config.token).toString()]: bot_config,
       }),
       {}
     );
-    Object.keys(access_keys).forEach((key) => {
-      console.log(`${access_keys[key].bot_name} ${worker_url}${key}`);
-    });
-    if (access_keys[url_key]) {
-      const content = this.processRequest(request);
-      console.log({ content });
-      this.bot = new TelegramBot({
-        token: access_keys[url_key].token, // Bot Token
-        commands: access_keys[url_key].commands, // Bot commands
-        url: worker_url, // worker url
-        kv: access_keys[url_key].kv, // kv storage
-      });
-      if (
-        request.method === "POST" &&
-        (request.headers["content-length"] || 0) > 6
-      ) {
-        return this.bot.update(content);
-      } else if (request.method === "GET") {
-        this.bot.webhook.process(url);
-        return this.bot.webhook.set();
-      } else {
-        return this.error(content.error);
-      }
-    } else {
-      return this.error("Invalid access key");
-    }
-  };
+
+  // handles the request
+  handle = async (request: Request): Promise<Response> =>
+    (console.log({ url: request.url }) === undefined &&
+      console.log(
+        this.getAccessKeys()[
+          new URL(request.url).pathname.substring(1).replace(/\/$/, "")
+        ]
+      ) === undefined &&
+      this.responses[request.method](
+        request,
+        new TelegramBot({
+          ...this.getAccessKeys()[
+            new URL(request.url).pathname.substring(1).replace(/\/$/, "")
+          ],
+          url: getBaseURL(request.url), // worker url
+        })
+      )) ??
+    this.responses.default();
 
   processRequest = (req): { message: string; error?: string } => {
     if (req.headers) return this.getContent(req);
@@ -70,7 +97,6 @@ export default class Handler {
   getContent = (request) => {
     const _type = request.headers["content-type"] || "";
     if (_type.includes("application/json")) {
-      console.log({ request_json: request.json });
       return request.json;
     } else if (_type.includes("text/")) {
       return request.text;
