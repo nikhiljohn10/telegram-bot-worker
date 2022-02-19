@@ -17,7 +17,7 @@ export default class Bot {
     this.kv = config.kv;
   }
 
-  update = async (request) => {
+  update = async (request): Promise<Response> => {
     console.log({ content: request.content });
     if (hasOwn(request.content, "inline_query")) {
       if (!(await this.executeInlineCommand(request))) {
@@ -26,9 +26,11 @@ export default class Bot {
     } else if (hasOwn(request.content, "message")) {
       if (hasOwn(request.content.message, "text")) {
         // Test command and execute
-        if (!(await this.executeCommand(request))) {
-          // don't send messages on invalid commands
-        }
+        console.log("--- response");
+        await this.executeCommand(request)
+          .then((response) => console.log(response.json()))
+          .catch(console.error);
+        console.log("response ---");
       } else if (hasOwn(request.content, "photo")) {
         // process photo
       } else if (hasOwn(request.content, "video")) {
@@ -70,15 +72,13 @@ export default class Bot {
   };
 
   // execute the custom bot commands from bot configurations
-  executeCommand = async (request) => {
+  executeCommand = async (request): Promise<Response> => {
     const cmdArray = request.content.message.text.split(" ");
     const command = cmdArray.shift();
-    const isCommand = Object.keys(this.commands).includes(command);
-    if (isCommand) {
-      await this.commands[command](this, request, cmdArray);
-      return true;
+    if (Object.keys(this.commands).includes(command)) {
+      return this.commands[command](this, request, cmdArray);
     }
-    return false;
+    return new Response();
   };
 
   // trigger answerInlineQuery command of BotAPI
@@ -108,7 +108,7 @@ export default class Bot {
     disable_web_page_preview = false,
     disable_notification = false,
     reply_to_message_id = 0
-  ) => {
+  ): Promise<Response> => {
     let url = `${
       this.api
     }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
@@ -120,7 +120,6 @@ export default class Bot {
     });
     console.log({ url });
     return fetch(url).then((response) => {
-      console.log({ response });
       return response;
     });
   };

@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 // Generate JSON response
-export const JSONResponse = (data, status = 200) =>
+export const JSONResponse = (data, status = 200): Response =>
   new Response(JSON.stringify(data, null, 2), {
     status: status,
     headers: {
