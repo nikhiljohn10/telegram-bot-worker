@@ -46,19 +46,20 @@ export default {
       },
     ]).handle(
       request
+      // new Request(request.url, request)
       // {
-      // url: request.url,
-      // method: request.method,
-      // headers: {
-      //   "cf-connecting-ip": request.headers.get("cf-connecting-ip"),
-      //   "content-length": request.headers.get("content-length"),
-      //   "content-type": request.headers.get("content-type"),
-      // },
-      // cf: request.cf,
-      // json: request.json(),
-      // text: request.text(),
-      // formData: request.formData(),
-      // arrayBuffer: request.arrayBuffer(),
+      //   url: request.url,
+      //   method: request.method,
+      //   headers: {
+      //     "cf-connecting-ip": request.headers.get("cf-connecting-ip"),
+      //     "content-length": request.headers.get("content-length"),
+      //     "content-type": request.headers.get("content-type"),
+      //   },
+      //   cf: request.cf,
+      //   json: await request.json(),
+      //   text: await request.text(),
+      //   formData: await request.formData(),
+      //   arrayBuffer: await request.arrayBuffer(),
       // }
     ),
 };
