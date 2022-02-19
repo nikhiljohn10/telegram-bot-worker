@@ -10,6 +10,3 @@ compatibility_date = "2022-02-16"
 build.command = "npm install && npm run build"
 build.upload.format = "modules"
 build.upload.main = "./worker.mjs"
-kv_namespaces = [
-  { binding = "KV_BOT_STORAGE", id = "f41b1157343949e3a82c48dd14a63d9b" }
-]
