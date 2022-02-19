@@ -19,17 +19,13 @@ export default class Bot {
 
   update = async (request, content): Promise<Response> => {
     if (hasOwn(content, "inline_query")) {
-      if (!(await this.executeInlineCommand(request, content))) {
-        // don't send messages on invalid commands
-      }
+      console.log("executing inline command");
+      await this.executeInlineCommand(request, content);
     } else if (hasOwn(content, "message")) {
       if (hasOwn(content.message, "text")) {
         // Test command and execute
-        this.executeCommand(request, content)
-          .then((response) =>
-            response.json().then((json) => console.log({ response: json }))
-          )
-          .catch(console.error);
+        console.log("executing command");
+        await this.executeCommand(request, content);
       } else if (hasOwn(content, "photo")) {
         // process photo
       } else if (hasOwn(content, "video")) {
@@ -75,7 +71,7 @@ export default class Bot {
     const cmdArray = content.message.text.split(" ");
     const command = cmdArray.shift();
     if (Object.keys(this.commands).includes(command)) {
-      return this.commands[command](this, request, cmdArray);
+      return this.commands[command](this, content, cmdArray);
     }
     return new Response();
   };
@@ -107,12 +103,14 @@ export default class Bot {
     let url = `${
       this.api
     }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
+    console.log({ text });
     url = addURLOptions(url, {
       parse_mode: parse_mode,
       disable_web_page_preview: disable_web_page_preview,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
+    console.log(url);
     return fetch(url);
   };
 
