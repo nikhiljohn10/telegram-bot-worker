@@ -39,6 +39,11 @@ export default {
         },
         kv: env.KV_BOT_STORAGE,
       },
+      {
+        bot_name: "bot_name",
+        token: "token",
+        commands: {},
+      },
     ]).handle({
       url: request.url,
       method: request.method,
