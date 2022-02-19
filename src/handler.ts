@@ -36,13 +36,7 @@ export default class Handler {
 
   postResponse = async (request, bot): Promise<Response> =>
     (bot.token &&
-      request
-        .json()
-        .then(
-          (content) =>
-            (console.log({ json: content }) === undefined || true) &&
-            bot.update(request, content)
-        )) ??
+      request.json().then((content) => bot.update(request, content))) ??
     this.responses.default();
 
   defaultResponse = (): Response => this.error("Invalid request");
@@ -64,22 +58,15 @@ export default class Handler {
 
   // handles the request
   handle = async (request: Request): Promise<Response> =>
-    (console.log({ url: request.url }) === undefined &&
-      console.log(
-        this.getAccessKeys()[
+    this.responses[request.method](
+      request,
+      new TelegramBot({
+        ...this.getAccessKeys()[
           new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-        ]
-      ) === undefined &&
-      this.responses[request.method](
-        request,
-        new TelegramBot({
-          ...this.getAccessKeys()[
-            new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-          ],
-          url: getBaseURL(request.url), // worker url
-        })
-      )) ??
-    this.responses.default();
+        ],
+        url: getBaseURL(request.url), // worker url
+      })
+    ) ?? this.responses.default();
 
   processRequest = (req): { message: string; error?: string } => {
     if (req.headers) return this.getContent(req);

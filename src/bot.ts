@@ -19,12 +19,10 @@ export default class Bot {
 
   update = async (request, content): Promise<Response> => {
     if (hasOwn(content, "inline_query")) {
-      console.log("executing inline command");
       await this.executeInlineCommand(request, content);
     } else if (hasOwn(content, "message")) {
       if (hasOwn(content.message, "text")) {
         // Test command and execute
-        console.log("executing command");
         await this.executeCommand(request, content);
       } else if (hasOwn(content, "photo")) {
         // process photo
@@ -103,14 +101,12 @@ export default class Bot {
     let url = `${
       this.api
     }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
-    console.log({ text });
     url = addURLOptions(url, {
       parse_mode: parse_mode,
       disable_web_page_preview: disable_web_page_preview,
       disable_notification: disable_notification,
       reply_to_message_id: reply_to_message_id,
     });
-    console.log(url);
     return fetch(url);
   };
 
