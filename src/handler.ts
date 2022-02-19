@@ -3,10 +3,6 @@ import { JSONResponse, sha256, getBaseURL } from "./libs";
 
 export default class Handler {
   configs: any;
-  access_keys: string[];
-  bot_id: number;
-  request: Request;
-  url: string;
 
   constructor(configs) {
     this.configs = configs;
