@@ -16,10 +16,11 @@ export default class Handler {
   }
 
   // handles the request
-  handle = async (request: any) => {
+  handle = async (request: any): Promise<Response> => {
     const url = new URL(request.url);
     const url_key = url.pathname.substring(1).replace(/\/$/, "");
     const worker_url = getBaseURL(request.url);
+    console.log({ request });
 
     this.access_keys = await Promise.all(
       this.tokens.map(async (token) => await sha256(token))
@@ -33,7 +34,7 @@ export default class Handler {
 
     this.bot_id = this.access_keys.indexOf(url_key);
     if (this.bot_id > -1) {
-      return this.processRequest(request).then((response) => {
+      return this.processRequest(request).then((req) => {
         this.bot = new TelegramBot({
           token: this.tokens[this.bot_id.toString()], // Bot Token
           access_key: this.access_keys[this.bot_id.toString()], // Access Key
@@ -41,13 +42,13 @@ export default class Handler {
           url: worker_url, // worker url
           kv: this.configs[this.bot_id.toString()].kv, // kv storage
         });
-        if (request.method === "POST" && request.size > 6) {
-          return this.bot.update(this.request);
-        } else if (request.method === "GET") {
+        if (req.method === "POST" && req.size > 6) {
+          return this.bot.update(req);
+        } else if (req.method === "GET") {
           this.bot.webhook.process(url);
           return this.bot.webhook.set();
         } else {
-          return this.error(request.content.error);
+          return this.error(req.content.error);
         }
       });
     } else {
@@ -55,7 +56,7 @@ export default class Handler {
     }
   };
 
-  processRequest = async (req): Promise<Request> => {
+  processRequest = async (req): Promise<any> => {
     req.size = parseInt(req.headers["content-length"]) || 0;
     req.type = req.headers["content-type"] || "";
     if (req.cf) req.content = await this.getContent(req);
