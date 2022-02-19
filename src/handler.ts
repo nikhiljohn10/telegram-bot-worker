@@ -14,9 +14,9 @@ export default class Handler {
   }
 
   // handles the request
-  handle = async (request: any): Promise<Response> => {
+  handle = async (request: Request): Promise<Response> => {
     console.log({ request });
-    console.log({ json: request.json });
+    console.log({ json: request.json() });
     const url = new URL(request.url);
     const url_key = url.pathname.substring(1).replace(/\/$/, "");
     const worker_url = getBaseURL(request.url);
