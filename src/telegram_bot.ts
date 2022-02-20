@@ -111,7 +111,7 @@ export default class TelegramBot extends Bot {
   numbers = async (content, args) =>
     this.sendMessage(
       content.message.chat.id,
-      "<pre>" + JSON.stringify(this._numbers(args[0])) + "</pre>",
+      preTagString(JSON.stringify(this._numbers(args[0]))),
       "HTML"
     );
 
