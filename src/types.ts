@@ -89,5 +89,14 @@ export type TelegramInlineQuery = {
 export type TelegramUpdate = {
   message?: TelegramMessage;
   inline_query?: TelegramInlineQuery;
+  photo?: string;
+  video?: string;
+  animation?: string;
+  location?: string;
+  poll?: string;
+  contact?: string;
+  dice?: string;
+  sticker?: string;
+  reply_to_message?: string;
   update_id: number;
 };

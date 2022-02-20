@@ -1,6 +1,5 @@
 import Webhook from "./webhook";
 import { InlineQueryResultArticle, addURLOptions } from "./libs";
-import hasOwn from "core-js-pure/es/object/has-own";
 import { Commands, KV, TelegramUpdate } from "./types";
 
 export default class Bot {
@@ -23,7 +22,7 @@ export default class Bot {
     update: TelegramUpdate
   ): Promise<Response> => {
     console.log({ update });
-    if (hasOwn(update, "inline_query")) {
+    if (update.inline_query) {
       await this.executeInlineCommand(request, update).then((response) => {
         response
           .clone()
@@ -31,8 +30,8 @@ export default class Bot {
           .then((response) => console.log({ response }));
         return response;
       });
-    } else if (hasOwn(update, "message")) {
-      if (hasOwn(update.message, "text")) {
+    } else if (update.message) {
+      if (update.message.text) {
         await this.executeCommand(request, update).then((response) => {
           response
             .clone()
@@ -40,23 +39,23 @@ export default class Bot {
             .then((response) => console.log({ response }));
           return response;
         });
-      } else if (hasOwn(update, "photo")) {
+      } else if (update.photo) {
         // process photo
-      } else if (hasOwn(update, "video")) {
+      } else if (update.video) {
         // process video
-      } else if (hasOwn(update, "animation")) {
+      } else if (update.animation) {
         // process animation
-      } else if (hasOwn(update, "location")) {
+      } else if (update.location) {
         // process locaiton
-      } else if (hasOwn(update, "poll")) {
+      } else if (update.poll) {
         // process poll
-      } else if (hasOwn(update, "contact")) {
+      } else if (update.contact) {
         // process contact
-      } else if (hasOwn(update, "dice")) {
+      } else if (update.dice) {
         // process dice
-      } else if (hasOwn(update, "sticker")) {
+      } else if (update.sticker) {
         // process sticker
-      } else if (hasOwn(update, "reply_to_message")) {
+      } else if (update.reply_to_message) {
         // process reply of a message
       }
     } else {

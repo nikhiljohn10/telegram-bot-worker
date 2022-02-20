@@ -1,6 +1,5 @@
 import Bot from "./bot";
 import { preTagString, prettyJSON } from "./libs";
-import hasOwn from "core-js-pure/es/object/has-own";
 import { Joke, Bored, Balance } from "./types";
 
 export default class TelegramBot extends Bot {
@@ -64,7 +63,7 @@ export default class TelegramBot extends Bot {
       .then((json: Balance) => (json[args[0]]?.final_balance ?? 0) / 100000000)
       .then((balance) => {
         const message = `${args[0]}\n\n${balance.toString()} BTC`;
-        if (hasOwn(update, "inline_query")) {
+        if (update.inline_query) {
           this.answerInlineQuery(
             update.inline_query.id,
             [message],
@@ -77,14 +76,14 @@ export default class TelegramBot extends Bot {
 
   // bot command: /get
   _get = async (update, args) =>
-    hasOwn(this.kv, "get") &&
+    this.kv.get &&
     this.kv
       .get(args[0])
       .then((value) => this.sendMessage(update.message.chat.id, value));
 
   // bot command: /set
   _set = async (update, args) =>
-    hasOwn(this.kv, "put") &&
+    this.kv.put &&
     this.kv
       .put(args[0], args[1])
       .then(() => this.sendMessage(update.message.chat.id, `set ${args[0]}`));
@@ -124,7 +123,7 @@ export default class TelegramBot extends Bot {
       `@${username} rolled a ${args[0] ??
         6} sided die. it landed on ${outcome}`;
 
-    if (hasOwn(update, "inline_query")) {
+    if (update.inline_query) {
       const username = update.inline_query.from.username;
       return this.answerInlineQuery(update.inline_query.id, [
         message(username, outcome),
