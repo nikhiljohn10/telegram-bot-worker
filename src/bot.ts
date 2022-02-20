@@ -18,6 +18,7 @@ export default class Bot {
   }
 
   update = async (request, content): Promise<Response> => {
+    console.log({ request: content });
     if (hasOwn(content, "inline_query")) {
       await this.executeInlineCommand(request, content);
     } else if (hasOwn(content, "message")) {
