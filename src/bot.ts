@@ -75,6 +75,7 @@ export default class Bot {
     if (isinlineCommand) {
       return this.commands[inline_command](this, update, inlinecmdArray);
     }
+    return new Response();
   };
 
   // execute the custom bot commands from bot configurations

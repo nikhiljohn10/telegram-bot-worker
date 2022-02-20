@@ -47,6 +47,7 @@ export default {
     ])
       .handle(request)
       .then((response) => {
+        console.log({ response });
         response
           .clone()
           .text()

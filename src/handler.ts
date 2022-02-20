@@ -27,7 +27,8 @@ export default class Handler {
       request.json().then((content) => bot.update(request, content))) ??
     this.responses.default();
 
-  defaultResponse = (): Response => this.error("Invalid request");
+  defaultResponse = (): Response =>
+    JSONResponse({ error: "Invalid request" }, 400);
 
   responses = {
     GET: this.getResponse,
@@ -57,13 +58,4 @@ export default class Handler {
         url: getBaseURL(request.url), // worker url
       })
     ) ?? this.responses.default();
-
-  // handles error responses
-  error = (message, status = 403): Response =>
-    JSONResponse(
-      {
-        error: message,
-      },
-      status
-    );
 }
