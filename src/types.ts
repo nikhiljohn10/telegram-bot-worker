@@ -25,8 +25,9 @@ export type Joke = {
   error: boolean;
   category: string;
   type: string;
-  setup: string;
-  delivery: string;
+  setup?: string;
+  delivery?: string;
+  joke?: string;
   flags: {
     nsfw: boolean;
     religious: boolean;

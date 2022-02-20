@@ -26,8 +26,10 @@ export default class TelegramBot extends Bot {
       "https://v2.jokeapi.dev/joke/Any?blacklistFlags=religious,political,racist,sexist"
     )
       .then((response) => response.json())
-      .then((json: Joke) => {
-        const message = `${json.setup}\n\n<tg-spoiler>${json.delivery}</tg-spoiler>`;
+      .then((joke: Joke) => {
+        const message =
+          joke.joke ||
+          `${joke.setup}\n\n<tg-spoiler>${joke.delivery}</tg-spoiler>`;
         if (update.inline_query) {
           return this.answerInlineQuery(
             update.inline_query.id,
