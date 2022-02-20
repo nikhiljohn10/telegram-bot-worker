@@ -10,11 +10,11 @@ export default class Bot {
   kv: KV;
 
   constructor(config) {
-    this.token = config.token || "";
+    this.token = config.token || null;
     this.commands = config.commands;
     this.api = "https://api.telegram.org/bot" + config.token;
     this.webhook = new Webhook(this.api, config.token, config.url);
-    this.kv = config.kv || {};
+    this.kv = config.kv || null;
   }
 
   update = async (

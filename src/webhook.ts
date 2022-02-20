@@ -41,5 +41,7 @@ export default class Webhook {
   };
 
   process = async (url) =>
-    this.webhookCommands[url.searchParams.get("command")]();
+    (this.webhookCommands[url.searchParams.get("command")] &&
+      this.webhookCommands[url.searchParams.get("command")]()) ??
+    this.webhookCommands.default;
 }

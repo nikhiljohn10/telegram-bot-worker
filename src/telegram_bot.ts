@@ -66,13 +66,13 @@ export default class TelegramBot extends Bot {
       .then((balance) => {
         const message = `${args[0]}\n\n${balance.toString()} BTC`;
         if (update.inline_query) {
-          this.answerInlineQuery(
+          return this.answerInlineQuery(
             update.inline_query.id,
             [message],
             7 * 60 // 7 minutes
           );
         } else {
-          this.sendMessage(update.message.chat.id, message);
+          return this.sendMessage(update.message.chat.id, message);
         }
       });
 

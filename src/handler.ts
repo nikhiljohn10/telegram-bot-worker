@@ -20,20 +20,17 @@ export default class Handler {
         });
         return response;
       })) ??
-    this.responses.default();
+    this.responses.default;
 
   postResponse = async (request, bot): Promise<Response> =>
     (bot.token &&
       request.json().then((content) => bot.update(request, content))) ??
-    this.responses.default();
-
-  defaultResponse = (): Response =>
-    JSONResponse({ error: "Invalid request" }, 400);
+    this.responses.default;
 
   responses = {
     GET: this.getResponse,
     POST: this.postResponse,
-    default: this.defaultResponse,
+    default: JSONResponse({ error: "Invalid request" }, 400),
   };
 
   getAccessKeys = ():
@@ -57,5 +54,5 @@ export default class Handler {
         ],
         url: getBaseURL(request.url), // worker url
       })
-    ) ?? this.responses.default();
+    ) ?? this.responses.default;
 }
