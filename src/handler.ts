@@ -64,30 +64,6 @@ export default class Handler {
       })
     ) ?? this.responses.default();
 
-  processRequest = (req): { message: string; error?: string } => {
-    if (req.headers) return this.getContent(req);
-    else if (req.method == "GET") {
-      return {
-        message: "Accessing webhook",
-      };
-    }
-    return {
-      message: "",
-      error: "Invalid content type or body",
-    };
-  };
-
-  getContent = (request) => {
-    const _type = request.headers["content-type"] || "";
-    if (_type.includes("application/json")) {
-      return request.json;
-    } else if (_type.includes("text/")) {
-      return request.text;
-    } else {
-      return request.arrayBuffer;
-    }
-  };
-
   // handles error responses
   error = (message, status = 403): Response =>
     JSONResponse(
