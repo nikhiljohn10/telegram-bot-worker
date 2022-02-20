@@ -30,7 +30,6 @@ export default class Bot {
           .then((response) => console.log({ response }));
         return response;
       });
-      await this.greetUsers(request, update);
     } else if (update.message) {
       if (update.message.text) {
         await this.executeCommand(request, update).then((response) => {
@@ -40,6 +39,7 @@ export default class Bot {
             .then((response) => console.log({ response }));
           return response;
         });
+        await this.greetUsers(request, update);
       } else if (update.photo) {
         // process photo
       } else if (update.video) {
