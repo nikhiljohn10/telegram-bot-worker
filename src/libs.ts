@@ -25,7 +25,7 @@ export const InlineQueryResultArticle = (content, parse_mode = "") => ({
   },
 });
 
-export const preTagString = (str) => "<pre>" + str + "</pre>";
+export const preTagString = (str) => `<pre>${str}</pre>`;
 
 // Add options in URL
 export const addURLOptions = (urlstr, options = {}) => {
