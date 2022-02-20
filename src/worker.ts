@@ -44,5 +44,15 @@ export default {
         token: "token",
         commands: {},
       },
-    ]).handle(request),
+    ])
+      .handle(request)
+      .then((response) => {
+        response
+          .clone()
+          .text()
+          .then((content) =>
+            console.log({ result: { status: response.status, body: content } })
+          );
+        return response;
+      }),
 };
