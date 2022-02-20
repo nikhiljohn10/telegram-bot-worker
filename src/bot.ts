@@ -1,13 +1,14 @@
 import Webhook from "./webhook";
 import { InlineQueryResultArticle, addURLOptions } from "./libs";
 import hasOwn from "core-js-pure/es/object/has-own";
+import { Commands, KV, TelegramUpdate } from "./types";
 
 export default class Bot {
   token: string;
-  commands: any;
+  commands: Commands;
   api: string;
   webhook: Webhook;
-  kv: any;
+  kv: KV;
 
   constructor(config) {
     this.token = config.token || "";
@@ -17,31 +18,43 @@ export default class Bot {
     this.kv = config.kv || {};
   }
 
-  update = async (request, content): Promise<Response> => {
-    console.log({ request: content });
-    if (hasOwn(content, "inline_query")) {
-      await this.executeInlineCommand(request, content);
-    } else if (hasOwn(content, "message")) {
-      if (hasOwn(content.message, "text")) {
-        // Test command and execute
-        await this.executeCommand(request, content);
-      } else if (hasOwn(content, "photo")) {
+  update = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> => {
+    console.log({ update });
+    if (hasOwn(update, "inline_query")) {
+      await this.executeInlineCommand(request, update).then((response) =>
+        response
+          .clone()
+          .json()
+          .then((response) => console.log({ response }))
+      );
+    } else if (hasOwn(update, "message")) {
+      if (hasOwn(update.message, "text")) {
+        await this.executeCommand(request, update).then((response) =>
+          response
+            .clone()
+            .json()
+            .then((response) => console.log({ response }))
+        );
+      } else if (hasOwn(update, "photo")) {
         // process photo
-      } else if (hasOwn(content, "video")) {
+      } else if (hasOwn(update, "video")) {
         // process video
-      } else if (hasOwn(content, "animation")) {
+      } else if (hasOwn(update, "animation")) {
         // process animation
-      } else if (hasOwn(content, "location")) {
+      } else if (hasOwn(update, "location")) {
         // process locaiton
-      } else if (hasOwn(content, "poll")) {
+      } else if (hasOwn(update, "poll")) {
         // process poll
-      } else if (hasOwn(content, "contact")) {
+      } else if (hasOwn(update, "contact")) {
         // process contact
-      } else if (hasOwn(content, "dice")) {
+      } else if (hasOwn(update, "dice")) {
         // process dice
-      } else if (hasOwn(content, "sticker")) {
+      } else if (hasOwn(update, "sticker")) {
         // process sticker
-      } else if (hasOwn(content, "reply_to_message")) {
+      } else if (hasOwn(update, "reply_to_message")) {
         // process reply of a message
       }
     } else {
@@ -54,24 +67,21 @@ export default class Bot {
   };
 
   // execute the inline custom bot commands from bot configurations
-  executeInlineCommand = async (request, content) => {
-    console.log({ content });
-    const inlinecmdArray = content.inline_query.query.split(" ");
+  executeInlineCommand = async (request, update): Promise<Response> => {
+    const inlinecmdArray = update.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
     if (isinlineCommand) {
-      await this.commands[inline_command](this, content, inlinecmdArray);
-      return true;
+      return this.commands[inline_command](this, update, inlinecmdArray);
     }
-    return false;
   };
 
   // execute the custom bot commands from bot configurations
-  executeCommand = async (request, content): Promise<Response> => {
-    const cmdArray = content.message.text.split(" ");
+  executeCommand = async (request, update): Promise<Response> => {
+    const cmdArray = update.message.text.split(" ");
     const command = cmdArray.shift();
     if (Object.keys(this.commands).includes(command)) {
-      return this.commands[command](this, content, cmdArray);
+      return this.commands[command](this, update, cmdArray);
     }
     return new Response();
   };
@@ -88,12 +98,7 @@ export default class Bot {
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
       JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
-    return fetch(url).then((response) =>
-      response.json().then((json) => {
-        console.log({ response: json });
-        return response;
-      })
-    );
+    return fetch(url);
   };
 
   // trigger sendMessage command of BotAPI
@@ -117,11 +122,6 @@ export default class Bot {
           reply_to_message_id: reply_to_message_id,
         }
       )
-    ).then((response) =>
-      response.json().then((json) => {
-        console.log({ response: json });
-        return response;
-      })
     );
 
   // trigger forwardMessage command of BotAPI
@@ -320,6 +320,6 @@ export default class Bot {
     });
     return fetch(url)
       .then((response) => response.json())
-      .then((json: any) => json.result.photos);
+      .then((json: { result: { photos: any } }) => json.result.photos);
   };
 }

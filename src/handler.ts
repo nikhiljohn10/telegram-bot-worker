@@ -1,8 +1,9 @@
 import TelegramBot from "./telegram_bot";
 import { JSONResponse, sha256, getBaseURL } from "./libs";
+import { Config } from "./types";
 
 export default class Handler {
-  configs: any;
+  configs: Config[];
 
   constructor(configs) {
     this.configs = configs;
@@ -11,13 +12,7 @@ export default class Handler {
   getResponse = async (request, bot): Promise<Response> =>
     (bot.token &&
       bot.webhook.process(new URL(request.url)).then((response) => {
-        const access_keys = this.configs.reduce(
-          (previous, bot_config) => ({
-            ...previous,
-            [sha256(bot_config.token).toString()]: bot_config,
-          }),
-          {}
-        );
+        const access_keys = this.getAccessKeys();
         Object.keys(access_keys).forEach((key) => {
           console.log(
             `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
@@ -40,7 +35,9 @@ export default class Handler {
     default: this.defaultResponse,
   };
 
-  getAccessKeys = (): Map<string, Map<string, string>> =>
+  getAccessKeys = ():
+    | Record<string, Record<string, string>>
+    | Record<string, never> =>
     this.configs.reduce(
       (previous, bot_config) => ({
         ...previous,
