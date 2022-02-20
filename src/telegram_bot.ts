@@ -1,5 +1,5 @@
 import Bot from "./bot";
-import { logJSONinHTML } from "./libs";
+import { preTagString, prettyJSON } from "./libs";
 import hasOwn from "core-js-pure/es/object/has-own";
 
 export default class TelegramBot extends Bot {
@@ -166,7 +166,7 @@ export default class TelegramBot extends Bot {
   getChatInfo = async (content, args) =>
     this.sendMessage(
       content.message.chat.id,
-      logJSONinHTML(content.message.chat),
+      preTagString(prettyJSON(content.message.chat)),
       "HTML"
     );
 

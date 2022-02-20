@@ -2,9 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import sha256 from "crypto-js/sha256";
 export { sha256 };
 
+// format json with line indents and newlines
+export const prettyJSON = (data) => JSON.stringify(data, null, 2);
+
 // Generate JSON response
 export const JSONResponse = (data, status = 200): Response =>
-  new Response(JSON.stringify(data, null, 2), {
+  new Response(prettyJSON(data), {
     status: status,
     headers: {
       "content-type": "application/json",
@@ -21,10 +24,6 @@ export const InlineQueryResultArticle = (content, parse_mode = "") => ({
     parse_mode: parse_mode,
   },
 });
-
-// Stringify JSON and add <pre> tag HTML
-export const logJSONinHTML = (data) =>
-  preTagString(JSON.stringify(data, null, 2));
 
 export const preTagString = (str) => "<pre>" + str + "</pre>";
 
