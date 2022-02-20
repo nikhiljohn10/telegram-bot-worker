@@ -22,9 +22,7 @@ export default class TelegramBot extends Bot {
 
   // bot command: /joke
   joke = async (update, args) =>
-    fetch(
-      "https://v2.jokeapi.dev/joke/Any?blacklistFlags=religious,political,racist,sexist"
-    )
+    fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => response.json())
       .then((joke: Joke) => {
         const message =
