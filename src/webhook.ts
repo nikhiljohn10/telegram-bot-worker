@@ -12,7 +12,7 @@ export default class Webhook {
   }
 
   // trigger getMe command of BotAPI
-  getMe = () => this.execute(this.api + "/getMe");
+  getMe = () => this.execute(`${this.api}/getMe`);
 
   set = async () =>
     this.execute(
