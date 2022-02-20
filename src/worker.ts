@@ -44,10 +44,5 @@ export default {
         token: "token",
         commands: {},
       },
-    ])
-      .handle(request)
-      .then((response) => {
-        console.log({ response });
-        return response;
-      }),
+    ]).handle(request),
 };
