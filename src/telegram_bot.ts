@@ -13,7 +13,7 @@ export default class TelegramBot extends Bot {
       .then((response) => response.json())
       .then((json: any) => `Kanye says... ${json.quote}`)
       .then((message) => {
-        if (hasOwn(content, "inline_query")) {
+        if (content.inline_query) {
           return this.answerInlineQuery(content.inline_query.id, [message], 0);
         } else {
           return this.sendMessage(content.message.chat.id, message);
@@ -26,7 +26,7 @@ export default class TelegramBot extends Bot {
       .then((response) => response.json())
       .then((json: any) => {
         const message = `${json.setup}\n\n<tg-spoiler>${json.delivery}</tg-spoiler>`;
-        if (hasOwn(content, "inline_query")) {
+        if (content.inline_query) {
           return this.answerInlineQuery(
             content.inline_query.id,
             [message],
@@ -76,12 +76,14 @@ export default class TelegramBot extends Bot {
 
   // bot command: /get
   _get = async (content, args) =>
+    hasOwn(this.kv, "get") &&
     this.kv
       .get(args[0])
       .then((value) => this.sendMessage(content.message.chat.id, value));
 
   // bot command: /set
   _set = async (content, args) =>
+    hasOwn(this.kv, "put") &&
     this.kv
       .put(args[0], args[1])
       .then(this.sendMessage(content.message.chat.id, `set ${args[0]}`));

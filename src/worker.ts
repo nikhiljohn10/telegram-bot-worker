@@ -18,7 +18,7 @@ export default {
     new Handler([
       {
         bot_name: "CCMooniterBot",
-        token: env.SECRET_TELEGRAM_API_TOKEN || "",
+        token: env.SECRET_TELEGRAM_API_TOKEN,
         commands: {
           "/chatinfo": commands.chatInfo,
           "/ping": commands.ping,

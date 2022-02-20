@@ -10,11 +10,11 @@ export default class Bot {
   kv: any;
 
   constructor(config) {
-    this.token = config.token;
+    this.token = config.token || "";
     this.commands = config.commands;
     this.api = "https://api.telegram.org/bot" + config.token;
     this.webhook = new Webhook(this.api, config.token, config.url);
-    this.kv = config.kv;
+    this.kv = config.kv || {};
   }
 
   update = async (request, content): Promise<Response> => {
@@ -54,11 +54,12 @@ export default class Bot {
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, content) => {
+    console.log({ content });
     const inlinecmdArray = content.inline_query.query.split(" ");
     const inline_command = inlinecmdArray.shift();
     const isinlineCommand = Object.keys(this.commands).includes(inline_command);
     if (isinlineCommand) {
-      await this.commands[inline_command](this, request, inlinecmdArray);
+      await this.commands[inline_command](this, content, inlinecmdArray);
       return true;
     }
     return false;
@@ -86,7 +87,12 @@ export default class Bot {
     }/answerInlineQuery?inline_query_id=${inline_query_id}&results=${encodeURIComponent(
       JSON.stringify([InlineQueryResultArticle(results, parse_mode)])
     )}&cache_time=${cache_time}`;
-    return fetch(url);
+    return fetch(url).then((response) =>
+      response.json().then((json) => {
+        console.log({ response: json });
+        return response;
+      })
+    );
   };
 
   // trigger sendMessage command of BotAPI
@@ -97,18 +103,25 @@ export default class Bot {
     disable_web_page_preview = false,
     disable_notification = false,
     reply_to_message_id = 0
-  ): Promise<Response> => {
-    let url = `${
-      this.api
-    }/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(text)}`;
-    url = addURLOptions(url, {
-      parse_mode: parse_mode,
-      disable_web_page_preview: disable_web_page_preview,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
-    return fetch(url);
-  };
+  ): Promise<Response> =>
+    fetch(
+      addURLOptions(
+        `${this.api}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(
+          text
+        )}`,
+        {
+          parse_mode: parse_mode,
+          disable_web_page_preview: disable_web_page_preview,
+          disable_notification: disable_notification,
+          reply_to_message_id: reply_to_message_id,
+        }
+      )
+    ).then((response) =>
+      response.json().then((json) => {
+        console.log({ response: json });
+        return response;
+      })
+    );
 
   // trigger forwardMessage command of BotAPI
   forwardMessage = async (
