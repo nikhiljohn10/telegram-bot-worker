@@ -16,11 +16,14 @@ export default class Webhook {
 
   set = async () =>
     this.execute(
-      `${this.api}/setWebhook?url=${encodeURIComponent(
-        `${this.url}${sha256(this.token).toString()}`
-      )}&max_connections=${100}&allowed_updates=${[
-        "message",
-      ]}&drop_pending_updates=${true}`
+      sha256(this.token).then(
+        (access_key) =>
+          `${this.api}/setWebhook?url=${encodeURIComponent(
+            `${this.url}${access_key}`
+          )}&max_connections=${100}&allowed_updates=${[
+            "message",
+          ]}&drop_pending_updates=${true}`
+      )
     );
 
   get = async () => this.execute(`${this.api}/getWebhookInfo`);
