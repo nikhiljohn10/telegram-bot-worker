@@ -71,7 +71,10 @@ export default class Bot {
   // greet new users who join
   greetUsers = async (request, update): Promise<Response> => {
     if (update.message.new_chat_members)
-      this.sendMessage(update.message.chat.id, "welcome to the group");
+      this.sendMessage(
+        update.message.chat.id,
+        `Welcome to ${update.message.chat.title}, ${update.message.from.username}`
+      );
     return new Response();
   };
 
