@@ -116,7 +116,13 @@ export default class TelegramBot extends Bot {
 
   // bot command: /recursion
   recursion = async (update, args): Promise<Response> =>
-    this.sendMessage(update.message.chat.id, "/recursion");
+    this.sendMessage(update.message.chat.id, "/recursion").then((response) => {
+      console.log({ response_____: response });
+      return this.handler.postResponse(
+        new Request("", { method: "POST", body: response.body }),
+        this
+      );
+    });
 
   // bot command: /roll
   roll = async (update, args) => {

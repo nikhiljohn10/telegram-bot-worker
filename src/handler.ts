@@ -53,6 +53,7 @@ export default class Handler {
           new URL(request.url).pathname.substring(1).replace(/\/$/, "")
         ],
         url: getBaseURL(request.url), // worker url
+        handler: this,
       })
     ) ?? this.responses.default;
 }

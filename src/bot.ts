@@ -1,6 +1,7 @@
 import Webhook from "./webhook";
-import { InlineQueryResultArticle, addURLOptions } from "./libs";
+import { InlineQueryResultArticle, addSearchParams } from "./libs";
 import { Commands, KV, TelegramUpdate } from "./types";
+import Handler from "./handler";
 
 export default class Bot {
   token: string;
@@ -8,6 +9,7 @@ export default class Bot {
   api: string;
   webhook: Webhook;
   kv: KV;
+  handler: Handler;
 
   constructor(config) {
     this.token = config.token || null;
@@ -15,6 +17,7 @@ export default class Bot {
     this.api = "https://api.telegram.org/bot" + config.token;
     this.webhook = new Webhook(this.api, config.token, config.url);
     this.kv = config.kv || null;
+    this.handler = config.handler;
   }
 
   update = async (
@@ -93,6 +96,7 @@ export default class Bot {
   executeCommand = async (request, update): Promise<Response> => {
     const cmdArray = update.message.text.split(" ");
     const command = cmdArray.shift();
+    console.log({ command });
     if (Object.keys(this.commands).includes(command)) {
       return this.commands[command](this, update, cmdArray);
     }
@@ -124,18 +128,18 @@ export default class Bot {
     reply_to_message_id = 0
   ): Promise<Response> =>
     fetch(
-      addURLOptions(
-        `${this.api}/sendMessage?chat_id=${chat_id}&text=${encodeURIComponent(
-          text
-        )}`,
-        {
-          parse_mode: parse_mode,
-          disable_web_page_preview: disable_web_page_preview,
-          disable_notification: disable_notification,
-          reply_to_message_id: reply_to_message_id,
-        }
-      )
-    );
+      addSearchParams(new URL(`${this.api}/sendMessage`), {
+        chat_id: chat_id,
+        text: text,
+        parse_mode: parse_mode,
+        disable_web_page_preview: disable_web_page_preview.toString(),
+        disable_notification: disable_notification.toString(),
+        reply_to_message_id: reply_to_message_id.toString(),
+      }).href
+    ).then((response) => {
+      console.log({ send_message: response.body });
+      return response;
+    });
 
   // trigger forwardMessage command of BotAPI
   forwardMessage = async (
@@ -155,9 +159,9 @@ export default class Bot {
     if (disable_notification)
       url += "&disable_notification=" + disable_notification;
 
-    url = addURLOptions(url, {
-      disable_notification: disable_notification,
-    });
+    url = addSearchParams(new URL(url), {
+      disable_notification: disable_notification.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -171,12 +175,12 @@ export default class Bot {
     reply_to_message_id = 0
   ) => {
     let url = this.api + "/sendPhoto?chat_id=" + chat_id + "&photo=" + photo;
-    url = addURLOptions(url, {
+    url = addSearchParams(new URL(url), {
       caption: caption,
       parse_mode: parse_mode,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -195,17 +199,17 @@ export default class Bot {
     reply_to_message_id = 0
   ) => {
     let url = this.api + "/sendVideo?chat_id=" + chat_id + "&video=" + video;
-    url = addURLOptions(url, {
-      duration: duration,
-      width: width,
-      height: height,
+    url = addSearchParams(new URL(url), {
+      duration: duration.toString(),
+      width: width.toString(),
+      height: height.toString(),
       thumb: thumb,
       caption: caption,
       parse_mode: parse_mode,
-      supports_streaming: supports_streaming,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+      supports_streaming: supports_streaming.toString(),
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -228,16 +232,16 @@ export default class Bot {
       chat_id +
       "&animation=" +
       animation;
-    url = addURLOptions(url, {
-      duration: duration,
-      width: width,
-      height: height,
+    url = addSearchParams(new URL(url), {
+      duration: duration.toString(),
+      width: width.toString(),
+      height: height.toString(),
       thumb: thumb,
       caption: caption,
       parse_mode: parse_mode,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -258,11 +262,11 @@ export default class Bot {
       latitude +
       "&longitude=" +
       longitude;
-    url = addURLOptions(url, {
-      live_period: live_period,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+    url = addSearchParams(new URL(url), {
+      live_period: live_period.toString(),
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -292,19 +296,19 @@ export default class Bot {
       "&options=" +
       options;
 
-    url = addURLOptions(url, {
+    url = addSearchParams(new URL(url), {
       is_anonymous: is_anonymous,
       type: type,
-      allows_multiple_answers: allows_multiple_answers,
-      correct_option_id: correct_option_id,
+      allows_multiple_answers: allows_multiple_answers.toString(),
+      correct_option_id: correct_option_id.toString(),
       explanation: explanation,
       explanation_parse_mode: explanation_parse_mode,
-      open_period: open_period,
-      close_date: close_date,
-      is_closed: is_closed,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+      open_period: open_period.toString(),
+      close_date: close_date.toString(),
+      is_closed: is_closed.toString(),
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
@@ -316,21 +320,21 @@ export default class Bot {
     reply_to_message_id = 0
   ) => {
     let url = this.api + "/sendDice?chat_id=" + chat_id;
-    url = addURLOptions(url, {
+    url = addSearchParams(new URL(url), {
       emoji: emoji,
-      disable_notification: disable_notification,
-      reply_to_message_id: reply_to_message_id,
-    });
+      disable_notification: disable_notification.toString(),
+      reply_to_message_id: reply_to_message_id.toString(),
+    }).href;
     return fetch(url);
   };
 
   // bot api command to get user profile photos
   getUserProfilePhotos = async (user_id, offset = 0, limit = 0) => {
     let url = this.api + "/getUserProfilePhotos?user_id=" + user_id;
-    url = addURLOptions(url, {
-      offset: offset,
-      limit: limit,
-    });
+    url = addSearchParams(new URL(url), {
+      offset: offset.toString(),
+      limit: limit.toString(),
+    }).href;
     return fetch(url)
       .then((response) => response.json())
       .then((json: { result: { photos: any } }) => json.result.photos);

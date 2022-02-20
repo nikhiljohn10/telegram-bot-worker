@@ -27,14 +27,16 @@ export const InlineQueryResultArticle = (content, parse_mode = "") => ({
 
 export const preTagString = (str) => `<pre>${str}</pre>`;
 
-// Add options in URL
-export const addURLOptions = (urlstr, options = {}) => {
-  let url = urlstr;
-  for (const key of Object.keys(options)) {
-    if (options[key]) url += "&" + key + "=" + options[key];
-  }
-  return url;
-};
+export const addSearchParams = (
+  url: URL,
+  params: Record<string, string> = {}
+): URL =>
+  new URL(
+    `${url.origin}${url.pathname}?${new URLSearchParams([
+      ...Array.from(url.searchParams.entries()),
+      ...Object.entries(params),
+    ]).toString()}`
+  );
 
 // get the base url for a given url string
 export const getBaseURL = (url_string) => `${new URL(url_string).origin}/`;
