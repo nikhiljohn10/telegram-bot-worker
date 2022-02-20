@@ -85,7 +85,7 @@ export default class TelegramBot extends Bot {
   _set = async (update, args) =>
     this.kv.put &&
     this.kv
-      .put(args[0], args[1])
+      .put(args[0], args.slice(1).join(" "))
       .then(() => this.sendMessage(update.message.chat.id, `set ${args[0]}`));
 
   _average = (numbers: number[]) =>
