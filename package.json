@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "moonitor",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "serverless telegram bot on cf workers",
   "main": "./dist/worker.mjs",
   "module": "./dist/worker.mjs",
