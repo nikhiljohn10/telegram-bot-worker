@@ -24,20 +24,22 @@ export default class Bot {
   ): Promise<Response> => {
     console.log({ update });
     if (hasOwn(update, "inline_query")) {
-      await this.executeInlineCommand(request, update).then((response) =>
+      await this.executeInlineCommand(request, update).then((response) => {
         response
           .clone()
           .json()
-          .then((response) => console.log({ response }))
-      );
+          .then((response) => console.log({ response }));
+        return response;
+      });
     } else if (hasOwn(update, "message")) {
       if (hasOwn(update.message, "text")) {
-        await this.executeCommand(request, update).then((response) =>
+        await this.executeCommand(request, update).then((response) => {
           response
             .clone()
             .json()
-            .then((response) => console.log({ response }))
-        );
+            .then((response) => console.log({ response }));
+          return response;
+        });
       } else if (hasOwn(update, "photo")) {
         // process photo
       } else if (hasOwn(update, "video")) {
