@@ -27,7 +27,7 @@ export default class Handler {
           });
           return response;
         })
-        .then(() => bot.webhook.set())) ||
+        .then(() => bot.webhook.set())) ??
     this.responses.default();
 
   postResponse = async (request, bot): Promise<Response> =>
