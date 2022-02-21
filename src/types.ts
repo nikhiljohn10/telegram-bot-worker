@@ -110,7 +110,6 @@ export type TelegramUpdate = {
 export class InlineQueryResult {
   type: string;
   id: string;
-
   constructor(type) {
     this.type = type;
     this.id = crypto.randomUUID();
@@ -120,7 +119,6 @@ export class InlineQueryResult {
 export class InlineQueryResultPhoto extends InlineQueryResult {
   photo_url: string; // must be a jpg
   thumb_url: string;
-
   constructor(photo) {
     super("photo");
     this.photo_url = photo;
@@ -131,7 +129,6 @@ export class InlineQueryResultPhoto extends InlineQueryResult {
 export class InlineQueryResultArticle extends InlineQueryResult {
   title: string;
   input_message_content: InputMessageContent;
-
   constructor(content, parse_mode = "") {
     super("article");
     this.title = content.toString();
