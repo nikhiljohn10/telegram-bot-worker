@@ -1,4 +1,4 @@
-name = "moonitor"
+name = "cf-workers-telegram-bot"
 type = "javascript"
 
 account_id = ""
