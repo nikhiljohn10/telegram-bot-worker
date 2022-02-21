@@ -31,6 +31,3 @@ export const addSearchParams = (
       ...Object.entries(params),
     ]).toString()}`
   );
-
-// get the base url for a given url string
-export const getBaseURL = (url_string) => `${new URL(url_string).origin}/`;

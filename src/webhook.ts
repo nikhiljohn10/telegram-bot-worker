@@ -14,7 +14,7 @@ export default class Webhook {
   // trigger getMe command of BotAPI
   getMe = () => this.execute(`${this.api}/getMe`);
 
-  set = async () =>
+  set = async (drop_pending_updates = true) =>
     sha256(this.token)
       .then(
         (access_key) =>
@@ -22,7 +22,7 @@ export default class Webhook {
             `${this.url}${access_key}`
           )}&max_connections=${100}&allowed_updates=${[
             "message",
-          ]}&drop_pending_updates=${true}`
+          ]}&drop_pending_updates=${drop_pending_updates}`
       )
       .then((url) => this.execute(url));
 

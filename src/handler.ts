@@ -17,12 +17,10 @@ export default class Handler {
             `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
           ) === undefined &&
           new TelegramBot({
-            ...access_keys[
-              new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-            ],
-            url: getBaseURL(request.url), // worker url
+            ...access_keys[new URL(request.url).pathname.substring(1)],
+            url: new URL(request.url).origin, // worker url
             handler: this,
-          }).webhook.set()
+          }).webhook.set(false)
       )
     ) &&
       bot.token &&
@@ -56,10 +54,8 @@ export default class Handler {
       this.responses[request.method](
         request,
         new TelegramBot({
-          ...access_keys[
-            new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-          ],
-          url: getBaseURL(request.url), // worker url
+          ...access_keys[new URL(request.url).pathname.substring(1)],
+          url: new URL(request.url).origin, // worker url
           handler: this,
         })
       )
