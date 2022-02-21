@@ -1,5 +1,3 @@
-import { InputMessageContent } from "./types";
-
 export const sha256 = async (text) =>
   crypto.subtle
     .digest("SHA-256", new TextEncoder().encode(text))
@@ -20,23 +18,6 @@ export const JSONResponse = (data, status = 200): Response =>
       "content-type": "application/json",
     },
   });
-
-export class InlineQueryResultArticle {
-  type: string;
-  id: string;
-  title: string;
-  input_message_content: InputMessageContent;
-
-  constructor(content, parse_mode = "") {
-    this.type = "article";
-    this.id = crypto.randomUUID();
-    this.title = content.toString();
-    this.input_message_content = {
-      message_text: content.toString(),
-      parse_mode,
-    };
-  }
-}
 
 export const preTagString = (str) => `<pre>${str}</pre>`;
 

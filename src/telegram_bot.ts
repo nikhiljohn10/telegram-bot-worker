@@ -1,6 +1,12 @@
 import Bot from "./bot";
-import { preTagString, prettyJSON, InlineQueryResultArticle } from "./libs";
-import { Joke, Bored, Balance } from "./types";
+import { preTagString, prettyJSON } from "./libs";
+import {
+  Joke,
+  Bored,
+  Balance,
+  InlineQueryResultArticle,
+  InlineQueryResultPhoto,
+} from "./types";
 
 export default class TelegramBot extends Bot {
   constructor(config) {
@@ -13,15 +19,13 @@ export default class TelegramBot extends Bot {
       .then((response) => response.json())
       .then((json: { quote: string }) => `Kanye says... ${json.quote}`)
       .then((message) => {
-        if (update.inline_query) {
+        if (update.inline_query)
           return this.answerInlineQuery(
             update.inline_query.id,
             [new InlineQueryResultArticle(message)],
             0
           );
-        } else {
-          return this.sendMessage(update.message.chat.id, message);
-        }
+        return this.sendMessage(update.message.chat.id, message);
       });
 
   // bot command: /joke
@@ -47,7 +51,15 @@ export default class TelegramBot extends Bot {
   doge = async (update, args) =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
-      .then((json) => this.sendPhoto(update.message.chat.id, json[0]));
+      .then((json: [string]) => {
+        if (update.inline_query)
+          return this.answerInlineQuery(
+            update.inline_query.id,
+            [new InlineQueryResultPhoto(json[0])],
+            0
+          );
+        return this.sendPhoto(update.message.chat.id, json[0]);
+      });
 
   // bot command: /bored
   bored = async (update, args) =>
@@ -74,9 +86,8 @@ export default class TelegramBot extends Bot {
             [new InlineQueryResultArticle(message)],
             7 * 60 // 7 minutes
           );
-        } else {
-          return this.sendMessage(update.message.chat.id, message);
         }
+        return this.sendMessage(update.message.chat.id, message);
       });
 
   // bot command: /get
@@ -133,19 +144,14 @@ export default class TelegramBot extends Bot {
     const message = (username, outcome) =>
       `@${username} rolled a ${args[0] ??
         6} sided die. it landed on ${outcome}`;
-
     if (update.inline_query) {
       const username = update.inline_query.from.username;
       return this.answerInlineQuery(update.inline_query.id, [
         new InlineQueryResultArticle(message(username, outcome)),
       ]);
-    } else {
-      const username = update.message.from.username;
-      return this.sendMessage(
-        update.message.chat.id,
-        message(username, outcome)
-      );
     }
+    const username = update.message.from.username;
+    return this.sendMessage(update.message.chat.id, message(username, outcome));
   };
 
   // bot command: /commandList
