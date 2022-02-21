@@ -30,7 +30,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /joke
-  joke = async (update, args) =>
+  joke = async (update) =>
     fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => response.json())
       .then((joke: Joke) =>
@@ -54,7 +54,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /doge
-  doge = async (update, args) =>
+  doge = async (update) =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then(
@@ -69,7 +69,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /bored
-  bored = async (update, args) =>
+  bored = async (update) =>
     fetch("https://boredapi.com/api/activity/")
       .then((response) => response.json())
       .then(
@@ -84,7 +84,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /epoch
-  epoch = async (update, args) =>
+  epoch = async (update) =>
     this.sendMessage(update.message.chat.id, new Date().getTime());
 
   // bot command: /balance
@@ -152,7 +152,7 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /average
-  average = async (update, args) =>
+  average = async (update) =>
     this.sendMessage(update.message.chat.id, this._average(this._numbers(100)));
 
   _numbers = (count = 100): number[] =>
@@ -169,7 +169,7 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /recursion
-  recursion = async (update, args): Promise<Response> =>
+  recursion = async (update): Promise<Response> =>
     this.sendMessage(update.message.chat.id, "/recursion").then((response) => {
       console.log({ response_____: response });
       return this.handler.postResponse(
@@ -198,7 +198,7 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /commandList
-  commandList = async (update, args) =>
+  commandList = async (update) =>
     this.sendMessage(
       update.message.chat.id,
       `<pre>${JSON.stringify(Object.keys(this.commands))}</pre>`,
@@ -206,7 +206,7 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /toss
-  toss = async (update, args) =>
+  toss = async (update) =>
     this.sendMessage(
       update.message.chat.id,
       Math.floor(Math.random() * 2) == 0 ? "heads" : "tails"
@@ -220,7 +220,7 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /chatInfo
-  getChatInfo = async (update, args) =>
+  getChatInfo = async (update) =>
     this.sendMessage(
       update.message.chat.id,
       preTagString(prettyJSON(update.message.chat)),
@@ -229,7 +229,15 @@ export default class TelegramBot extends Bot {
 
   // Send all the profile pictures to user_id
   sendAllProfilePhotos = async (chat_id, user_id) =>
-    this.getUserProfilePhotos(user_id).then((photos) =>
-      photos.map((photo) => this.sendPhoto(chat_id, photo[0].file_id))
+    this.getUserProfilePhotos(user_id).then((result) =>
+      result
+        .json()
+        .then(
+          (content: { result: { photos: { file_id: string }[] } }) =>
+            content.result.photos
+        )
+        .then((photos) =>
+          photos.map((photo) => this.sendPhoto(chat_id, photo[0].file_id))
+        )
     );
 }

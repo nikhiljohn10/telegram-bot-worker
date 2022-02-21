@@ -1,5 +1,5 @@
 import Webhook from "./webhook";
-import { InlineQueryResultArticle, addSearchParams } from "./libs";
+import { addSearchParams } from "./libs";
 import { Commands, KV, TelegramUpdate } from "./types";
 import Handler from "./handler";
 
@@ -268,7 +268,11 @@ export default class Bot {
     );
 
   // bot api command to get user profile photos
-  getUserProfilePhotos = async (user_id, offset = 0, limit = 0) =>
+  getUserProfilePhotos = async (
+    user_id,
+    offset = 0,
+    limit = 0
+  ): Promise<Response> =>
     fetch(
       addSearchParams(new URL(`${this.api}/getUserProfilePhotos`), {
         user_id: user_id.toString(),

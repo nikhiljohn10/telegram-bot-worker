@@ -14,7 +14,7 @@ import commands from "./commands";
 import Handler from "./handler";
 
 export default {
-  fetch: async (request: Request, env, context) =>
+  fetch: async (request: Request, env) =>
     new Handler([
       {
         bot_name: "CCMooniterBot",
