@@ -45,18 +45,16 @@ export default class Handler {
 
   // handles the request
   handle = async (request: Request): Promise<Response> =>
-    this.getAccessKeys().then(
-      (access_keys) =>
-        console.log({ access_keys }) === undefined &&
-        this.responses[request.method](
-          request,
-          new TelegramBot({
-            ...access_keys[
-              new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-            ],
-            url: getBaseURL(request.url), // worker url
-            handler: this,
-          })
-        )
+    this.getAccessKeys().then((access_keys) =>
+      this.responses[request.method](
+        request,
+        new TelegramBot({
+          ...access_keys[
+            new URL(request.url).pathname.substring(1).replace(/\/$/, "")
+          ],
+          url: getBaseURL(request.url), // worker url
+          handler: this,
+        })
+      )
     ) ?? this.responses.default;
 }
