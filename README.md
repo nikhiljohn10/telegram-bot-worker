@@ -31,7 +31,7 @@ To fork this repo and use wrangler:
 - `wrangler publish`
 - Done!
 
-## Getting started with cf-workers-telegram bot
+## Getting started with cf-workers-telegram-bot
 
 Once you've deployed the bot you can get your Webhook command URL by doing any
 of the following.
