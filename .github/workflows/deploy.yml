@@ -15,9 +15,9 @@ jobs:
             apiToken: ${{ secrets.CF_API_TOKEN }}
             preCommands: |
               wrangler kv:namespace create KV_BOT_STORAGE
-              apt-get update && apt-get install -y jq
-              export KV_NAMESPACE_ID=$(wrangler kv:namespace list | jq -c 'map(select(.title | contains("KV_BOT_STORAGE")))' | jq -r ".[0].id")
-              echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=\"${KV_NAMESPACE_ID}\"}]" >> wrangler.toml
+              echo 'import process from "process";let buffer="";process.stdin.on("readable",()=>{const chunk=process.stdin.read();buffer+=chunk==null?"":chunk;});process.stdin.on("end",function(){process.stdout.write(JSON.stringify(JSON.parse(buffer).filter((item)=>item.title.includes("KV_BOT_STORAGE"))[0].id));});' > script.mjs;
+              export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node script.mjs)
+              echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
               [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
             secrets: |
               SECRET_TELEGRAM_API_TOKEN
