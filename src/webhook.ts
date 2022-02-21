@@ -19,7 +19,7 @@ export default class Webhook {
       .then(
         (access_key) =>
           `${this.api}/setWebhook?url=${encodeURIComponent(
-            `${this.url}${access_key}`
+            `${this.url}/${access_key}`
           )}&max_connections=${100}&allowed_updates=${[
             "message",
           ]}&drop_pending_updates=${drop_pending_updates}`

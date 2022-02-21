@@ -14,7 +14,7 @@ export default class Handler {
       Object.keys(access_keys).forEach(
         (key) =>
           console.log(
-            `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
+            `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
           ) === undefined &&
           new TelegramBot({
             ...access_keys[new URL(request.url).pathname.substring(1)],
