@@ -107,29 +107,32 @@ export type TelegramUpdate = {
   update_id: number;
 };
 
-export class InlineQueryResultPhoto {
+export class InlineQueryResult {
   type: string;
   id: string;
+
+  constructor(type) {
+    this.type = type;
+  }
+}
+
+export class InlineQueryResultPhoto extends InlineQueryResult {
   photo_url: string; // must be a jpg
   thumb_url: string;
 
   constructor(photo) {
-    this.type = "photo";
-    this.id = crypto.randomUUID();
+    super("photo");
     this.photo_url = photo;
     this.thumb_url = photo;
   }
 }
 
-export class InlineQueryResultArticle {
-  type: string;
-  id: string;
+export class InlineQueryResultArticle extends InlineQueryResult {
   title: string;
   input_message_content: InputMessageContent;
 
   constructor(content, parse_mode = "") {
-    this.type = "article";
-    this.id = crypto.randomUUID();
+    super("article");
     this.title = content.toString();
     this.input_message_content = {
       message_text: content.toString(),
