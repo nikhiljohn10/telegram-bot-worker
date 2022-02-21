@@ -1,5 +1,5 @@
 import TelegramBot from "./telegram_bot";
-import { JSONResponse, sha256, getBaseURL } from "./libs";
+import { JSONResponse, sha256 } from "./libs";
 import { Config } from "./types";
 
 export default class Handler {
