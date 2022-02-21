@@ -113,6 +113,7 @@ export class InlineQueryResult {
 
   constructor(type) {
     this.type = type;
+    this.id = crypto.randomUUID();
   }
 }
 
