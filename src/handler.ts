@@ -10,15 +10,15 @@ export default class Handler {
   }
 
   getResponse = async (request, bot): Promise<Response> =>
-    (bot.token &&
-      bot.webhook.process(new URL(request.url)).then((response) => {
-        this.getAccessKeys().then((access_keys) =>
-          Object.keys(access_keys).forEach((key) => {
-            console.log(
-              `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
-            );
-          })
+    (this.getAccessKeys().then((access_keys) =>
+      Object.keys(access_keys).forEach((key) => {
+        console.log(
+          `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
         );
+      })
+    ) &&
+      bot.token &&
+      bot.webhook.process(new URL(request.url)).then((response) => {
         return response;
       })) ??
     this.responses.default;
