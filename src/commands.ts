@@ -14,5 +14,6 @@ export default {
   average: async (bot, update, args) => bot.average(update),
   _get: async (bot, update, args) => bot._get(update, args),
   _set: async (bot, update, args) => bot._set(update, args),
+  duckduckgo: async (bot, update, args) => bot.duckduckgo(update, args),
   commandList: async (bot, update, args) => bot.commandList(update),
 };

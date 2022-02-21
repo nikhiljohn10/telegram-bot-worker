@@ -35,15 +35,18 @@ export default {
           "/average": commands.average,
           "/get": commands._get,
           "/set": commands._set,
+          "/duckduckgo": commands.duckduckgo,
           "/commands": commands.commandList,
           "/start": commands.commandList,
         },
         kv: env.KV_BOT_STORAGE,
       },
       {
-        bot_name: "bot_name",
-        token: "token",
-        commands: {},
+        bot_name: "@duckduckbot",
+        token: env.SECRET_TELEGRAM_API_TOKEN2,
+        commands: {
+          "": commands.duckduckgo, // default inline response
+        },
       },
     ])
       .handle(request)

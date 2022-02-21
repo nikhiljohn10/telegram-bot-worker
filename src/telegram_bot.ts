@@ -1,5 +1,5 @@
 import Bot from "./bot";
-import { preTagString, prettyJSON } from "./libs";
+import { preTagString, prettyJSON, addSearchParams } from "./libs";
 import {
   Joke,
   Bored,
@@ -12,22 +12,42 @@ export default class TelegramBot extends Bot {
   constructor(config) {
     super(config);
   }
+  // bot command: /duckduckgo
+  duckduckgo = async (update, args) =>
+    ((query) =>
+      ((content) =>
+        (update.inline_query &&
+          this.answerInlineQuery(
+            update.inline_query.id,
+            [new InlineQueryResultArticle(content)],
+            3600 // 1 hour
+          )) ??
+        this.sendMessage(update.message.chat.id, content))(
+        addSearchParams(new URL("https://duckduckgo.com"), {
+          q: query,
+        }).href
+      ))(args.slice(1).join(" "));
 
   // bot command: /kanye
-  kanye = async (update) =>
-    fetch("https://api.kanye.rest")
-      .then((response) => response.json())
-      .then((json: { quote: string }) => `Kanye says... ${json.quote}`)
-      .then(
-        (message) =>
-          (update.inline_query &&
-            this.answerInlineQuery(
-              update.inline_query.id,
-              [new InlineQueryResultArticle(message)],
-              0
-            )) ??
-          this.sendMessage(update.message.chat.id, message)
-      );
+  kanye = async (update): Promise<Response> =>
+    (console.log("entering kanye function") === undefined &&
+      fetch("https://api.kanye.rest").then((response) =>
+        response
+          .json()
+          .then(
+            (json: { quote: string }) =>
+              console.log("parsed json of response") === undefined &&
+              ((message) =>
+                (update.inline_query !== undefined &&
+                  this.answerInlineQuery(update.inline_query.id, [
+                    new InlineQueryResultArticle(message),
+                  ])) ||
+                this.sendMessage(update.message.chat.id, message))(
+                `Kanye says... ${json.quote}`
+              )
+          )
+      )) ||
+    new Response();
 
   // bot command: /joke
   joke = async (update) =>
@@ -91,9 +111,9 @@ export default class TelegramBot extends Bot {
   balance = async (update, args) =>
     fetch(`https://blockchain.info/balance?active=${args[0]}`)
       .then((response) => response.json())
-      .then((json: Balance) => (json[args[0]]?.final_balance ?? 0) / 100000000)
+      .then((json: Balance) => (json[args[1]]?.final_balance ?? 0) / 100000000)
       .then((balance) => {
-        const message = `${args[0]}\n\n${balance.toString()} BTC`;
+        const message = `${args[1]}\n\n${balance.toString()} BTC`;
         if (update.inline_query) {
           return this.answerInlineQuery(
             update.inline_query.id,
@@ -119,7 +139,7 @@ export default class TelegramBot extends Bot {
                 0
               )) ??
             this.sendMessage(update.message.chat.id, value)
-        ))(args[0]);
+        ))(args[1]);
 
   // bot command: /set
   _set = async (update, args) =>
@@ -142,7 +162,7 @@ export default class TelegramBot extends Bot {
                   `set ${key} to ${value}`
                 )) ??
               new Response()
-          ))(args.slice(1).join(" ")))(args[0]);
+          ))(args.slice(2).join(" ")))(args[1]);
 
   _average = (numbers: number[]) =>
     parseFloat(
@@ -164,14 +184,13 @@ export default class TelegramBot extends Bot {
   numbers = async (update, args) =>
     this.sendMessage(
       update.message.chat.id,
-      preTagString(JSON.stringify(this._numbers(args[0]))),
+      preTagString(JSON.stringify(this._numbers(args[1]))),
       "HTML"
     );
 
   // bot command: /recursion
   recursion = async (update): Promise<Response> =>
     this.sendMessage(update.message.chat.id, "/recursion").then((response) => {
-      console.log({ response_____: response });
       return this.handler.postResponse(
         new Request("", { method: "POST", body: response.body }),
         this
@@ -189,11 +208,11 @@ export default class TelegramBot extends Bot {
         ])) ??
       this.sendMessage(
         update.message.chat.id,
-        message(update.message.from.username, message)
+        message(update.message.from.username, outcome)
       ))(
-      Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1),
+      Math.floor(Math.random() * (args[1] ?? 6 - 1 + 1) + 1),
       (username, outcome) =>
-        `@${username} rolled a ${args[0] ??
+        `@${username} rolled a ${args[1] ??
           6} sided die. it landed on ${outcome}`
     );
 
@@ -216,7 +235,7 @@ export default class TelegramBot extends Bot {
   ping = async (update, args) =>
     this.sendMessage(
       update.message.chat.id,
-      args.length < 1 ? "pong" : args.join(" ")
+      args.length === 1 ? "pong" : args.join(" ")
     );
 
   // bot command: /chatInfo

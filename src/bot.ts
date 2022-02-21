@@ -20,36 +20,51 @@ export default class Bot {
     this.handler = config.handler;
   }
 
-  update = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> => {
-    console.log({ update });
-    if (update.inline_query) {
-      await this.executeInlineCommand(request, update).then((response) => {
+  inlineQueryUpdate = async (request, update): Promise<Response> =>
+    this.executeInlineCommand(request, update).then(
+      (response) =>
         response
           .clone()
           .json()
-          .then((response) => console.log({ response }));
-        return response;
-      });
-    } else if (update.message) {
-      if (update.message.text) {
-        await this.executeCommand(request, update).then((response) => {
-          response
-            .clone()
-            .json()
-            .then((response) => console.log({ response }));
-          return response;
-        });
-        await this.greetUsers(request, update);
-      }
-    }
-    // return 200 OK response to every update request
-    return new Response("True", {
-      status: 200,
-    });
+          .then((json) => console.log({ response: json })) === undefined &&
+        response
+    );
+
+  messageUpdate = async (request, update): Promise<Response> =>
+    (update.message.text !== undefined &&
+      this.executeCommand(request, update).then(
+        (response1) =>
+          this.greetUsers(request, update).then(
+            (response2) =>
+              response1
+                .clone()
+                .json()
+                .then((json1) =>
+                  response2
+                    .clone()
+                    .json()
+                    .then((json2) =>
+                      console.log({ response1: json1, response2: json2 })
+                    )
+                ) === undefined && response1
+          ) || this.updates.default
+      )) ||
+    this.updates.default;
+
+  updates = {
+    inline_query: this.inlineQueryUpdate,
+    message: this.messageUpdate,
+    default: new Response("True", { status: 200 }),
   };
+
+  update = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
+    (update.message !== undefined && this.updates.message(request, update)) ||
+    (update.inline_query !== undefined &&
+      this.updates.inline_query(request, update)) ||
+    this.updates.default;
 
   // greet new users who join
   greetUsers = async (request, update): Promise<Response> =>
@@ -58,28 +73,45 @@ export default class Bot {
         update.message.chat.id,
         `Welcome to ${update.message.chat.title}, ${update.message.from.username}`
       )) ??
-    new Response();
+    this.updates.default;
 
-  _executeCommand = async (update, args) =>
-    this.commands[args.shift().split("@")[0]]?.(this, update, args) ??
-    new Response();
+  getCommand = (args) => args[0]?.split("@")[0];
+
+  _executeCommand = async (update, text, args = []) =>
+    (
+      console.log({ text, args }) === undefined &&
+      ((text_args: string[]) =>
+        this.commands[this.getCommand(text_args)]?.(this, update, [
+          ...text_args,
+          ...args,
+        ]))
+    )(text.split(" ")) ?? new Response();
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, update): Promise<Response> =>
-    this._executeCommand(update, update.inline_query.query.split(" "));
+    (this._executeCommand(update, update.inline_query.query) &&
+      this._executeCommand(update, "", update.inline_query.query.split(" "))) ??
+    new Response();
 
   // execute the custom bot commands from bot configurations
   executeCommand = async (request, update): Promise<Response> =>
-    this._executeCommand(update, update.message.text.split(" "));
+    this._executeCommand(update, update.message.text) ?? new Response();
 
   // trigger answerInlineQuery command of BotAPI
   answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
-        inline_query_id: inline_query_id.toString(),
-        results: JSON.stringify(results),
-        cache_time: cache_time.toString(),
-      }).href
+      console.log(
+        addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
+          inline_query_id: inline_query_id.toString(),
+          results: JSON.stringify(results),
+          cache_time: cache_time.toString(),
+        }).href
+      ) === undefined &&
+        addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
+          inline_query_id: inline_query_id.toString(),
+          results: JSON.stringify(results),
+          cache_time: cache_time.toString(),
+        }).href
     );
 
   // trigger sendMessage command of BotAPI
