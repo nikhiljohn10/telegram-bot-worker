@@ -129,9 +129,9 @@ export class InlineQueryResultPhoto extends InlineQueryResult {
 export class InlineQueryResultArticle extends InlineQueryResult {
   title: string;
   input_message_content: InputMessageContent;
-  constructor(content, parse_mode = "") {
+  constructor(content, title = content, parse_mode = "") {
     super("article");
-    this.title = content.toString();
+    this.title = title;
     this.input_message_content = {
       message_text: content.toString(),
       parse_mode,

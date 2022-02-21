@@ -18,55 +18,69 @@ export default class TelegramBot extends Bot {
     fetch("https://api.kanye.rest")
       .then((response) => response.json())
       .then((json: { quote: string }) => `Kanye says... ${json.quote}`)
-      .then((message) => {
-        if (update.inline_query)
-          return this.answerInlineQuery(
-            update.inline_query.id,
-            [new InlineQueryResultArticle(message)],
-            0
-          );
-        return this.sendMessage(update.message.chat.id, message);
-      });
+      .then(
+        (message) =>
+          (update.inline_query &&
+            this.answerInlineQuery(
+              update.inline_query.id,
+              [new InlineQueryResultArticle(message)],
+              0
+            )) ??
+          this.sendMessage(update.message.chat.id, message)
+      );
 
   // bot command: /joke
   joke = async (update, args) =>
     fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => response.json())
-      .then((joke: Joke) => {
-        const message =
-          joke.joke ||
-          `${joke.setup}\n\n<tg-spoiler>${joke.delivery}</tg-spoiler>`;
-        if (update.inline_query) {
-          return this.answerInlineQuery(
-            update.inline_query.id,
-            [new InlineQueryResultArticle(message, "HTML")],
-            0
-          );
-        } else {
-          return this.sendMessage(update.message.chat.id, message, "HTML");
-        }
-      });
+      .then((joke: Joke) =>
+        ((content) =>
+          (update.inline_query &&
+            this.answerInlineQuery(
+              update.inline_query.id,
+              [
+                new InlineQueryResultArticle(
+                  content,
+                  joke.joke ?? joke.setup,
+                  "HTML"
+                ),
+              ],
+              0
+            )) ??
+          this.sendMessage(update.message.chat.id, content, "HTML"))(
+          joke.joke ??
+            `${joke.setup}\n\n<tg-spoiler>${joke.delivery}</tg-spoiler>`
+        )
+      );
 
   // bot command: /doge
   doge = async (update, args) =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
-      .then((json: [string]) => {
-        if (update.inline_query)
-          return this.answerInlineQuery(
-            update.inline_query.id,
-            [new InlineQueryResultPhoto(json[0])],
-            0
-          );
-        return this.sendPhoto(update.message.chat.id, json[0]);
-      });
+      .then(
+        (json: [string]) =>
+          (update.inline_query &&
+            this.answerInlineQuery(
+              update.inline_query.id,
+              [new InlineQueryResultPhoto(json[0])],
+              0
+            )) ??
+          this.sendPhoto(update.message.chat.id, json[0])
+      );
 
   // bot command: /bored
   bored = async (update, args) =>
     fetch("https://boredapi.com/api/activity/")
       .then((response) => response.json())
-      .then((json: Bored) =>
-        this.sendMessage(update.message.chat.id, json.activity)
+      .then(
+        (json: Bored) =>
+          (update.inline_query &&
+            this.answerInlineQuery(
+              update.inline_query.id,
+              [new InlineQueryResultArticle(json.activity)],
+              0
+            )) ??
+          this.sendMessage(update.message.chat.id, json.activity)
       );
 
   // bot command: /epoch
@@ -93,16 +107,42 @@ export default class TelegramBot extends Bot {
   // bot command: /get
   _get = async (update, args) =>
     this.kv.get &&
-    this.kv
-      .get(args[0])
-      .then((value) => this.sendMessage(update.message.chat.id, value));
+    ((key) =>
+      this.kv
+        .get(key)
+        .then(
+          (value) =>
+            (update.inline_query &&
+              this.answerInlineQuery(
+                update.inline_query.id,
+                [new InlineQueryResultArticle(value)],
+                0
+              )) ??
+            this.sendMessage(update.message.chat.id, value)
+        ))(args[0]);
 
   // bot command: /set
   _set = async (update, args) =>
     this.kv.put &&
-    this.kv
-      .put(args[0], args.slice(1).join(" "))
-      .then(() => this.sendMessage(update.message.chat.id, `set ${args[0]}`));
+    ((key) =>
+      ((value) =>
+        this.kv
+          .put(key, value)
+          .then(
+            (response) =>
+              (response === undefined &&
+                ((message) =>
+                  (update.inline_query &&
+                    this.answerInlineQuery(
+                      update.inline_query.id,
+                      [new InlineQueryResultArticle(message)],
+                      0
+                    )) ??
+                  this.sendMessage(update.message.chat.id, message))(
+                  `set ${key} to ${value}`
+                )) ??
+              new Response()
+          ))(args.slice(1).join(" ")))(args[0]);
 
   _average = (numbers: number[]) =>
     parseFloat(
@@ -139,20 +179,23 @@ export default class TelegramBot extends Bot {
     });
 
   // bot command: /roll
-  roll = async (update, args) => {
-    const outcome = Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1);
-    const message = (username, outcome) =>
-      `@${username} rolled a ${args[0] ??
-        6} sided die. it landed on ${outcome}`;
-    if (update.inline_query) {
-      const username = update.inline_query.from.username;
-      return this.answerInlineQuery(update.inline_query.id, [
-        new InlineQueryResultArticle(message(username, outcome)),
-      ]);
-    }
-    const username = update.message.from.username;
-    return this.sendMessage(update.message.chat.id, message(username, outcome));
-  };
+  roll = async (update, args) =>
+    ((outcome, message) =>
+      (update.inline_query &&
+        this.answerInlineQuery(update.inline_query.id, [
+          new InlineQueryResultArticle(
+            message(update.inline_query.from.username, outcome)
+          ),
+        ])) ??
+      this.sendMessage(
+        update.message.chat.id,
+        message(update.message.from.username, message)
+      ))(
+      Math.floor(Math.random() * (args[0] ?? 6 - 1 + 1) + 1),
+      (username, outcome) =>
+        `@${username} rolled a ${args[0] ??
+          6} sided die. it landed on ${outcome}`
+    );
 
   // bot command: /commandList
   commandList = async (update, args) =>
