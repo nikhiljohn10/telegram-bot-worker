@@ -15,8 +15,8 @@ export default class Webhook {
   getMe = () => this.execute(`${this.api}/getMe`);
 
   set = async () =>
-    this.execute(
-      sha256(this.token).then(
+    sha256(this.token)
+      .then(
         (access_key) =>
           `${this.api}/setWebhook?url=${encodeURIComponent(
             `${this.url}${access_key}`
@@ -24,7 +24,7 @@ export default class Webhook {
             "message",
           ]}&drop_pending_updates=${true}`
       )
-    );
+      .then((url) => this.execute(url));
 
   get = async () => this.execute(`${this.api}/getWebhookInfo`);
 

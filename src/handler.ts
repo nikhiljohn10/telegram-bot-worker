@@ -37,27 +37,26 @@ export default class Handler {
   getAccessKeys = async (): Promise<
     Record<string, Record<string, string>> | Record<string, never>
   > =>
-    this.configs.reduce(
-      async (previous, bot_config) =>
-        sha256(bot_config.token).then((access_key) => ({
-          ...previous,
-          [access_key]: bot_config,
-        })),
-      {}
-    );
+    Promise.all(
+      this.configs.map((bot_config) =>
+        sha256(bot_config.token).then((hash) => [hash, bot_config])
+      )
+    ).then((result) => Object.fromEntries(result));
 
   // handles the request
   handle = async (request: Request): Promise<Response> =>
-    this.getAccessKeys().then((access_keys) =>
-      this.responses[request.method](
-        request,
-        new TelegramBot({
-          ...access_keys[
-            new URL(request.url).pathname.substring(1).replace(/\/$/, "")
-          ],
-          url: getBaseURL(request.url), // worker url
-          handler: this,
-        })
-      )
+    this.getAccessKeys().then(
+      (access_keys) =>
+        console.log({ access_keys }) === undefined &&
+        this.responses[request.method](
+          request,
+          new TelegramBot({
+            ...access_keys[
+              new URL(request.url).pathname.substring(1).replace(/\/$/, "")
+            ],
+            url: getBaseURL(request.url), // worker url
+            handler: this,
+          })
+        )
     ) ?? this.responses.default;
 }

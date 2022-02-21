@@ -1,9 +1,11 @@
 export const sha256 = async (text) =>
-  crypto.subtle.digest("SHA-256", text).then((array_buffer) =>
-    Array.from(new Uint8Array(array_buffer))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-  );
+  crypto.subtle
+    .digest("SHA-256", new TextEncoder().encode(text))
+    .then((array_buffer) =>
+      Array.from(new Uint8Array(array_buffer))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("")
+    );
 
 // format json with line indents and newlines
 export const prettyJSON = (data) => JSON.stringify(data, null, 2);
