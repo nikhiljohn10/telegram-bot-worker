@@ -35,7 +35,7 @@ export default class TelegramBot extends Bot {
         if (update.inline_query) {
           return this.answerInlineQuery(
             update.inline_query.id,
-            [new InlineQueryResultArticle(message)],
+            [new InlineQueryResultArticle(message, "HTML")],
             0
           );
         } else {
