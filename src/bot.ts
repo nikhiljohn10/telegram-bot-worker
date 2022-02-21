@@ -61,7 +61,8 @@ export default class Bot {
     new Response();
 
   _executeCommand = async (update, args) =>
-    this.commands[args.shift()]?.(this, update, args) ?? new Response();
+    this.commands[args.shift().split("@")[0]]?.(this, update, args) ??
+    new Response();
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, update): Promise<Response> =>
