@@ -11,16 +11,22 @@ export default class Handler {
 
   getResponse = async (request, bot): Promise<Response> =>
     (this.getAccessKeys().then((access_keys) =>
-      Object.keys(access_keys).forEach((key) => {
-        console.log(
-          `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
-        );
-      })
+      Object.keys(access_keys).forEach(
+        (key) =>
+          console.log(
+            `${access_keys[key].bot_name} ${getBaseURL(request.url)}${key}`
+          ) === undefined &&
+          new TelegramBot({
+            ...access_keys[
+              new URL(request.url).pathname.substring(1).replace(/\/$/, "")
+            ],
+            url: getBaseURL(request.url), // worker url
+            handler: this,
+          }).webhook.set()
+      )
     ) &&
       bot.token &&
-      bot.webhook.process(new URL(request.url)).then((response) => {
-        return response;
-      })) ??
+      bot.webhook.process(new URL(request.url))) ??
     this.responses.default;
 
   postResponse = async (request, bot): Promise<Response> =>
