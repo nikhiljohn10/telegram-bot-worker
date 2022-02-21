@@ -1,4 +1,4 @@
-# moonitor
+# cf-workers-telegram-bot
 
 serverless telegram bot on cf workers
 
