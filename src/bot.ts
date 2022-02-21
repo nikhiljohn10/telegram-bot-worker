@@ -32,7 +32,7 @@ export default class Bot {
 
   messageUpdate = async (request, update): Promise<Response> =>
     (update.message.text !== undefined &&
-      this.executeCommand(request, update).then(
+      (await this.executeCommand(request, update).then(
         (response1) =>
           this.greetUsers(request, update).then(
             (response2) =>
@@ -48,7 +48,7 @@ export default class Bot {
                     )
                 ) === undefined && response1
           ) || this.updates.default
-      )) ||
+      ))) ||
     this.updates.default;
 
   updates = {
@@ -61,9 +61,10 @@ export default class Bot {
     request: Request,
     update: TelegramUpdate
   ): Promise<Response> =>
-    (update.message !== undefined && this.updates.message(request, update)) ||
+    (update.message !== undefined &&
+      (await this.updates.message(request, update))) ||
     (update.inline_query !== undefined &&
-      this.updates.inline_query(request, update)) ||
+      (await this.updates.inline_query(request, update))) ||
     this.updates.default;
 
   // greet new users who join
@@ -89,9 +90,13 @@ export default class Bot {
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, update): Promise<Response> =>
-    (this._executeCommand(update, update.inline_query.query) &&
-      this._executeCommand(update, "", update.inline_query.query.split(" "))) ??
-    new Response();
+    ((await this._executeCommand(update, update.inline_query.query)) &&
+      (await this._executeCommand(
+        update,
+        "",
+        update.inline_query.query.split(" ")
+      ))) ||
+    this.updates.default;
 
   // execute the custom bot commands from bot configurations
   executeCommand = async (request, update): Promise<Response> =>
