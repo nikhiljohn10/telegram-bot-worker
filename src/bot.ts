@@ -43,27 +43,7 @@ export default class Bot {
           return response;
         });
         await this.greetUsers(request, update);
-      } else if (update.photo) {
-        // process photo
-      } else if (update.video) {
-        // process video
-      } else if (update.animation) {
-        // process animation
-      } else if (update.location) {
-        // process locaiton
-      } else if (update.poll) {
-        // process poll
-      } else if (update.contact) {
-        // process contact
-      } else if (update.dice) {
-        // process dice
-      } else if (update.sticker) {
-        // process sticker
-      } else if (update.reply_to_message) {
-        // process reply of a message
       }
-    } else {
-      // process unknown type
     }
     // return 200 OK response to every update request
     return new Response("True", {
