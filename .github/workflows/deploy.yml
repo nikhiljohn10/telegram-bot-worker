@@ -15,7 +15,7 @@ jobs:
             apiToken: ${{ secrets.CF_API_TOKEN }}
             preCommands: |
               wrangler kv:namespace create KV_BOT_STORAGE
-              echo 'import process from "process";let buffer="";process.stdin.on("readable",()=>{const chunk=process.stdin.read();buffer+=chunk==null?"":chunk;});process.stdin.on("end",function(){process.stdout.write(JSON.stringify(JSON.parse(buffer).filter((item)=>item.title.includes("KV_BOT_STORAGE"))[0].id));});' > script.mjs;
+              echo 'import process from"process";let a="";process.stdin.on("readable",()=>{const b=process.stdin.read();a+=null==b?"":b}),process.stdin.on("end",()=>{process.stdout.write(JSON.stringify(JSON.parse(a).filter(b=>b.title.includes("KV_BOT_STORAGE"))[0].id))});' > script.mjs
               export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node script.mjs)
               echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
               [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
