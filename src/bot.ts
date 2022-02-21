@@ -92,16 +92,11 @@ export default class Bot {
     this._executeCommand(update, update.message.text.split(" "));
 
   // trigger answerInlineQuery command of BotAPI
-  answerInlineQuery = async (
-    inline_query_id,
-    results,
-    cache_time = 0,
-    parse_mode = ""
-  ) =>
+  answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
     fetch(
       addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
         inline_query_id: inline_query_id.toString(),
-        results: JSON.stringify(InlineQueryResultArticle(results, parse_mode)),
+        results: JSON.stringify(results),
         cache_time: cache_time.toString(),
       }).href
     );

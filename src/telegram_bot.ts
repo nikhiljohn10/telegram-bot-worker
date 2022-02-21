@@ -1,5 +1,5 @@
 import Bot from "./bot";
-import { preTagString, prettyJSON } from "./libs";
+import { preTagString, prettyJSON, InlineQueryResultArticle } from "./libs";
 import { Joke, Bored, Balance } from "./types";
 
 export default class TelegramBot extends Bot {
@@ -14,7 +14,11 @@ export default class TelegramBot extends Bot {
       .then((json: { quote: string }) => `Kanye says... ${json.quote}`)
       .then((message) => {
         if (update.inline_query) {
-          return this.answerInlineQuery(update.inline_query.id, [message], 0);
+          return this.answerInlineQuery(
+            update.inline_query.id,
+            [new InlineQueryResultArticle(message)],
+            0
+          );
         } else {
           return this.sendMessage(update.message.chat.id, message);
         }
@@ -31,9 +35,8 @@ export default class TelegramBot extends Bot {
         if (update.inline_query) {
           return this.answerInlineQuery(
             update.inline_query.id,
-            [message],
-            0,
-            "HTML"
+            [new InlineQueryResultArticle(message)],
+            0
           );
         } else {
           return this.sendMessage(update.message.chat.id, message, "HTML");
@@ -68,7 +71,7 @@ export default class TelegramBot extends Bot {
         if (update.inline_query) {
           return this.answerInlineQuery(
             update.inline_query.id,
-            [message],
+            [new InlineQueryResultArticle(message)],
             7 * 60 // 7 minutes
           );
         } else {
@@ -134,7 +137,7 @@ export default class TelegramBot extends Bot {
     if (update.inline_query) {
       const username = update.inline_query.from.username;
       return this.answerInlineQuery(update.inline_query.id, [
-        message(username, outcome),
+        new InlineQueryResultArticle(message(username, outcome)),
       ]);
     } else {
       const username = update.message.from.username;

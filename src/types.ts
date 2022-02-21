@@ -79,6 +79,11 @@ export type TelegramMessage = {
   text: string;
 };
 
+export type InputMessageContent = {
+  message_text: string;
+  parse_mode: string;
+};
+
 export type TelegramInlineQuery = {
   chat_type: "sender" | "private" | "group" | "supergroup" | "channel";
   from: TelegramFrom;
