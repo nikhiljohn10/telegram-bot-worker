@@ -28,7 +28,7 @@ export default class Handler {
     this.responses.default;
 
   postResponse = async (request, bot): Promise<Response> =>
-    (console.log(request.headers.get("x-real-ip")) === undefined &&
+    (log(request.headers.get("x-real-ip")) &&
       bot.token &&
       request.json().then((content) => bot.update(request, content))) ??
     this.responses.default;

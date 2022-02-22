@@ -33,21 +33,7 @@ export default class Bot {
   messageUpdate = async (request, update): Promise<Response> =>
     (typeof update.message.text === "string" &&
       (await this.executeCommand(request, update).then(
-        (response1) =>
-          this.greetUsers(request, update).then(
-            (response2) =>
-              response1
-                .clone()
-                .json()
-                .then((json1) =>
-                  response2
-                    .clone()
-                    .json()
-                    .then((json2) =>
-                      console.log({ response1: json1, response2: json2 })
-                    )
-                ) === undefined && response1
-          ) || this.updates.default
+        async () => await this.greetUsers(request, update)
       ))) ||
     this.updates.default;
 
@@ -80,14 +66,29 @@ export default class Bot {
   getCommand = (args) => args[0]?.split("@")[0];
 
   _executeCommand = async (update, text, args = []) =>
-    (
-      log({ text, args }) &&
-      ((text_args: string[]) =>
-        this.commands[this.getCommand(text_args)]?.(this, update, [
-          ...text_args,
-          ...args,
-        ]))
-    )(text.split(" ")) || this.updates.default;
+    (log({ execute: { text, args } }) &&
+      (async (text_args: string[]) =>
+        ((command) =>
+          (log(
+            this.commands[command] ?? {
+              error: `command '${command}' does not exist`,
+            }
+          ) &&
+            this.commands[command]?.(this, update, [...text_args, ...args])) ||
+          this.updates.default)(this.getCommand(text_args)))(
+        text.split(" ")
+      ).then((response) =>
+        response
+          .clone()
+          .text()
+          .then(
+            (text) =>
+              log({
+                response: { status: response.status, body: text },
+              }).response
+          )
+      )) ||
+    this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, update): Promise<Response> =>
