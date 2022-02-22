@@ -51,6 +51,16 @@ export default {
           "/start": commands.commandList,
         },
       },
+      {
+        bot_name: "@ddggbot",
+        token: env.SECRET_TELEGRAM_API_TOKEN3,
+        commands: {
+          inline: commands.duckduckgo,
+          "/duckduckgo": commands.duckduckgo,
+          "/commands": commands.commandList,
+          "/start": commands.commandList,
+        },
+      },
     ])
       .handle(request)
       .then((response) => {

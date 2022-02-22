@@ -13,9 +13,8 @@ export default class TelegramBot extends Bot {
     super(config);
   }
   // bot command: /duckduckgo
-  duckduckgo = async (update, args) =>
+  duckduckgo = async (update, args): Promise<Response> =>
     ((query) =>
-      query !== "" &&
       ((duckduckgo_url) =>
         (update.inline_query &&
           fetch(
@@ -77,9 +76,10 @@ export default class TelegramBot extends Bot {
               )
           )) ??
         this.sendMessage(update.message.chat.id, duckduckgo_url))(
-        addSearchParams(new URL("https://duckduckgo.com"), {
-          q: query,
-        }).href
+        (query === "" && "https://duckduckgo.com") ||
+          addSearchParams(new URL("https://duckduckgo.com"), {
+            q: query,
+          }).href
       ))(args.slice(1).join(" "));
 
   // bot command: /kanye
