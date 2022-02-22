@@ -31,7 +31,7 @@ export default class Bot {
     );
 
   messageUpdate = async (request, update): Promise<Response> =>
-    (update.message.text !== undefined &&
+    (typeof update.message.text === "string" &&
       (await this.executeCommand(request, update).then(
         (response1) =>
           this.greetUsers(request, update).then(
