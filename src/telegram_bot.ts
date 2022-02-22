@@ -15,14 +15,33 @@ export default class TelegramBot extends Bot {
   // bot command: /duckduckgo
   duckduckgo = async (update, args) =>
     ((query) =>
-      ((content) =>
+      ((duckduckgo_url) =>
         (update.inline_query &&
-          this.answerInlineQuery(
-            update.inline_query.id,
-            [new InlineQueryResultArticle(content)],
-            3600 // 1 hour
+          fetch(
+            addSearchParams(new URL("https://api.duckduckgo.com"), {
+              q: query,
+              format: "json",
+            }).href
+          ).then((response) =>
+            response
+              .json()
+              .then(
+                (results: { AbstractSource: string; AbstractURL: string }) =>
+                  this.answerInlineQuery(
+                    update.inline_query.id,
+                    [
+                      new InlineQueryResultArticle(
+                        `${results.AbstractURL}\n\n${duckduckgo_url}`,
+                        `${results.AbstractURL}`,
+                        "HTML"
+                      ),
+                      new InlineQueryResultArticle(duckduckgo_url),
+                    ],
+                    3600 // 1 hour
+                  )
+              )
           )) ??
-        this.sendMessage(update.message.chat.id, content))(
+        this.sendMessage(update.message.chat.id, duckduckgo_url))(
         addSearchParams(new URL("https://duckduckgo.com"), {
           q: query,
         }).href
