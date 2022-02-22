@@ -15,21 +15,20 @@ export default class Webhook {
   getMe = () => this.execute(new URL(`${this.api}/getMe`));
 
   set = async (drop_pending_updates = true): Promise<Response> =>
-    sha256(this.token)
-      .then(
-        (access_key) =>
-          new URL(
-            `${this.api}/setWebhook?url=${encodeURIComponent(
-              `${this.url.href}/${access_key}`
-            )}&max_connections=${100}&allowed_updates=${[
-              "message",
-            ]}&drop_pending_updates=${drop_pending_updates}`
-          )
+    sha256(this.token).then((access_key) =>
+      this.execute(
+        new URL(
+          `${this.api.href}/setWebhook?url=${encodeURIComponent(
+            `${this.url.href}/${access_key}`
+          )}&max_connections=${100}&allowed_updates=${[
+            "message",
+          ]}&drop_pending_updates=${drop_pending_updates}`
+        )
       )
-      .then((url) => this.execute(url));
+    );
 
   get = async (): Promise<Response> =>
-    this.execute(new URL(`${this.api}/getWebhookInfo`));
+    this.execute(new URL(`${this.api.href}/getWebhookInfo`));
 
   delete = async (): Promise<Response> =>
     this.execute(new URL(`${this.api.href}/deleteWebhook`));

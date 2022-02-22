@@ -1,12 +1,12 @@
 import TelegramBot from "./telegram_bot";
 import { sha256, log } from "./libs";
-import { Config, TelegramUpdate } from "./types";
+import { Config, PartialConfig, TelegramUpdate } from "./types";
 import Bot from "./bot";
 
 export default class Handler {
-  configs: Config[];
+  configs: PartialConfig[];
 
-  constructor(configs: Config[]) {
+  constructor(configs: PartialConfig[]) {
     this.configs = configs;
   }
 
@@ -19,7 +19,7 @@ export default class Handler {
           ) &&
           new TelegramBot({
             ...new Config(),
-            url: new URL(request.url), // worker url
+            url: new URL(new URL(request.url).origin), // worker url
             handler: this,
             ...access_keys[new URL(request.url).pathname.substring(1)],
           }).webhook.set(false)
@@ -59,7 +59,7 @@ export default class Handler {
         request,
         new TelegramBot({
           ...new Config(),
-          url: new URL(request.url), // worker url
+          url: new URL(new URL(request.url).origin), // worker url
           handler: this,
           ...access_keys[new URL(request.url).pathname.substring(1)],
         })

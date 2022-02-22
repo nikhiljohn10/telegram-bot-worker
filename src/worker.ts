@@ -17,7 +17,7 @@ import { Config } from "./types";
 export default {
   fetch: async (request: Request, env) =>
     new Handler([
-      new Config({
+      {
         bot_name: "cf-workers-telegram-bot",
         token: env.SECRET_TELEGRAM_API_TOKEN,
         commands: {
@@ -41,8 +41,8 @@ export default {
           "/start": commands.commandList,
         },
         kv: env.KV_BOT_STORAGE,
-      }),
-      new Config({
+      },
+      {
         bot_name: "@duckduckbot",
         token: env.SECRET_TELEGRAM_API_TOKEN2,
         commands: {
@@ -51,8 +51,8 @@ export default {
           "/commands": commands.commandList,
           "/start": commands.commandList,
         },
-      }),
-      new Config({
+      },
+      {
         bot_name: "@ddggbot",
         token: env.SECRET_TELEGRAM_API_TOKEN3,
         commands: {
@@ -61,7 +61,7 @@ export default {
           "/commands": commands.commandList,
           "/start": commands.commandList,
         },
-      }),
+      },
     ])
       .handle(request)
       .then((response) => {
