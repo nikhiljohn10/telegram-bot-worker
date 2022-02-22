@@ -81,7 +81,7 @@ export default class Bot {
 
   _executeCommand = async (update, text, args = []) =>
     (
-      (log({ text, args }) &&
+      log({ text, args }) &&
       ((text_args: string[]) =>
         this.commands[this.getCommand(text_args)]?.(this, update, [
           ...text_args,
@@ -165,14 +165,16 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendPhoto`), {
-        chat_id: chat_id.toString(),
-        photo,
-        caption,
-        parse_mode,
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendPhoto`), {
+          chat_id: chat_id.toString(),
+          photo,
+          caption,
+          parse_mode,
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger sendVideo command of BotAPI
@@ -190,19 +192,21 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendVideo`), {
-        chat_id: chat_id.toString(),
-        video,
-        duration: duration.toString(),
-        width: width.toString(),
-        height: height.toString(),
-        thumb: thumb,
-        caption: caption,
-        parse_mode: parse_mode,
-        supports_streaming: supports_streaming.toString(),
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendVideo`), {
+          chat_id: chat_id.toString(),
+          video,
+          duration: duration.toString(),
+          width: width.toString(),
+          height: height.toString(),
+          thumb: thumb,
+          caption: caption,
+          parse_mode: parse_mode,
+          supports_streaming: supports_streaming.toString(),
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger sendAnimation command of BotAPI
@@ -219,18 +223,20 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendAnimation`), {
-        chat_id: chat_id.toString(),
-        animation,
-        duration: duration.toString(),
-        width: width.toString(),
-        height: height.toString(),
-        thumb,
-        caption,
-        parse_mode,
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendAnimation`), {
+          chat_id: chat_id.toString(),
+          animation,
+          duration: duration.toString(),
+          width: width.toString(),
+          height: height.toString(),
+          thumb,
+          caption,
+          parse_mode,
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger sendLocation command of BotAPI
@@ -243,14 +249,16 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendLocation`), {
-        chat_id: chat_id.toString(),
-        latitude: latitude.toString(),
-        longitude: longitude.toString(),
-        live_period: live_period.toString(),
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendLocation`), {
+          chat_id: chat_id.toString(),
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          live_period: live_period.toString(),
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger senPoll command of BotAPI
@@ -271,22 +279,24 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendPoll`), {
-        chat_id: chat_id.toString(),
-        question,
-        options: options.toString(),
-        is_anonymous: is_anonymous.toString(),
-        type,
-        allows_multiple_answers: allows_multiple_answers.toString(),
-        correct_option_id: correct_option_id.toString(),
-        explanation: explanation,
-        explanation_parse_mode: explanation_parse_mode,
-        open_period: open_period.toString(),
-        close_date: close_date.toString(),
-        is_closed: is_closed.toString(),
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendPoll`), {
+          chat_id: chat_id.toString(),
+          question,
+          options: options.toString(),
+          is_anonymous: is_anonymous.toString(),
+          type,
+          allows_multiple_answers: allows_multiple_answers.toString(),
+          correct_option_id: correct_option_id.toString(),
+          explanation: explanation,
+          explanation_parse_mode: explanation_parse_mode,
+          open_period: open_period.toString(),
+          close_date: close_date.toString(),
+          is_closed: is_closed.toString(),
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger senDice command of BotAPI
@@ -297,12 +307,14 @@ export default class Bot {
     reply_to_message_id = 0
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendDice`), {
-        chat_id: chat_id.toString(),
-        emoji,
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendDice`), {
+          chat_id: chat_id.toString(),
+          emoji,
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // bot api command to get user profile photos
@@ -312,10 +324,12 @@ export default class Bot {
     limit = 0
   ): Promise<Response> =>
     fetch(
-      addSearchParams(new URL(`${this.api}/getUserProfilePhotos`), {
-        user_id: user_id.toString(),
-        offset: offset.toString(),
-        limit: limit.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/getUserProfilePhotos`), {
+          user_id: user_id.toString(),
+          offset: offset.toString(),
+          limit: limit.toString(),
+        }).href
+      )
     );
 }
