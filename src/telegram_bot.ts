@@ -54,20 +54,20 @@ export default class TelegramBot extends Bot {
                     this.answerInlineQuery(
                       update.inline_query.id,
                       (instant_answer_url !== "" && [
-                        new InlineQueryResultArticle(
+                        new TelegramInlineQueryResultArticle(
                           `${instant_answer_url}\n\n<a href="${duckduckgo_url}">Results From DuckDuckGo</a>`,
                           instant_answer_url,
                           "HTML",
                           thumb_url
                         ),
-                        new InlineQueryResultArticle(
+                        new TelegramInlineQueryResultArticle(
                           duckduckgo_url,
                           duckduckgo_url,
                           "",
                           default_thumb_url
                         ),
                       ]) || [
-                        new InlineQueryResultArticle(
+                        new TelegramInlineQueryResultArticle(
                           duckduckgo_url,
                           duckduckgo_url,
                           "",
@@ -105,7 +105,7 @@ export default class TelegramBot extends Bot {
         ((message) =>
           (update.inline_query !== undefined &&
             this.answerInlineQuery(update.inline_query.id, [
-              new InlineQueryResultArticle(message),
+              new TelegramInlineQueryResultArticle(message),
             ])) ||
           this.sendMessage(update.message.chat.id, message))(
           `Kanye says... ${json.quote}`
@@ -123,7 +123,7 @@ export default class TelegramBot extends Bot {
             this.answerInlineQuery(
               update.inline_query.id,
               [
-                new InlineQueryResultArticle(
+                new TelegramInlineQueryResultArticle(
                   message,
                   joke.joke ?? joke.setup,
                   "HTML"

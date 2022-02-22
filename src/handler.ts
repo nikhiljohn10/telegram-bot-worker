@@ -12,17 +12,10 @@ export default class Handler {
 
   getResponse = async (request: Request, bot: Bot): Promise<Response> =>
     (this.getAccessKeys().then((access_keys) =>
-      Object.keys(access_keys).forEach(
-        (key) =>
-          log(
-            `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
-          ) &&
-          new TelegramBot({
-            ...new Config(),
-            url: new URL(new URL(request.url).origin), // worker url
-            handler: this,
-            ...access_keys[new URL(request.url).pathname.substring(1)],
-          }).webhook.set(false)
+      Object.keys(access_keys).forEach((key) =>
+        log(
+          `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
+        )
       )
     ) &&
       bot.token &&
@@ -48,7 +41,7 @@ export default class Handler {
   > =>
     Promise.all(
       this.configs.map((bot_config) =>
-        sha256(bot_config.token).then((hash) => [hash, bot_config])
+        sha256(bot_config.token.toString()).then((hash) => [hash, bot_config])
       )
     ).then((result) => Object.fromEntries(result));
 

@@ -6,15 +6,16 @@ import {
   Config,
   TelegramInlineQueryResult,
   TelegramUpdate,
+  EnvKey,
 } from "./types";
 import Handler from "./handler";
 
 export default class Bot {
-  token: string;
+  token: EnvKey;
   commands: Commands;
   api: URL;
   webhook: Webhook;
-  kv: KV;
+  kv: EnvKey;
   handler: Handler;
 
   constructor(config: Config) {

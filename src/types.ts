@@ -24,7 +24,7 @@ export class Config {
   commands: Record<string, Command>;
   kv: EnvKey;
   url: URL;
-  handler: Handler | undefined;
+  handler: Handler;
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
     this.token = config.token || "";
@@ -44,7 +44,7 @@ export type PartialConfig = {
   commands?: Record<string, Command>;
   kv?: EnvKey;
   url?: URL;
-  handler?: Handler | undefined;
+  handler?: Handler;
 };
 
 export type Joke = {
