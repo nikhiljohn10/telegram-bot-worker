@@ -16,7 +16,11 @@ export default class TelegramBot extends Bot {
   duckduckgo = async (update, args): Promise<Response> =>
     ((query) =>
       ((duckduckgo_url) =>
-        (update.inline_query &&
+        ((update.inline_query &&
+          query === "" &&
+          this.answerInlineQuery(update.inline_query.id, [
+            new InlineQueryResultArticle("https://duckduckgo.com"),
+          ])) ||
           fetch(
             addSearchParams(new URL("https://api.duckduckgo.com"), {
               q: query,
