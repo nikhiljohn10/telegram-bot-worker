@@ -293,7 +293,7 @@ export default class TelegramBot extends Bot {
   ping = async (update, args) =>
     this.sendMessage(
       update.message.chat.id,
-      args.length === 1 ? "pong" : args.join(" ")
+      args.length === 1 ? "pong" : args.slice(1).join(" ")
     );
 
   // bot command: /chatInfo

@@ -1,6 +1,6 @@
 export default {
   chatInfo: async (bot, update, args) => bot.getChatInfo(update),
-  ping: async (bot, update, args) => bot.ping(update),
+  ping: async (bot, update, args) => bot.ping(update, args),
   toss: async (bot, update, args) => bot.toss(update),
   balance: async (bot, update, args) => bot.balance(update, args),
   epoch: async (bot, update, args) => bot.epoch(update),
