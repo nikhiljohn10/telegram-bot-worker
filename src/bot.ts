@@ -93,7 +93,7 @@ export default class Bot {
     ((await this._executeCommand(update, update.inline_query.query)) &&
       (await this._executeCommand(
         update,
-        "",
+        "inline",
         update.inline_query.query.split(" ")
       ))) ||
     this.updates.default;

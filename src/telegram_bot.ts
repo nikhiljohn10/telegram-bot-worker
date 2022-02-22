@@ -15,6 +15,7 @@ export default class TelegramBot extends Bot {
   // bot command: /duckduckgo
   duckduckgo = async (update, args) =>
     ((query) =>
+      query !== "" &&
       ((duckduckgo_url) =>
         (update.inline_query &&
           fetch(
@@ -29,14 +30,14 @@ export default class TelegramBot extends Bot {
                 (results: { AbstractSource: string; AbstractURL: string }) =>
                   this.answerInlineQuery(
                     update.inline_query.id,
-                    [
+                    (results.AbstractURL !== "" && [
                       new InlineQueryResultArticle(
                         `${results.AbstractURL}\n\n${duckduckgo_url}`,
-                        `${results.AbstractURL}`,
+                        results.AbstractURL,
                         "HTML"
                       ),
                       new InlineQueryResultArticle(duckduckgo_url),
-                    ],
+                    ]) || [new InlineQueryResultArticle(duckduckgo_url)],
                     3600 // 1 hour
                   )
               )

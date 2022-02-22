@@ -45,7 +45,10 @@ export default {
         bot_name: "@duckduckbot",
         token: env.SECRET_TELEGRAM_API_TOKEN2,
         commands: {
-          "": commands.duckduckgo, // default inline response
+          inline: commands.duckduckgo, // default inline response
+          "/duckduckgo": commands.duckduckgo,
+          "/commands": commands.commandList,
+          "/start": commands.commandList,
         },
       },
     ])
