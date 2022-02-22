@@ -68,8 +68,8 @@ export default {
         response
           .clone()
           .text()
-          .then((content) =>
-            console.log({ result: { status: response.status, body: content } })
+          .then((text) =>
+            console.log({ result: { status: response.status, body: text } })
           );
         return response;
       }),

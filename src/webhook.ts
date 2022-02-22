@@ -1,39 +1,43 @@
 import { JSONResponse, sha256 } from "./libs";
 
 export default class Webhook {
-  api: string;
+  api: URL;
   token: string;
-  url: string;
+  url: URL;
 
-  constructor(api, token, url) {
+  constructor(api: URL, token: string, url: URL) {
     this.api = api;
     this.token = token;
     this.url = url;
   }
 
   // trigger getMe command of BotAPI
-  getMe = () => this.execute(`${this.api}/getMe`);
+  getMe = () => this.execute(new URL(`${this.api}/getMe`));
 
-  set = async (drop_pending_updates = true) =>
+  set = async (drop_pending_updates = true): Promise<Response> =>
     sha256(this.token)
       .then(
         (access_key) =>
-          `${this.api}/setWebhook?url=${encodeURIComponent(
-            `${this.url}/${access_key}`
-          )}&max_connections=${100}&allowed_updates=${[
-            "message",
-          ]}&drop_pending_updates=${drop_pending_updates}`
+          new URL(
+            `${this.api}/setWebhook?url=${encodeURIComponent(
+              `${this.url.href}/${access_key}`
+            )}&max_connections=${100}&allowed_updates=${[
+              "message",
+            ]}&drop_pending_updates=${drop_pending_updates}`
+          )
       )
       .then((url) => this.execute(url));
 
-  get = async () => this.execute(`${this.api}/getWebhookInfo`);
+  get = async (): Promise<Response> =>
+    this.execute(new URL(`${this.api}/getWebhookInfo`));
 
-  delete = async () => this.execute(`${this.api}/deleteWebhook`);
+  delete = async (): Promise<Response> =>
+    this.execute(new URL(`${this.api.href}/deleteWebhook`));
 
-  execute = async (url) =>
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => JSONResponse(json));
+  execute = async (url: URL): Promise<Response> =>
+    fetch(url.href).then((response) =>
+      response.json().then((json) => JSONResponse(json))
+    );
 
   webhookCommands = {
     setWebhook: this.set,
@@ -43,7 +47,7 @@ export default class Webhook {
     default: JSONResponse({ error: "Invalid command" }, 400),
   };
 
-  process = async (url) =>
+  process = async (url: URL): Promise<Response> =>
     this.webhookCommands[url.searchParams.get("command")]?.() ??
     this.webhookCommands.default;
 }

@@ -1,5 +1,5 @@
 import TelegramBot from "./telegram_bot";
-import { JSONResponse, sha256, log } from "./libs";
+import { sha256, log } from "./libs";
 import { Config, TelegramUpdate } from "./types";
 import Bot from "./bot";
 
@@ -10,7 +10,7 @@ export default class Handler {
     this.configs = configs;
   }
 
-  getResponse = async (request, bot): Promise<Response> =>
+  getResponse = async (request: Request, bot: Bot): Promise<Response> =>
     (this.getAccessKeys().then((access_keys) =>
       Object.keys(access_keys).forEach(
         (key) =>
@@ -19,7 +19,7 @@ export default class Handler {
           ) &&
           new TelegramBot({
             ...new Config(),
-            url: new URL(request.url).origin, // worker url
+            url: new URL(request.url), // worker url
             handler: this,
             ...access_keys[new URL(request.url).pathname.substring(1)],
           }).webhook.set(false)
@@ -34,7 +34,7 @@ export default class Handler {
       bot.token &&
       request
         .json()
-        .then((update) => bot.update(request, new TelegramUpdate(update)))) ??
+        .then((update) => bot.update(new TelegramUpdate(update)))) ??
     this.responses.default;
 
   responses = {
@@ -59,7 +59,7 @@ export default class Handler {
         request,
         new TelegramBot({
           ...new Config(),
-          url: new URL(request.url).origin, // worker url
+          url: new URL(request.url), // worker url
           handler: this,
           ...access_keys[new URL(request.url).pathname.substring(1)],
         })

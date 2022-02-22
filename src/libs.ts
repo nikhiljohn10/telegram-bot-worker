@@ -1,4 +1,4 @@
-export const sha256 = async (text) =>
+export const sha256 = async (text: string): Promise<string> =>
   crypto.subtle
     .digest("SHA-256", new TextEncoder().encode(text))
     .then((array_buffer) =>
@@ -8,20 +8,21 @@ export const sha256 = async (text) =>
     );
 
 // format json with line indents and newlines
-export const prettyJSON = (data) => JSON.stringify(data, null, 2);
+export const prettyJSON = (obj: unknown): string =>
+  JSON.stringify(obj, null, 2);
 
 // Generate JSON response
-export const JSONResponse = (data, status = 200): Response =>
-  new Response(prettyJSON(data), {
+export const JSONResponse = (obj: unknown, status = 200): Response =>
+  new Response(prettyJSON(obj), {
     status: status,
     headers: {
       "content-type": "application/json",
     },
   });
 
-export const log = (obj) => console.log(obj) === undefined && obj;
+export const log = <T>(obj: T): T => console.log(obj) === undefined && obj;
 
-export const preTagString = (str) => `<pre>${str}</pre>`;
+export const preTagString = (str: string): string => `<pre>${str}</pre>`;
 
 export const addSearchParams = (
   url: URL,

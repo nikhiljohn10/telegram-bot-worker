@@ -20,7 +20,7 @@ export class Config {
   token: string;
   commands: Record<string, Command>;
   kv: KV;
-  url: string;
+  url: URL;
   handler: Handler | undefined;
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
@@ -30,7 +30,7 @@ export class Config {
       get: () => Promise.resolve(""),
       put: () => undefined,
     };
-    this.url = config.url || "";
+    this.url = config.url;
     this.handler = config.handler;
   }
 }
@@ -40,7 +40,7 @@ export type PartialConfig = {
   token?: string;
   commands?: Record<string, Command>;
   kv?: KV;
-  url?: string;
+  url?: URL;
   handler?: Handler | undefined;
 };
 

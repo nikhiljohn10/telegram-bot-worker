@@ -13,7 +13,7 @@ import Handler from "./handler";
 export default class Bot {
   token: string;
   commands: Commands;
-  api: string;
+  api: URL;
   webhook: Webhook;
   kv: KV;
   handler: Handler;
@@ -21,17 +21,14 @@ export default class Bot {
   constructor(config: Config) {
     this.token = config.token || null;
     this.commands = config.commands;
-    this.api = "https://api.telegram.org/bot" + config.token;
+    this.api = new URL(`https://api.telegram.org/bot${config.token}`);
     this.webhook = new Webhook(this.api, config.token, config.url);
     this.kv = config.kv || null;
     this.handler = config.handler;
   }
 
-  inlineQueryUpdate = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
-    this.executeInlineCommand(request, update).then(
+  inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
+    this.executeInlineCommand(update).then(
       (response) =>
         response
           .clone()
@@ -40,13 +37,10 @@ export default class Bot {
         response
     ) || this.updates.default;
 
-  messageUpdate = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
+  messageUpdate = async (update: TelegramUpdate): Promise<Response> =>
     (typeof update.message.text === "string" &&
-      (await this.executeCommand(request, update).then(
-        async () => await this.greetUsers(request, update)
+      (await this.executeCommand(update).then(
+        async () => await this.greetUsers(update)
       ))) ||
     this.updates.default;
 
@@ -56,22 +50,16 @@ export default class Bot {
     default: new Response(),
   };
 
-  update = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
+  update = async (update: TelegramUpdate): Promise<Response> =>
     (log({ update }) &&
       update.message !== undefined &&
-      (await this.updates.message(request, update))) ||
+      (await this.updates.message(update))) ||
     (update.inline_query !== undefined &&
-      (await this.updates.inline_query(request, update))) ||
+      (await this.updates.inline_query(update))) ||
     this.updates.default;
 
   // greet new users who join
-  greetUsers = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
+  greetUsers = async (update: TelegramUpdate): Promise<Response> =>
     (update.message.new_chat_members !== undefined &&
       this.sendMessage(
         update.message.chat.id,
@@ -103,18 +91,17 @@ export default class Bot {
           .text()
           .then(
             (text) =>
-              log({
-                response: { status: response.status, body: text },
-              }).response
+              new Response(
+                log({
+                  response: { status: response.status, body: text },
+                }).response.body
+              )
           )
       )) ||
     this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
-  executeInlineCommand = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
+  executeInlineCommand = async (update: TelegramUpdate): Promise<Response> =>
     ((await this._executeCommand(update, update.inline_query.query)) &&
       (await this._executeCommand(
         update,
@@ -124,10 +111,7 @@ export default class Bot {
     this.updates.default;
 
   // execute the custom bot commands from bot configurations
-  executeCommand = async (
-    request: Request,
-    update: TelegramUpdate
-  ): Promise<Response> =>
+  executeCommand = async (update: TelegramUpdate): Promise<Response> =>
     this._executeCommand(update, update.message.text) || this.updates.default;
 
   // trigger answerInlineQuery command of BotAPI
@@ -138,7 +122,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
+        addSearchParams(new URL(`${this.api.href}/answerInlineQuery`), {
           inline_query_id: inline_query_id.toString(),
           results: JSON.stringify(results),
           cache_time: cache_time.toString(),
@@ -157,7 +141,7 @@ export default class Bot {
   ): Promise<Response> =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendMessage`), {
+        addSearchParams(new URL(`${this.api.href}/sendMessage`), {
           chat_id: chat_id.toString(),
           text,
           parse_mode: parse_mode,
@@ -177,7 +161,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendMessage`), {
+        addSearchParams(new URL(`${this.api.href}/sendMessage`), {
           chat_id: chat_id.toString(),
           from_chat_id: from_chat_id.toString(),
           message_id: message_id.toString(),
@@ -197,7 +181,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendPhoto`), {
+        addSearchParams(new URL(`${this.api.href}/sendPhoto`), {
           chat_id: chat_id.toString(),
           photo: JSON.stringify(photo),
           caption,
@@ -224,7 +208,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendVideo`), {
+        addSearchParams(new URL(`${this.api.href}/sendVideo`), {
           chat_id: chat_id.toString(),
           video: JSON.stringify(video),
           duration: duration.toString(),
@@ -255,7 +239,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendAnimation`), {
+        addSearchParams(new URL(`${this.api.href}/sendAnimation`), {
           chat_id: chat_id.toString(),
           animation: JSON.stringify(animation),
           duration: duration.toString(),
@@ -281,7 +265,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendLocation`), {
+        addSearchParams(new URL(`${this.api.href}/sendLocation`), {
           chat_id: chat_id.toString(),
           latitude: latitude.toString(),
           longitude: longitude.toString(),
@@ -311,7 +295,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendPoll`), {
+        addSearchParams(new URL(`${this.api.href}/sendPoll`), {
           chat_id: chat_id.toString(),
           question,
           options: options.toString(),
@@ -339,7 +323,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/sendDice`), {
+        addSearchParams(new URL(`${this.api.href}/sendDice`), {
           chat_id: chat_id.toString(),
           emoji,
           disable_notification: disable_notification.toString(),
@@ -356,7 +340,7 @@ export default class Bot {
   ): Promise<Response> =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api}/getUserProfilePhotos`), {
+        addSearchParams(new URL(`${this.api.href}/getUserProfilePhotos`), {
           user_id: user_id.toString(),
           offset: offset.toString(),
           limit: limit.toString(),
