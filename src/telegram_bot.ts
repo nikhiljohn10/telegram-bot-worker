@@ -76,7 +76,7 @@ export default class TelegramBot extends Bot {
                           results.RelatedTopics[0].Icon.URL) ||
                         "/i/f96d4798.png"}`) ||
                       "",
-                    "https://duckduckgo.com/i/f96d4798.png"
+                    "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
                   )
               )
           )) ||
