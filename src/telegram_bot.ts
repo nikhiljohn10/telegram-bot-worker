@@ -22,6 +22,7 @@ export default class TelegramBot extends Bot {
             addSearchParams(new URL("https://api.duckduckgo.com"), {
               q: query,
               format: "json",
+              t: "telegram_bot",
             }).href
           ).then((response) =>
             response
