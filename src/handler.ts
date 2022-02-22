@@ -1,11 +1,12 @@
 import TelegramBot from "./telegram_bot";
 import { JSONResponse, sha256, log } from "./libs";
-import { Config } from "./types";
+import { Config, TelegramUpdate } from "./types";
+import Bot from "./bot";
 
 export default class Handler {
   configs: Config[];
 
-  constructor(configs) {
+  constructor(configs: Config[]) {
     this.configs = configs;
   }
 
@@ -17,9 +18,10 @@ export default class Handler {
             `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
           ) &&
           new TelegramBot({
-            ...access_keys[new URL(request.url).pathname.substring(1)],
+            ...new Config(),
             url: new URL(request.url).origin, // worker url
             handler: this,
+            ...access_keys[new URL(request.url).pathname.substring(1)],
           }).webhook.set(false)
       )
     ) &&
@@ -27,16 +29,18 @@ export default class Handler {
       bot.webhook.process(new URL(request.url))) ??
     this.responses.default;
 
-  postResponse = async (request, bot): Promise<Response> =>
+  postResponse = async (request: Request, bot: Bot): Promise<Response> =>
     (log(request.headers.get("x-real-ip")) &&
       bot.token &&
-      request.json().then((content) => bot.update(request, content))) ??
+      request
+        .json()
+        .then((update) => bot.update(request, new TelegramUpdate(update)))) ??
     this.responses.default;
 
   responses = {
     GET: this.getResponse,
     POST: this.postResponse,
-    default: JSONResponse({ error: "Invalid request" }, 400),
+    default: new Response(),
   };
 
   getAccessKeys = async (): Promise<
@@ -54,9 +58,10 @@ export default class Handler {
       this.responses[request.method](
         request,
         new TelegramBot({
-          ...access_keys[new URL(request.url).pathname.substring(1)],
+          ...new Config(),
           url: new URL(request.url).origin, // worker url
           handler: this,
+          ...access_keys[new URL(request.url).pathname.substring(1)],
         })
       )
     ) ?? this.responses.default;

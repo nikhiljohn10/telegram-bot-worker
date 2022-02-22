@@ -1,6 +1,13 @@
 import Webhook from "./webhook";
 import { addSearchParams, log } from "./libs";
-import { Commands, KV, TelegramUpdate } from "./types";
+import {
+  Commands,
+  KV,
+  Config,
+  InlineQueryResult,
+  TelegramUpdate,
+  TelegramPhotoSize,
+} from "./types";
 import Handler from "./handler";
 
 export default class Bot {
@@ -11,7 +18,7 @@ export default class Bot {
   kv: KV;
   handler: Handler;
 
-  constructor(config) {
+  constructor(config: Config) {
     this.token = config.token || null;
     this.commands = config.commands;
     this.api = "https://api.telegram.org/bot" + config.token;
@@ -20,7 +27,10 @@ export default class Bot {
     this.handler = config.handler;
   }
 
-  inlineQueryUpdate = async (request, update): Promise<Response> =>
+  inlineQueryUpdate = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
     this.executeInlineCommand(request, update).then(
       (response) =>
         response
@@ -30,7 +40,10 @@ export default class Bot {
         response
     ) || this.updates.default;
 
-  messageUpdate = async (request, update): Promise<Response> =>
+  messageUpdate = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
     (typeof update.message.text === "string" &&
       (await this.executeCommand(request, update).then(
         async () => await this.greetUsers(request, update)
@@ -55,17 +68,24 @@ export default class Bot {
     this.updates.default;
 
   // greet new users who join
-  greetUsers = async (request, update): Promise<Response> =>
-    (update.message.new_chat_members &&
+  greetUsers = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
+    (update.message.new_chat_members !== undefined &&
       this.sendMessage(
         update.message.chat.id,
         `Welcome to ${update.message.chat.title}, ${update.message.from.username}`
       )) ??
     this.updates.default;
 
-  getCommand = (args) => args[0]?.split("@")[0];
+  getCommand = (args: string[]): string => args[0]?.split("@")[0];
 
-  _executeCommand = async (update, text, args = []) =>
+  _executeCommand = async (
+    update: TelegramUpdate,
+    text: string,
+    args: string[] = []
+  ) =>
     (log({ execute: { text, args } }) &&
       (async (text_args: string[]) =>
         ((command) =>
@@ -91,7 +111,10 @@ export default class Bot {
     this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
-  executeInlineCommand = async (request, update): Promise<Response> =>
+  executeInlineCommand = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
     ((await this._executeCommand(update, update.inline_query.query)) &&
       (await this._executeCommand(
         update,
@@ -101,11 +124,18 @@ export default class Bot {
     this.updates.default;
 
   // execute the custom bot commands from bot configurations
-  executeCommand = async (request, update): Promise<Response> =>
+  executeCommand = async (
+    request: Request,
+    update: TelegramUpdate
+  ): Promise<Response> =>
     this._executeCommand(update, update.message.text) || this.updates.default;
 
   // trigger answerInlineQuery command of BotAPI
-  answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
+  answerInlineQuery = async (
+    inline_query_id: number,
+    results: InlineQueryResult[],
+    cache_time = 0
+  ) =>
     fetch(
       log(
         addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
@@ -118,8 +148,8 @@ export default class Bot {
 
   // trigger sendMessage command of BotAPI
   sendMessage = async (
-    chat_id,
-    text,
+    chat_id: number,
+    text: string,
     parse_mode = "",
     disable_web_page_preview = false,
     disable_notification = false,
@@ -128,7 +158,7 @@ export default class Bot {
     fetch(
       log(
         addSearchParams(new URL(`${this.api}/sendMessage`), {
-          chat_id: chat_id,
+          chat_id: chat_id.toString(),
           text,
           parse_mode: parse_mode,
           disable_web_page_preview: disable_web_page_preview.toString(),
@@ -140,10 +170,10 @@ export default class Bot {
 
   // trigger forwardMessage command of BotAPI
   forwardMessage = async (
-    chat_id,
-    from_chat_id,
+    chat_id: number,
+    from_chat_id: number,
     disable_notification = false,
-    message_id
+    message_id: number
   ) =>
     fetch(
       log(
@@ -158,8 +188,8 @@ export default class Bot {
 
   // trigger sendPhoto command of BotAPI
   sendPhoto = async (
-    chat_id,
-    photo,
+    chat_id: number,
+    photo: TelegramPhotoSize,
     caption = "",
     parse_mode = "",
     disable_notification = false,
@@ -169,7 +199,7 @@ export default class Bot {
       log(
         addSearchParams(new URL(`${this.api}/sendPhoto`), {
           chat_id: chat_id.toString(),
-          photo,
+          photo: JSON.stringify(photo),
           caption,
           parse_mode,
           disable_notification: disable_notification.toString(),
@@ -180,7 +210,7 @@ export default class Bot {
 
   // trigger sendVideo command of BotAPI
   sendVideo = async (
-    chat_id,
+    chat_id: number,
     video,
     duration = 0,
     width = 0,
@@ -196,7 +226,7 @@ export default class Bot {
       log(
         addSearchParams(new URL(`${this.api}/sendVideo`), {
           chat_id: chat_id.toString(),
-          video,
+          video: JSON.stringify(video),
           duration: duration.toString(),
           width: width.toString(),
           height: height.toString(),
@@ -212,7 +242,7 @@ export default class Bot {
 
   // trigger sendAnimation command of BotAPI
   sendAnimation = async (
-    chat_id,
+    chat_id: number,
     animation,
     duration = 0,
     width = 0,
@@ -227,7 +257,7 @@ export default class Bot {
       log(
         addSearchParams(new URL(`${this.api}/sendAnimation`), {
           chat_id: chat_id.toString(),
-          animation,
+          animation: JSON.stringify(animation),
           duration: duration.toString(),
           width: width.toString(),
           height: height.toString(),
@@ -242,9 +272,9 @@ export default class Bot {
 
   // trigger sendLocation command of BotAPI
   sendLocation = async (
-    chat_id,
-    latitude,
-    longitude,
+    chat_id: number,
+    latitude: number,
+    longitude: number,
     live_period = 0,
     disable_notification = false,
     reply_to_message_id = 0
@@ -264,9 +294,9 @@ export default class Bot {
 
   // trigger senPoll command of BotAPI
   sendPoll = async (
-    chat_id,
-    question,
-    options,
+    chat_id: number,
+    question: string,
+    options: string[],
     is_anonymous = false,
     type = "",
     allows_multiple_answers = false,
@@ -302,7 +332,7 @@ export default class Bot {
 
   // trigger senDice command of BotAPI
   sendDice = async (
-    chat_id,
+    chat_id: number,
     emoji = "",
     disable_notification = false,
     reply_to_message_id = 0
@@ -320,7 +350,7 @@ export default class Bot {
 
   // bot api command to get user profile photos
   getUserProfilePhotos = async (
-    user_id,
+    user_id: number,
     offset = 0,
     limit = 0
   ): Promise<Response> =>

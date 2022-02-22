@@ -1,19 +1,24 @@
 import Bot from "./bot";
-import { preTagString, prettyJSON, addSearchParams } from "./libs";
+import { preTagString, prettyJSON, addSearchParams, log } from "./libs";
 import {
   Joke,
   Bored,
   Balance,
   InlineQueryResultArticle,
   InlineQueryResultPhoto,
+  TelegramUpdate,
+  Config,
 } from "./types";
 
 export default class TelegramBot extends Bot {
-  constructor(config) {
+  constructor(config: Config) {
     super(config);
   }
   // bot command: /duckduckgo
-  duckduckgo = async (update, args): Promise<Response> =>
+  duckduckgo = async (
+    update: TelegramUpdate,
+    args: string[]
+  ): Promise<Response> =>
     ((query) =>
       ((duckduckgo_url) =>
         (update.inline_query &&
@@ -88,24 +93,32 @@ export default class TelegramBot extends Bot {
       ))(args.slice(1).join(" "));
 
   // bot command: /kanye
-  kanye = async (update): Promise<Response> =>
+  kanye = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://api.kanye.rest").then((response) =>
       response
-        .json()
-        .then((json: { quote: string }) =>
-          ((message) =>
-            (update.inline_query !== undefined &&
-              this.answerInlineQuery(update.inline_query.id, [
-                new InlineQueryResultArticle(message),
-              ])) ||
-            this.sendMessage(update.message.chat.id, message))(
-            `Kanye says... ${json.quote}`
-          )
+        .text()
+        .then(
+          (text) =>
+            log({ api_response: { status: response.status, body: text } }) &&
+            JSON.parse(text)
         )
+        .then(
+          (json: { quote: string }) =>
+            log({ kanye_api_response: json }) &&
+            ((message) =>
+              (update.inline_query !== undefined &&
+                this.answerInlineQuery(update.inline_query.id, [
+                  new InlineQueryResultArticle(message),
+                ])) ||
+              this.sendMessage(update.message.chat.id, message))(
+              `Kanye says... ${json.quote}`
+            )
+        )
+        .catch(() => new Response("Failed to parse JSON"))
     );
 
   // bot command: /joke
-  joke = async (update) =>
+  joke = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => response.json())
       .then((joke: Joke) =>
@@ -129,7 +142,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /doge
-  doge = async (update) =>
+  doge = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then(
@@ -144,7 +157,7 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /bored
-  bored = async (update) =>
+  bored = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://boredapi.com/api/activity/")
       .then((response) => response.json())
       .then(
@@ -159,11 +172,11 @@ export default class TelegramBot extends Bot {
       );
 
   // bot command: /epoch
-  epoch = async (update) =>
+  epoch = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(update.message.chat.id, new Date().getTime());
 
   // bot command: /balance
-  balance = async (update, args) =>
+  balance = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     fetch(`https://blockchain.info/balance?active=${args[0]}`)
       .then((response) => response.json())
       .then((json: Balance) => (json[args[1]]?.final_balance ?? 0) / 100000000)
@@ -180,7 +193,7 @@ export default class TelegramBot extends Bot {
       });
 
   // bot command: /get
-  _get = async (update, args) =>
+  _get = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     this.kv.get &&
     ((key) =>
       this.kv
@@ -197,7 +210,7 @@ export default class TelegramBot extends Bot {
         ))(args[1]);
 
   // bot command: /set
-  _set = async (update, args) =>
+  _set = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     this.kv.put &&
     ((key) =>
       ((value) =>
@@ -219,7 +232,7 @@ export default class TelegramBot extends Bot {
               new Response()
           ))(args.slice(2).join(" ")))(args[1]);
 
-  _average = (numbers: number[]) =>
+  _average = (numbers: number[]): number =>
     parseFloat(
       (
         numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0
@@ -227,8 +240,11 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /average
-  average = async (update) =>
-    this.sendMessage(update.message.chat.id, this._average(this._numbers(100)));
+  average = async (update: TelegramUpdate): Promise<Response> =>
+    this.sendMessage(
+      update.message.chat.id,
+      this._average(this._numbers(100)).toString()
+    );
 
   _numbers = (count = 100): number[] =>
     Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
@@ -236,15 +252,15 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /numbers
-  numbers = async (update, args) =>
+  numbers = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     this.sendMessage(
       update.message.chat.id,
-      preTagString(JSON.stringify(this._numbers(args[1]))),
+      preTagString(JSON.stringify(this._numbers(parseInt(args[1])))),
       "HTML"
     );
 
   // bot command: /recursion
-  recursion = async (update): Promise<Response> =>
+  recursion = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(update.message.chat.id, "/recursion")
       .then((response) =>
         response
@@ -267,7 +283,7 @@ export default class TelegramBot extends Bot {
       .catch(() => new Response());
 
   // bot command: /roll
-  roll = async (update, args) =>
+  roll = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     ((outcome, message) =>
       (update.inline_query &&
         this.answerInlineQuery(update.inline_query.id, [
@@ -279,14 +295,14 @@ export default class TelegramBot extends Bot {
         update.message.chat.id,
         message(update.message.from.username, outcome)
       ))(
-      Math.floor(Math.random() * (args[1] ?? 6 - 1 + 1) + 1),
-      (username, outcome) =>
-        `@${username} rolled a ${args[1] ??
+      Math.floor(Math.random() * (parseInt(args[1]) ?? 6 - 1 + 1) + 1),
+      (username: string, outcome: number) =>
+        `@${username} rolled a ${parseInt(args[1]) ??
           6} sided die. it landed on ${outcome}`
     );
 
   // bot command: /commandList
-  commandList = async (update) =>
+  commandList = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
       update.message.chat.id,
       `<pre>${JSON.stringify(Object.keys(this.commands))}</pre>`,
@@ -294,21 +310,21 @@ export default class TelegramBot extends Bot {
     );
 
   // bot command: /toss
-  toss = async (update) =>
+  toss = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
       update.message.chat.id,
       Math.floor(Math.random() * 2) == 0 ? "heads" : "tails"
     );
 
   // bot command: /ping
-  ping = async (update, args) =>
+  ping = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     this.sendMessage(
       update.message.chat.id,
       args.length === 1 ? "pong" : args.slice(1).join(" ")
     );
 
   // bot command: /chatInfo
-  getChatInfo = async (update) =>
+  getChatInfo = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
       update.message.chat.id,
       preTagString(prettyJSON(update.message.chat)),
@@ -316,16 +332,19 @@ export default class TelegramBot extends Bot {
     );
 
   // Send all the profile pictures to user_id
-  sendAllProfilePhotos = async (chat_id, user_id) =>
-    this.getUserProfilePhotos(user_id).then((result) =>
-      result
+  sendAllProfilePhotos = async (
+    chat_id: number,
+    user_id: number
+  ): Promise<Response[]> =>
+    this.getUserProfilePhotos(user_id).then((response) =>
+      response
         .json()
-        .then(
-          (content: { result: { photos: { file_id: string }[] } }) =>
-            content.result.photos
-        )
-        .then((photos) =>
-          photos.map((photo) => this.sendPhoto(chat_id, photo[0].file_id))
+        .then((content: { result: { photos: { file_id: string }[] } }) =>
+          Promise.all(
+            content.result.photos.map((photo) =>
+              this.sendPhoto(chat_id, photo[0].file_id)
+            )
+          )
         )
     );
 }
