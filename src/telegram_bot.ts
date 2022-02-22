@@ -64,12 +64,14 @@ export default class TelegramBot extends Bot {
                     ))(
                     (results.Redirect !== "" && results.Redirect) ||
                       results.AbstractURL,
-                    `https://duckduckgo.com${(results.Image !== "" &&
-                      results.Image) ||
-                      (results.RelatedTopics.length !== 0 &&
-                        results.RelatedTopics[0].Icon.URL !== "" &&
-                        results.RelatedTopics[0].Icon.URL) ||
-                      "/i/f96d4798.png"}`
+                    (results.Redirect === "" &&
+                      `https://duckduckgo.com${(results.Image !== "" &&
+                        results.Image) ||
+                        (results.RelatedTopics.length !== 0 &&
+                          results.RelatedTopics[0].Icon.URL !== "" &&
+                          results.RelatedTopics[0].Icon.URL) ||
+                        "/i/f96d4798.png"}`) ||
+                      ""
                   )
               )
           )) ??
