@@ -16,11 +16,12 @@ export default class TelegramBot extends Bot {
   duckduckgo = async (update, args): Promise<Response> =>
     ((query) =>
       ((duckduckgo_url) =>
-        ((update.inline_query &&
+        (update.inline_query &&
           query === "" &&
           this.answerInlineQuery(update.inline_query.id, [
             new InlineQueryResultArticle("https://duckduckgo.com"),
           ])) ||
+        (update.inline_query &&
           fetch(
             addSearchParams(new URL("https://api.duckduckgo.com"), {
               q: query,
@@ -78,7 +79,7 @@ export default class TelegramBot extends Bot {
                     "https://duckduckgo.com/i/f96d4798.png"
                   )
               )
-          )) ??
+          )) ||
         this.sendMessage(update.message.chat.id, duckduckgo_url))(
         (query === "" && "https://duckduckgo.com") ||
           addSearchParams(new URL("https://duckduckgo.com"), {
