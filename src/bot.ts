@@ -40,7 +40,7 @@ export default class Bot {
   updates = {
     inline_query: this.inlineQueryUpdate,
     message: this.messageUpdate,
-    default: new Response("True", { status: 200 }),
+    default: new Response(),
   };
 
   update = async (
