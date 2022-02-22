@@ -23,23 +23,32 @@ export default class TelegramBot extends Bot {
               q: query,
               format: "json",
               t: "telegram_bot",
+              no_redirect: "1",
             }).href
           ).then((response) =>
             response
               .json()
               .then(
-                (results: { AbstractSource: string; AbstractURL: string }) =>
-                  this.answerInlineQuery(
-                    update.inline_query.id,
-                    (results.AbstractURL !== "" && [
-                      new InlineQueryResultArticle(
-                        `${results.AbstractURL}\n\n${duckduckgo_url}`,
-                        results.AbstractURL,
-                        "HTML"
-                      ),
-                      new InlineQueryResultArticle(duckduckgo_url),
-                    ]) || [new InlineQueryResultArticle(duckduckgo_url)],
-                    3600 // 1 hour
+                (results: {
+                  AbstractSource: string;
+                  AbstractURL: string;
+                  Redirect: string;
+                }) =>
+                  ((instant_answer_url) =>
+                    this.answerInlineQuery(
+                      update.inline_query.id,
+                      (instant_answer_url !== "" && [
+                        new InlineQueryResultArticle(
+                          `${instant_answer_url}\n\n${duckduckgo_url}`,
+                          instant_answer_url,
+                          "HTML"
+                        ),
+                        new InlineQueryResultArticle(duckduckgo_url),
+                      ]) || [new InlineQueryResultArticle(duckduckgo_url)],
+                      3600 // 1 hour
+                    ))(
+                    (results.Redirect !== "" && results.Redirect) ||
+                      results.AbstractURL
                   )
               )
           )) ??
