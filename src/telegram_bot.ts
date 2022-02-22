@@ -36,7 +36,7 @@ export default class TelegramBot extends Bot {
                   Image: string;
                   RelatedTopics: { Icon: { URL: string } }[];
                 }) =>
-                  ((instant_answer_url, thumb_url) =>
+                  ((instant_answer_url, thumb_url, default_thumb_url) =>
                     this.answerInlineQuery(
                       update.inline_query.id,
                       (instant_answer_url !== "" && [
@@ -50,14 +50,14 @@ export default class TelegramBot extends Bot {
                           duckduckgo_url,
                           duckduckgo_url,
                           "",
-                          "https://duckduckgo.com/i/f96d4798.png"
+                          default_thumb_url
                         ),
                       ]) || [
                         new InlineQueryResultArticle(
                           duckduckgo_url,
                           duckduckgo_url,
                           "",
-                          "https://duckduckgo.com/i/f96d4798.png"
+                          default_thumb_url
                         ),
                       ],
                       3600 // 1 hour
@@ -71,7 +71,8 @@ export default class TelegramBot extends Bot {
                           results.RelatedTopics[0].Icon.URL !== "" &&
                           results.RelatedTopics[0].Icon.URL) ||
                         "/i/f96d4798.png"}`) ||
-                      ""
+                      "",
+                    "https://duckduckgo.com/i/f96d4798.png"
                   )
               )
           )) ??
