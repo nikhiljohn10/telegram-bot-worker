@@ -1,4 +1,4 @@
-import { JSONResponse, sha256 } from "./libs";
+import { JSONResponse, sha256, addSearchParams } from "./libs";
 
 export default class Webhook {
   api: URL;
@@ -17,13 +17,12 @@ export default class Webhook {
   set = async (drop_pending_updates = true): Promise<Response> =>
     sha256(this.token).then((access_key) =>
       this.execute(
-        new URL(
-          `${this.api.href}/setWebhook?url=${encodeURIComponent(
-            `${this.url.href}/${access_key}`
-          )}&max_connections=${100}&allowed_updates=${[
-            "message",
-          ]}&drop_pending_updates=${drop_pending_updates}`
-        )
+        addSearchParams(new URL(`${this.api.href}/setWebhook`), {
+          url: encodeURIComponent(`${this.url.href}/${access_key}`),
+          max_connections: "100",
+          allowed_updates: JSON.stringify(["message"]),
+          drop_pending_updates: drop_pending_updates.toString(),
+        })
       )
     );
 
