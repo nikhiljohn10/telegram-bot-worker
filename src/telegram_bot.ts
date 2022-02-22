@@ -46,7 +46,12 @@ export default class TelegramBot extends Bot {
                           "HTML",
                           thumb_url
                         ),
-                        new InlineQueryResultArticle(duckduckgo_url),
+                        new InlineQueryResultArticle(
+                          duckduckgo_url,
+                          duckduckgo_url,
+                          "",
+                          "https://duckduckgo.com/i/f96d4798.png"
+                        ),
                       ]) || [
                         new InlineQueryResultArticle(
                           duckduckgo_url,
