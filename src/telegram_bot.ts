@@ -33,22 +33,39 @@ export default class TelegramBot extends Bot {
                   AbstractSource: string;
                   AbstractURL: string;
                   Redirect: string;
+                  Image: string;
+                  RelatedTopics: { Icon: { URL: string } }[];
                 }) =>
-                  ((instant_answer_url) =>
+                  ((instant_answer_url, thumb_url) =>
+                    console.log(thumb_url) === undefined &&
                     this.answerInlineQuery(
                       update.inline_query.id,
                       (instant_answer_url !== "" && [
                         new InlineQueryResultArticle(
                           `${instant_answer_url}\n\n${duckduckgo_url}`,
                           instant_answer_url,
-                          "HTML"
+                          "HTML",
+                          thumb_url
                         ),
                         new InlineQueryResultArticle(duckduckgo_url),
-                      ]) || [new InlineQueryResultArticle(duckduckgo_url)],
+                      ]) || [
+                        new InlineQueryResultArticle(
+                          duckduckgo_url,
+                          duckduckgo_url,
+                          "",
+                          "https://duckduckgo.com/i/f96d4798.png"
+                        ),
+                      ],
                       3600 // 1 hour
                     ))(
                     (results.Redirect !== "" && results.Redirect) ||
-                      results.AbstractURL
+                      results.AbstractURL,
+                    `https://duckduckgo.com${(results.Image !== "" &&
+                      results.Image) ||
+                      (results.RelatedTopics.length !== 0 &&
+                        results.RelatedTopics[0].Icon.URL !== "" &&
+                        results.RelatedTopics[0].Icon.URL) ||
+                      "/i/f96d4798.png"}`
                   )
               )
           )) ??

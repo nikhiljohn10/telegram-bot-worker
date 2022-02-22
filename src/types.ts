@@ -129,12 +129,19 @@ export class InlineQueryResultPhoto extends InlineQueryResult {
 export class InlineQueryResultArticle extends InlineQueryResult {
   title: string;
   input_message_content: InputMessageContent;
-  constructor(content, title = content, parse_mode = "") {
+  thumb_url: string;
+  constructor(
+    content: string,
+    title = content,
+    parse_mode = "",
+    thumb_url = ""
+  ) {
     super("article");
     this.title = title;
     this.input_message_content = {
       message_text: content.toString(),
       parse_mode,
     };
+    this.thumb_url = thumb_url;
   }
 }
