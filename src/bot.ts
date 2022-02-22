@@ -61,7 +61,8 @@ export default class Bot {
     request: Request,
     update: TelegramUpdate
   ): Promise<Response> =>
-    (update.message !== undefined &&
+    (console.log({ update }) === undefined &&
+      update.message !== undefined &&
       (await this.updates.message(request, update))) ||
     (update.inline_query !== undefined &&
       (await this.updates.inline_query(request, update))) ||
