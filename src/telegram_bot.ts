@@ -43,7 +43,7 @@ export default class TelegramBot extends Bot {
                         new InlineQueryResultArticle(
                           `${instant_answer_url}\n\n${duckduckgo_url}`,
                           instant_answer_url,
-                          "HTML",
+                          "",
                           thumb_url
                         ),
                         new InlineQueryResultArticle(
