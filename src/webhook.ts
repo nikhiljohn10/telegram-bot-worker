@@ -1,4 +1,4 @@
-import { JSONResponse, sha256, addSearchParams } from "./libs";
+import { JSONResponse, sha256, addSearchParams, responseToJSON } from "./libs";
 
 export default class Webhook {
   api: URL;
@@ -33,9 +33,9 @@ export default class Webhook {
     this.execute(new URL(`${this.api.href}/deleteWebhook`));
 
   execute = async (url: URL): Promise<Response> =>
-    fetch(url.href).then((response) =>
-      response.json().then((json) => JSONResponse(json))
-    );
+    fetch(url.href)
+      .then((response) => responseToJSON(response))
+      .then((json) => JSONResponse(json));
 
   webhookCommands = {
     setWebhook: this.set,

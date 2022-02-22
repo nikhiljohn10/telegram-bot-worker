@@ -6,16 +6,17 @@
 ////  License: MIT                                              ////
 ////                                                            ////
 ////  Author: Sean Behan                                        ////
-////  Repo: https://github.com/codebam/mooniter                 ////
+////  Repo: https://github.com/codebam/cf-workers-telegram-bot  ////
 ////  License: Apache-2.0                                       ////
 ////////////////////////////////////////////////////////////////////
 
 import commands from "./commands";
 import Handler from "./handler";
-import { Config } from "./types";
+import { responseToJSON } from "./libs";
+import { Env } from "./types";
 
 export default {
-  fetch: async (request: Request, env) =>
+  fetch: async (request: Request, env: Env) =>
     new Handler([
       {
         bot_name: "cf-workers-telegram-bot",
@@ -64,13 +65,5 @@ export default {
       },
     ])
       .handle(request)
-      .then((response) => {
-        response
-          .clone()
-          .text()
-          .then((text) =>
-            console.log({ result: { status: response.status, body: text } })
-          );
-        return response;
-      }),
+      .then((response) => responseToJSON(response) && response),
 };

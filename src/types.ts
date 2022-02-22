@@ -15,11 +15,14 @@ export type KV = {
   put: (key: string, value: string) => Promise<undefined>;
 };
 
+export type Env = Record<string, EnvKey>;
+export type EnvKey = string | KV;
+
 export class Config {
   bot_name: string;
-  token: string;
+  token: EnvKey;
   commands: Record<string, Command>;
-  kv: KV;
+  kv: EnvKey;
   url: URL;
   handler: Handler | undefined;
   constructor(config: PartialConfig = {}) {
@@ -37,9 +40,9 @@ export class Config {
 
 export type PartialConfig = {
   bot_name?: string;
-  token?: string;
+  token?: EnvKey;
   commands?: Record<string, Command>;
-  kv?: KV;
+  kv?: EnvKey;
   url?: URL;
   handler?: Handler | undefined;
 };
@@ -199,7 +202,7 @@ export type TelegramMessage = {
   // reply_markup?: TelegramInlineKeyboardMarkup;
 };
 
-export type InputMessageContent = {
+export type TelegramInputMessageContent = {
   message_text: string;
   parse_mode: string;
 };
@@ -271,7 +274,7 @@ export type TelegramInlineQueryType =
   | "game"
   | "sticker";
 
-export class InlineQueryResult {
+export class TelegramInlineQueryResult {
   type: TelegramInlineQueryType;
   id: string;
   constructor(type: TelegramInlineQueryType) {
@@ -280,19 +283,28 @@ export class InlineQueryResult {
   }
 }
 
-export class InlineQueryResultPhoto extends InlineQueryResult {
+export class TelegramInlineQueryResultPhoto extends TelegramInlineQueryResult {
   photo_url: string; // must be a jpg
   thumb_url: string;
-  constructor(photo: TelegramPhotoSize) {
+  photo_width?: number;
+  photo_height?: number;
+  title?: string;
+  description?: string;
+  caption?: string;
+  parse_mode?: string;
+  caption_entities?: string;
+  // reply_markup?: TelegramInlineKeyboardMarkup;
+  // input_message_content?: TelegramInputMessageContent;
+  constructor(photo: string) {
     super("photo");
-    this.photo_url = photo.file_id;
-    this.thumb_url = photo.file_id;
+    this.photo_url = photo;
+    this.thumb_url = photo;
   }
 }
 
-export class InlineQueryResultArticle extends InlineQueryResult {
+export class TelegramInlineQueryResultArticle extends TelegramInlineQueryResult {
   title: string;
-  input_message_content: InputMessageContent;
+  input_message_content: TelegramInputMessageContent;
   thumb_url: string;
   constructor(
     content: string,

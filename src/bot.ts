@@ -1,12 +1,11 @@
 import Webhook from "./webhook";
-import { addSearchParams, log } from "./libs";
+import { addSearchParams, log, responseToJSON } from "./libs";
 import {
   Commands,
   KV,
   Config,
-  InlineQueryResult,
+  TelegramInlineQueryResult,
   TelegramUpdate,
-  TelegramPhotoSize,
 } from "./types";
 import Handler from "./handler";
 
@@ -29,12 +28,7 @@ export default class Bot {
 
   inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
     this.executeInlineCommand(update).then(
-      (response) =>
-        response
-          .clone()
-          .json()
-          .then((json) => console.log({ response: json })) === undefined &&
-        response
+      (response) => responseToJSON(response) && response
     ) || this.updates.default;
 
   messageUpdate = async (update: TelegramUpdate): Promise<Response> =>
@@ -85,19 +79,7 @@ export default class Bot {
             this.commands[command]?.(this, update, [...text_args, ...args])) ||
           this.updates.default)(this.getCommand(text_args)))(
         text.split(" ")
-      ).then((response) =>
-        response
-          .clone()
-          .text()
-          .then(
-            (text) =>
-              new Response(
-                log({
-                  response: { status: response.status, body: text },
-                }).response.body
-              )
-          )
-      )) ||
+      ).then((response) => responseToJSON(response) && response)) ||
     this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
@@ -117,7 +99,7 @@ export default class Bot {
   // trigger answerInlineQuery command of BotAPI
   answerInlineQuery = async (
     inline_query_id: number,
-    results: InlineQueryResult[],
+    results: TelegramInlineQueryResult[],
     cache_time = 0
   ) =>
     fetch(
@@ -173,7 +155,7 @@ export default class Bot {
   // trigger sendPhoto command of BotAPI
   sendPhoto = async (
     chat_id: number,
-    photo: TelegramPhotoSize,
+    photo: string,
     caption = "",
     parse_mode = "",
     disable_notification = false,
@@ -183,7 +165,7 @@ export default class Bot {
       log(
         addSearchParams(new URL(`${this.api.href}/sendPhoto`), {
           chat_id: chat_id.toString(),
-          photo: JSON.stringify(photo),
+          photo,
           caption,
           parse_mode,
           disable_notification: disable_notification.toString(),

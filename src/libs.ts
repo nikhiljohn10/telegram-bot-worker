@@ -34,3 +34,16 @@ export const addSearchParams = (
       ...Object.entries(params),
     ]).toString()}`
   );
+
+export const responseToJSON = async (
+  response: Response
+): Promise<Record<string, unknown>> =>
+  response
+    .clone()
+    .text()
+    .then(
+      (text) =>
+        log({ response: { status: response.status, body: text } }) &&
+        JSON.parse(text)
+    )
+    .catch(() => log({ error: "Failed to parse JSON of response" }));
