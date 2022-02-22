@@ -37,7 +37,6 @@ export default class TelegramBot extends Bot {
                   RelatedTopics: { Icon: { URL: string } }[];
                 }) =>
                   ((instant_answer_url, thumb_url) =>
-                    console.log(thumb_url) === undefined &&
                     this.answerInlineQuery(
                       update.inline_query.id,
                       (instant_answer_url !== "" && [
