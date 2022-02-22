@@ -1,5 +1,5 @@
 import Webhook from "./webhook";
-import { addSearchParams } from "./libs";
+import { addSearchParams, log } from "./libs";
 import { Commands, KV, TelegramUpdate } from "./types";
 import Handler from "./handler";
 
@@ -28,7 +28,7 @@ export default class Bot {
           .json()
           .then((json) => console.log({ response: json })) === undefined &&
         response
-    );
+    ) || this.updates.default;
 
   messageUpdate = async (request, update): Promise<Response> =>
     (typeof update.message.text === "string" &&
@@ -61,7 +61,7 @@ export default class Bot {
     request: Request,
     update: TelegramUpdate
   ): Promise<Response> =>
-    (console.log({ update }) === undefined &&
+    (log({ update }) &&
       update.message !== undefined &&
       (await this.updates.message(request, update))) ||
     (update.inline_query !== undefined &&
@@ -81,13 +81,13 @@ export default class Bot {
 
   _executeCommand = async (update, text, args = []) =>
     (
-      console.log({ text, args }) === undefined &&
+      (log({ text, args }) &&
       ((text_args: string[]) =>
         this.commands[this.getCommand(text_args)]?.(this, update, [
           ...text_args,
           ...args,
         ]))
-    )(text.split(" ")) ?? new Response();
+    )(text.split(" ")) || this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (request, update): Promise<Response> =>
@@ -101,23 +101,18 @@ export default class Bot {
 
   // execute the custom bot commands from bot configurations
   executeCommand = async (request, update): Promise<Response> =>
-    this._executeCommand(update, update.message.text) ?? new Response();
+    this._executeCommand(update, update.message.text) || this.updates.default;
 
   // trigger answerInlineQuery command of BotAPI
   answerInlineQuery = async (inline_query_id, results, cache_time = 0) =>
     fetch(
-      console.log(
+      log(
         addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
           inline_query_id: inline_query_id.toString(),
           results: JSON.stringify(results),
           cache_time: cache_time.toString(),
         }).href
-      ) === undefined &&
-        addSearchParams(new URL(`${this.api}/answerInlineQuery`), {
-          inline_query_id: inline_query_id.toString(),
-          results: JSON.stringify(results),
-          cache_time: cache_time.toString(),
-        }).href
+      )
     );
 
   // trigger sendMessage command of BotAPI
@@ -130,14 +125,16 @@ export default class Bot {
     reply_to_message_id = 0
   ): Promise<Response> =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendMessage`), {
-        chat_id: chat_id,
-        text,
-        parse_mode: parse_mode,
-        disable_web_page_preview: disable_web_page_preview.toString(),
-        disable_notification: disable_notification.toString(),
-        reply_to_message_id: reply_to_message_id.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendMessage`), {
+          chat_id: chat_id,
+          text,
+          parse_mode: parse_mode,
+          disable_web_page_preview: disable_web_page_preview.toString(),
+          disable_notification: disable_notification.toString(),
+          reply_to_message_id: reply_to_message_id.toString(),
+        }).href
+      )
     );
 
   // trigger forwardMessage command of BotAPI
@@ -148,12 +145,14 @@ export default class Bot {
     message_id
   ) =>
     fetch(
-      addSearchParams(new URL(`${this.api}/sendMessage`), {
-        chat_id: chat_id.toString(),
-        from_chat_id: from_chat_id.toString(),
-        message_id: message_id.toString(),
-        disable_notification: disable_notification.toString(),
-      }).href
+      log(
+        addSearchParams(new URL(`${this.api}/sendMessage`), {
+          chat_id: chat_id.toString(),
+          from_chat_id: from_chat_id.toString(),
+          message_id: message_id.toString(),
+          disable_notification: disable_notification.toString(),
+        }).href
+      )
     );
 
   // trigger sendPhoto command of BotAPI

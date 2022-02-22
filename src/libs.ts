@@ -19,6 +19,8 @@ export const JSONResponse = (data, status = 200): Response =>
     },
   });
 
+export const log = (obj) => console.log(obj) === undefined && obj;
+
 export const preTagString = (str) => `<pre>${str}</pre>`;
 
 export const addSearchParams = (

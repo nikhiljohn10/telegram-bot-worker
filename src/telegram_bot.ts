@@ -89,21 +89,18 @@ export default class TelegramBot extends Bot {
 
   // bot command: /kanye
   kanye = async (update): Promise<Response> =>
-    console.log("entering kanye function") === undefined &&
     fetch("https://api.kanye.rest").then((response) =>
       response
         .json()
-        .then(
-          (json: { quote: string }) =>
-            console.log("parsed json of response") === undefined &&
-            ((message) =>
-              (update.inline_query !== undefined &&
-                this.answerInlineQuery(update.inline_query.id, [
-                  new InlineQueryResultArticle(message),
-                ])) ||
-              this.sendMessage(update.message.chat.id, message))(
-              `Kanye says... ${json.quote}`
-            )
+        .then((json: { quote: string }) =>
+          ((message) =>
+            (update.inline_query !== undefined &&
+              this.answerInlineQuery(update.inline_query.id, [
+                new InlineQueryResultArticle(message),
+              ])) ||
+            this.sendMessage(update.message.chat.id, message))(
+            `Kanye says... ${json.quote}`
+          )
         )
     );
 

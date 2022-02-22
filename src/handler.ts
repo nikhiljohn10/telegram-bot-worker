@@ -1,5 +1,5 @@
 import TelegramBot from "./telegram_bot";
-import { JSONResponse, sha256 } from "./libs";
+import { JSONResponse, sha256, log } from "./libs";
 import { Config } from "./types";
 
 export default class Handler {
@@ -13,9 +13,9 @@ export default class Handler {
     (this.getAccessKeys().then((access_keys) =>
       Object.keys(access_keys).forEach(
         (key) =>
-          console.log(
+          log(
             `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
-          ) === undefined &&
+          ) &&
           new TelegramBot({
             ...access_keys[new URL(request.url).pathname.substring(1)],
             url: new URL(request.url).origin, // worker url
