@@ -251,7 +251,6 @@ export default class TelegramBot extends Bot {
     this.sendMessage(update.message.chat.id, "/recursion")
       .then((response) =>
         response
-          .clone()
           .json()
           .then((result: { ok: boolean; result: { text: string } }) =>
             this.handler.postResponse(
