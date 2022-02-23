@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "name": "moonitor",
+  "version": "1.0.0",
+  "description": "serverless telegram bot on cf workers to monitor a cryptocurrency address",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "codebam",
+  "license": "(MIT OR Apache-2.0)",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  }
+}
