@@ -184,18 +184,19 @@ export default class TelegramBot extends Bot {
   balance = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     fetch(`https://blockchain.info/balance?active=${args[0]}`)
       .then((response) => responseToJSON(response))
-      .then((json: Balance) => (json[args[1]]?.final_balance ?? 0) / 100000000)
-      .then((balance) => {
-        const message = `${args[1]}\n\n${balance.toString()} BTC`;
-        if (update.inline_query) {
-          return this.answerInlineQuery(
-            update.inline_query.id,
-            [new TelegramInlineQueryResultArticle(message)],
-            7 * 60 // 7 minutes
-          );
-        }
-        return this.sendMessage(update.message.chat.id, message);
-      });
+      .then((json: Balance) =>
+        ((btc) =>
+          ((message) =>
+            (update.inline_query &&
+              this.answerInlineQuery(
+                update.inline_query.id,
+                [new TelegramInlineQueryResultArticle(message)],
+                7 * 60 // 7 minutes
+              )) ??
+            this.sendMessage(update.message.chat.id, message))(
+            `${args[1]}\n\n${btc} BTC`
+          ))(((json[args[1]]?.final_balance ?? 0) / 100000000).toString())
+      );
 
   // bot command: /get
   _get = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
