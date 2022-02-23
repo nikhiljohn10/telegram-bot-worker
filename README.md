@@ -49,6 +49,3 @@ to your Worker URL and look at the logs to see your Access URL
 Example URL for setting the Webhook and dropping pending updates:
 
 ```https://cf-workers-telegram-bot.codebam.workers.dev/a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447?command=setWebhook```
-
-Sending a GET request to the main URL updates the Webhook of all bots without
-dropping pending updates.
