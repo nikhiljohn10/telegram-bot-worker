@@ -71,11 +71,10 @@ export default class Bot {
     (log({ execute: { text, args } }) &&
       (async (text_args: string[]) =>
         ((command) =>
-          (log(
-            this.commands[command] ?? {
+          ((this.commands[command] ||
+            log({
               error: `command '${command}' does not exist`,
-            }
-          ) &&
+            })) &&
             this.commands[command]?.(this, update, [...text_args, ...args])) ||
           this.updates.default)(this.getCommand(text_args)))(
         text
