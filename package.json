@@ -14,10 +14,8 @@
   "license": "(MIT OR Apache-2.0)",
   "devDependencies": {
     "@cloudflare/workers-types": "^3.4.0",
-    "@types/crypto-js": "^4.1.1",
-    "@types/uuid": "^8.3.4",
-    "@typescript-eslint/parser": "^5.12.1",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
     "esbuild": "^0.14.23",
     "eslint": "^8.9.0",
     "miniflare": "^2.3.0",
