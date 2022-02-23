@@ -169,7 +169,16 @@ export default class TelegramBot extends Bot {
 
   // bot command: /epoch
   epoch = async (update: TelegramUpdate): Promise<Response> =>
-    this.sendMessage(update.message.chat.id, new Date().getTime().toString());
+    ((seconds) =>
+      (update.inline_query &&
+        this.answerInlineQuery(
+          update.inline_query.id,
+          [new TelegramInlineQueryResultArticle(seconds)],
+          0
+        )) ??
+      this.sendMessage(update.message.chat.id, seconds))(
+      Math.floor(Date.now() / 1000).toString()
+    );
 
   // bot command: /balance
   balance = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
