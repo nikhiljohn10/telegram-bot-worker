@@ -1,3 +1,5 @@
+import { Env, EnvKey, KV } from "./types";
+
 export const sha256 = async (text: string): Promise<string> =>
   crypto.subtle
     .digest("SHA-256", new TextEncoder().encode(text))
@@ -47,3 +49,27 @@ export const responseToJSON = async (
         JSON.parse(text)
     )
     .catch(() => log({ error: "Failed to parse JSON of response" }));
+
+export const isKV = (envKey: EnvKey): envKey is KV =>
+  typeof envKey === "object";
+
+export const undefinedEmpty = <T>(obj: T) => (obj === undefined && []) || [obj];
+
+export const sortEnv = (env: Env) =>
+  Object.entries(env)
+    .map(
+      (key: [string, EnvKey]) =>
+        (isKV(key[1]) && {
+          kv: Object.fromEntries([key]),
+        }) || {
+          string: Object.fromEntries([key]),
+        }
+    )
+    .reduce(
+      (prev, cur) => [
+        [...prev[0], ...undefinedEmpty(cur.string)],
+        [...prev[1], ...undefinedEmpty(cur.kv)],
+      ],
+      [[], []]
+    )
+    .map((arr) => Object.assign.apply({}, arr));

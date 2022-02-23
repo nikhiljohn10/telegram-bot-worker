@@ -41,7 +41,7 @@ export default class Handler {
   > =>
     Promise.all(
       this.configs.map((bot_config) =>
-        sha256(bot_config.token.toString()).then((hash) => [hash, bot_config])
+        sha256(bot_config.token).then((hash) => [hash, bot_config])
       )
     ).then((result) => Object.fromEntries(result));
 

@@ -1,18 +1,11 @@
-import {
-  JSONResponse,
-  sha256,
-  addSearchParams,
-  responseToJSON,
-  log,
-} from "./libs";
-import { EnvKey } from "./types";
+import { JSONResponse, sha256, addSearchParams, responseToJSON } from "./libs";
 
 export default class Webhook {
   api: URL;
-  token: EnvKey;
+  token: string;
   url: URL;
 
-  constructor(api: URL, token: EnvKey, url: URL) {
+  constructor(api: URL, token: string, url: URL) {
     this.api = api;
     this.token = token;
     this.url = url;
@@ -22,7 +15,7 @@ export default class Webhook {
   getMe = () => this.execute(new URL(`${this.api}/getMe`));
 
   set = async (drop_pending_updates = true): Promise<Response> =>
-    sha256(this.token.toString()).then((access_key) =>
+    sha256(this.token).then((access_key) =>
       this.execute(
         addSearchParams(new URL(`${this.api.href}/setWebhook`), {
           url: `${this.url.href}/${access_key}`,

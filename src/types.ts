@@ -20,9 +20,9 @@ export type EnvKey = string | KV;
 
 export class Config {
   bot_name: string;
-  token: EnvKey;
+  token: string;
   commands: Record<string, Command>;
-  kv: EnvKey;
+  kv: KV;
   url: URL;
   handler: Handler;
   constructor(config: PartialConfig = {}) {
@@ -40,9 +40,9 @@ export class Config {
 
 export type PartialConfig = {
   bot_name?: string;
-  token?: EnvKey;
+  token?: string;
   commands?: Record<string, Command>;
-  kv?: EnvKey;
+  kv?: KV;
   url?: URL;
   handler?: Handler;
 };
