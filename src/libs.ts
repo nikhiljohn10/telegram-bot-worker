@@ -55,21 +55,18 @@ export const isKV = (envKey: EnvKey): envKey is KV =>
 
 export const undefinedEmpty = <T>(obj: T) => (obj === undefined && []) || [obj];
 
-export const sortEnv = (env: Env) =>
-  Object.entries(env)
-    .map(
-      (key: [string, EnvKey]) =>
-        (isKV(key[1]) && {
-          kv: Object.fromEntries([key]),
-        }) || {
-          string: Object.fromEntries([key]),
-        }
-    )
-    .reduce(
-      (prev, cur) => [
-        [...prev[0], ...undefinedEmpty(cur.string)],
-        [...prev[1], ...undefinedEmpty(cur.kv)],
-      ],
+export const sortEnv = (
+  env: Env
+): [Record<string, string>, Record<string, KV>] =>
+  ((string_kv) => [
+    Object.fromEntries(string_kv[0]),
+    Object.fromEntries(string_kv[1]),
+  ])(
+    Object.entries(env).reduce<[[string, string][], [string, KV][]]>(
+      ([stringEntries, kvEntries], [key, value]) =>
+        typeof value === "string"
+          ? [[...stringEntries, [key, value]], kvEntries]
+          : [stringEntries, [...kvEntries, [key, value]]],
       [[], []]
     )
-    .map((arr) => Object.assign.apply({}, arr));
+  );
