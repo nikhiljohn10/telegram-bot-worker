@@ -78,7 +78,7 @@ export default class Bot {
           ) &&
             this.commands[command]?.(this, update, [...text_args, ...args])) ||
           this.updates.default)(this.getCommand(text_args)))(
-        text.split(" ")
+        log(text.trimStart().replace(/^([^\s]*)(\s*)/gm, "$1 ")).split(" ")
       ).then((response) => responseToJSON(response) && response)) ||
     this.updates.default;
 
