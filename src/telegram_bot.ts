@@ -182,7 +182,7 @@ export default class TelegramBot extends Bot {
 
   // bot command: /balance
   balance = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    fetch(`https://blockchain.info/balance?active=${args[0]}`)
+    fetch(`https://blockchain.info/balance?active=${args[1]}`)
       .then((response) => responseToJSON(response))
       .then((json: Balance) =>
         ((btc) =>
