@@ -10,7 +10,7 @@ My modifications are licensed under the Apache license.
 
 To use the deploy button:
 
-- Click the deploy button and fork the repo
+- Click the deploy button
 - Navigate to your new **GitHub repository &gt; Settings &gt; Secrets** and add the following secrets:
 
    ```yaml
