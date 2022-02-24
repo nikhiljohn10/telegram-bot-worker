@@ -31,10 +31,14 @@ export const addSearchParams = (
   params: Record<string, string> = {}
 ): URL =>
   new URL(
-    `${url.origin}${url.pathname}?${new URLSearchParams([
-      ...Array.from(url.searchParams.entries()),
-      ...Object.entries(params),
-    ]).toString()}`
+    `${url.origin}${url.pathname}?${new URLSearchParams(
+      Object.entries(
+        Object.fromEntries([
+          ...Array.from(url.searchParams.entries()),
+          ...Object.entries(params),
+        ])
+      )
+    ).toString()}`
   );
 
 export const responseToJSON = async (

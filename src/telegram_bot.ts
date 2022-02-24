@@ -55,7 +55,11 @@ export default class TelegramBot extends Bot {
                       update.inline_query.id,
                       (instant_answer_url !== "" && [
                         new TelegramInlineQueryResultArticle(
-                          `${instant_answer_url}\n\n<a href="${duckduckgo_url}">Results From DuckDuckGo</a>`,
+                          `${instant_answer_url}\n\n<a href="${
+                            addSearchParams(new URL(duckduckgo_url), {
+                              q: args.slice(2).join(" "),
+                            }).href
+                          }">Results From DuckDuckGo</a>`,
                           instant_answer_url,
                           "HTML",
                           thumb_url
@@ -79,12 +83,13 @@ export default class TelegramBot extends Bot {
                     (results.Redirect !== "" && results.Redirect) ||
                       results.AbstractURL,
                     (results.Redirect === "" &&
-                      `https://duckduckgo.com${(results.Image !== "" &&
-                        results.Image) ||
+                      `https://duckduckgo.com${
+                        (results.Image !== "" && results.Image) ||
                         (results.RelatedTopics.length !== 0 &&
                           results.RelatedTopics[0].Icon.URL !== "" &&
                           results.RelatedTopics[0].Icon.URL) ||
-                        "/i/f96d4798.png"}`) ||
+                        "/i/f96d4798.png"
+                      }`) ||
                       "",
                     "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
                   )
@@ -300,8 +305,9 @@ export default class TelegramBot extends Bot {
       ))(
       Math.floor(Math.random() * (parseInt(args[1]) ?? 6 - 1 + 1) + 1),
       (username: string, outcome: number) =>
-        `@${username} rolled a ${parseInt(args[1]) ??
-          6} sided die. it landed on ${outcome}`
+        `@${username} rolled a ${
+          parseInt(args[1]) ?? 6
+        } sided die. it landed on ${outcome}`
     );
 
   // bot command: /commandList
