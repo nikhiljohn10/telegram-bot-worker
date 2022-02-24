@@ -57,7 +57,10 @@ export default class TelegramBot extends Bot {
                         new TelegramInlineQueryResultArticle(
                           `${instant_answer_url}\n\n<a href="${
                             addSearchParams(new URL(duckduckgo_url), {
-                              q: args.slice(2).join(" "),
+                              q: args
+                                .slice(1)
+                                .join(" ")
+                                .replace(/^!\w* /, ""),
                             }).href
                           }">Results From DuckDuckGo</a>`,
                           instant_answer_url,
