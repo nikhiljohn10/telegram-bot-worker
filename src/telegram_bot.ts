@@ -19,6 +19,18 @@ export default class TelegramBot extends Bot {
   constructor(config: Config) {
     super(config);
   }
+
+  // bot command: /code
+  code = async (update: TelegramUpdate): Promise<Response> =>
+    ((url) =>
+      (update.inline_query &&
+        this.answerInlineQuery(update.inline_query.id, [
+          new TelegramInlineQueryResultArticle(url),
+        ])) ??
+      this.sendMessage(update.message.chat.id, url))(
+      "https://github.com/codebam/cf-workers-telegram-bot"
+    );
+
   // bot command: /duckduckgo
   duckduckgo = async (
     update: TelegramUpdate,

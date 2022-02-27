@@ -37,6 +37,8 @@ export default {
     update: TelegramUpdate,
     args: string[]
   ) => bot.duckduckgo(update, args),
+  code: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
+    bot.code(update),
   commandList: async (
     bot: TelegramBot,
     update: TelegramUpdate,

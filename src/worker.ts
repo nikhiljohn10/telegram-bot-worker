@@ -39,6 +39,7 @@ export default {
             "/get": commands._get,
             "/set": commands._set,
             "/duckduckgo": commands.duckduckgo,
+            "/code": commands.code,
             "/commands": commands.commandList,
             "/start": commands.commandList,
           },
@@ -50,6 +51,7 @@ export default {
           commands: {
             inline: commands.duckduckgo, // default inline response
             "/duckduckgo": commands.duckduckgo,
+            "/code": commands.code,
             "/commands": commands.commandList,
             "/start": commands.commandList,
           },
@@ -60,6 +62,7 @@ export default {
           commands: {
             inline: commands.duckduckgo,
             "/duckduckgo": commands.duckduckgo,
+            "/code": commands.code,
             "/commands": commands.commandList,
             "/start": commands.commandList,
           },
