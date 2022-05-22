@@ -46,6 +46,7 @@ export default {
           "/duckduckgo": commands.duckduckgo,
           "/code": commands.code,
           "/commands": commands.commandList,
+          "/help": commands.commandList,
           "/start": commands.commandList,
         },
         kv: env.KV_BOT_STORAGE,
