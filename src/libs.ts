@@ -54,23 +54,4 @@ export const responseToJSON = async (
     )
     .catch(() => log({ error: "Failed to parse JSON of response" }));
 
-export const isKV = (envKey: EnvKey): envKey is KV =>
-  typeof envKey === "object";
-
 export const undefinedEmpty = <T>(obj: T) => (obj === undefined && []) || [obj];
-
-export const sortEnv = (
-  env: Env
-): [Record<string, string>, Record<string, KV>] =>
-  ((string_kv) => [
-    Object.fromEntries(string_kv[0]),
-    Object.fromEntries(string_kv[1]),
-  ])(
-    Object.entries(env).reduce<[[string, string][], [string, KV][]]>(
-      ([stringEntries, kvEntries], [key, value]) =>
-        typeof value === "string"
-          ? [[...stringEntries, [key, value]], kvEntries]
-          : [stringEntries, [...kvEntries, [key, value]]],
-      [[], []]
-    )
-  );

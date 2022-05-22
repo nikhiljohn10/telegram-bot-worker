@@ -10,29 +10,18 @@ export type Command = (
 
 export type Commands = Record<string, Command>;
 
-export type KV = {
-  get: (key: string) => Promise<string>;
-  put: (key: string, value: string) => Promise<undefined>;
-};
-
-export type Env = Record<string, EnvKey>;
-export type EnvKey = string | KV;
-
 export class Config {
   bot_name: string;
   token: string;
   commands: Record<string, Command>;
-  kv: KV;
+  kv: KVNamespace;
   url: URL;
   handler: Handler;
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
     this.token = config.token || "";
     this.commands = config.commands || {};
-    this.kv = config.kv || {
-      get: () => Promise.resolve(""),
-      put: () => undefined,
-    };
+    this.kv = config.kv;
     this.url = config.url;
     this.handler = config.handler;
   }
@@ -42,7 +31,7 @@ export type PartialConfig = {
   bot_name?: string;
   token?: string;
   commands?: Record<string, Command>;
-  kv?: KV;
+  kv?: KVNamespace;
   url?: URL;
   handler?: Handler;
 };
