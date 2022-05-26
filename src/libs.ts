@@ -1,5 +1,3 @@
-import { Env, EnvKey, KV } from "./types";
-
 export const sha256 = async (text: string): Promise<string> =>
   crypto.subtle
     .digest("SHA-256", new TextEncoder().encode(text))
