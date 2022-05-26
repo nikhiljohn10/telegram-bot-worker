@@ -73,7 +73,5 @@ export default {
           "/start": commands.commandList,
         },
       },
-    ])
-      .handle(request)
-      .then((response) => responseToJSON(response) && response),
+    ]).handle(request),
 };

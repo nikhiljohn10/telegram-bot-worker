@@ -23,8 +23,7 @@ export default class Handler {
     this.responses.default;
 
   postResponse = async (request: Request, bot: Bot): Promise<Response> =>
-    (log(request.headers.get("x-real-ip")) &&
-      bot.token &&
+    (bot.token &&
       request
         .json()
         .then((update) => bot.update(new TelegramUpdate(update)))) ??

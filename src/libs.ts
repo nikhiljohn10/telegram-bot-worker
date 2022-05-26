@@ -45,11 +45,7 @@ export const responseToJSON = async (
   response
     .clone()
     .text()
-    .then(
-      (text) =>
-        log({ response: { status: response.status, body: text } }) &&
-        JSON.parse(text)
-    )
+    .then((text) => JSON.parse(text))
     .catch(() => log({ error: "Failed to parse JSON of response" }));
 
 export const undefinedEmpty = <T>(obj: T) => (obj === undefined && []) || [obj];

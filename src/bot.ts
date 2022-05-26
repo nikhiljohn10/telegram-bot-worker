@@ -2,7 +2,6 @@ import Webhook from "./webhook";
 import { addSearchParams, log, responseToJSON } from "./libs";
 import {
   Commands,
-  KV,
   Config,
   TelegramInlineQueryResult,
   TelegramUpdate,
@@ -14,7 +13,7 @@ export default class Bot {
   commands: Commands;
   api: URL;
   webhook: Webhook;
-  kv: KV;
+  kv: KVNamespace;
   handler: Handler;
 
   constructor(config: Config) {
@@ -35,7 +34,7 @@ export default class Bot {
     (typeof update.message.text === "string" &&
       (await this.executeCommand(update).then(
         async () => await this.greetUsers(update)
-      ))) ||
+      ))) ??
     this.updates.default;
 
   updates = {
@@ -63,6 +62,7 @@ export default class Bot {
 
   getCommand = (args: string[]): string => args[0]?.split("@")[0];
 
+  // run command passed from executeCommand
   _executeCommand = async (
     update: TelegramUpdate,
     text: string,
@@ -76,12 +76,14 @@ export default class Bot {
               error: `command '${command}' does not exist`,
             })) &&
             this.commands[command]?.(this, update, [...text_args, ...args])) ||
+          // run the command
           this.updates.default)(this.getCommand(text_args)))(
+        // get the command to run
         text
           .trimStart()
           .replace(/^([^\s]*\s)\s*/gm, "$1")
           .split(" ")
-      ).then((response) => responseToJSON(response) && response)) ||
+      )) ??
     this.updates.default;
 
   // execute the inline custom bot commands from bot configurations
@@ -91,7 +93,7 @@ export default class Bot {
         update,
         "inline",
         update.inline_query.query.trimStart().split(" ")
-      ))) ||
+      ))) ??
     this.updates.default;
 
   // execute the custom bot commands from bot configurations

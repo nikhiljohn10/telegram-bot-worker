@@ -4,6 +4,7 @@ import {
   prettyJSON,
   addSearchParams,
   responseToJSON,
+  log,
 } from "./libs";
 import {
   Joke,
@@ -287,23 +288,22 @@ export default class TelegramBot extends Bot {
 
   // bot command: /recursion
   recursion = async (update: TelegramUpdate): Promise<Response> =>
-    this.sendMessage(update.message.chat.id, "/recursion")
-      .then((response) => responseToJSON(response))
-      .then((result: { ok: boolean; result: { text: string } }) =>
-        this.handler.postResponse(
-          new Request("", {
-            method: "POST",
-            body: JSON.stringify({
-              message: {
-                text: result.result.text,
-                chat: { id: update.message.chat.id },
-              },
-            }),
-          }),
-          this
-        )
-      )
-      .catch(() => new Response());
+    this.sendMessage(update.message.chat.id, "/recursion");
+  // .then((response) => responseToJSON(response))
+  // .then((result: { ok: boolean; result: { text: string } }) =>
+  //   this.handler.postResponse(
+  //     new Request("", {
+  //       method: "POST",
+  //       body: JSON.stringify({
+  //         message: {
+  //           text: result.result.text,
+  //           chat: { id: update.message.chat.id },
+  //         },
+  //       }),
+  //     }),
+  //     this
+  //   )
+  // );
 
   // bot command: /roll
   roll = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
