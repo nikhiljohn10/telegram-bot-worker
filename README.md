@@ -39,7 +39,7 @@ of the following.
 - sha256sum(YourTelegramSecretKey) is the path to your webhook commands and
   should be put at the end of your worker URL to access commands such as
 setting your webhook
-- Do a web search for sha256 calculator and paste your telegram secret key
+- Use `sha256sum <<< "your secret key"` to get the path
 - Open the Cloudflare Worker Logs under **Workers &gt; cf-workers-telegram-bot
   &gt; Logs &gt; Begin log stream** and make a GET request (open it in your browser)
 to your Worker URL and look at the logs to see your Access URL
