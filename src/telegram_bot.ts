@@ -307,7 +307,6 @@ export default class TelegramBot extends Bot {
 
   // bot command: /roll
   roll = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    log(JSON.stringify(update)) &&
     ((outcome, message) =>
       (update.inline_query &&
         this.answerInlineQuery(update.inline_query.id, [
