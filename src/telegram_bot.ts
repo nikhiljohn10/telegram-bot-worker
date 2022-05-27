@@ -307,21 +307,30 @@ export default class TelegramBot extends Bot {
 
   // bot command: /roll
   roll = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
+    log(JSON.stringify(update)) &&
     ((outcome, message) =>
       (update.inline_query &&
         this.answerInlineQuery(update.inline_query.id, [
           new TelegramInlineQueryResultArticle(
-            message(update.inline_query.from.username, outcome)
+            message(
+              update.inline_query.from.username,
+              update.inline_query.from.first_name,
+              outcome
+            )
           ),
         ])) ??
       this.sendMessage(
         update.message.chat.id,
-        message(update.message.from.username, outcome)
+        message(
+          update.message.from.username,
+          update.message.from.first_name,
+          outcome
+        )
       ))(
-      Math.floor(Math.random() * (parseInt(args[1]) ?? 6 - 1 + 1) + 1),
-      (username: string, outcome: number) =>
-        `@${username} rolled a ${
-          parseInt(args[1]) ?? 6
+      Math.floor(Math.random() * (parseInt(args[1]) || 6 - 1 + 1) + 1),
+      (username: string, first_name: string, outcome: number) =>
+        `${username ?? first_name} rolled a ${
+          parseInt(args[1]) || 6
         } sided die. it landed on ${outcome}`
     );
 
