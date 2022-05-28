@@ -310,3 +310,11 @@ export class TelegramInlineQueryResultArticle extends TelegramInlineQueryResult 
     this.thumb_url = thumb_url;
   }
 }
+
+export type DDGQueryResponse = {
+  AbstractSource: string;
+  AbstractURL: string;
+  Redirect: string;
+  Image: string;
+  RelatedTopics: { Icon: { URL: string } }[];
+};

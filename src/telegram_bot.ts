@@ -14,6 +14,7 @@ import {
   TelegramInlineQueryResultPhoto,
   TelegramUpdate,
   Config,
+  DDGQueryResponse,
 } from "./types";
 
 export default class TelegramBot extends Bot {
@@ -53,63 +54,56 @@ export default class TelegramBot extends Bot {
               no_redirect: "1",
             }).href
           ).then((response) =>
-            response
-              .json()
-              .then(
-                (results: {
-                  AbstractSource: string;
-                  AbstractURL: string;
-                  Redirect: string;
-                  Image: string;
-                  RelatedTopics: { Icon: { URL: string } }[];
-                }) =>
-                  ((instant_answer_url, thumb_url, default_thumb_url) =>
-                    this.answerInlineQuery(
-                      update.inline_query.id,
-                      (instant_answer_url !== "" && [
-                        new TelegramInlineQueryResultArticle(
-                          `${instant_answer_url}\n\n<a href="${
-                            addSearchParams(new URL(duckduckgo_url), {
-                              q: args
-                                .slice(1)
-                                .join(" ")
-                                .replace(/^!\w* /, ""),
-                            }).href
-                          }">Results From DuckDuckGo</a>`,
-                          instant_answer_url,
-                          "HTML",
-                          thumb_url
-                        ),
-                        new TelegramInlineQueryResultArticle(
-                          duckduckgo_url,
-                          duckduckgo_url,
-                          "",
-                          default_thumb_url
-                        ),
-                      ]) || [
-                        new TelegramInlineQueryResultArticle(
-                          duckduckgo_url,
-                          duckduckgo_url,
-                          "",
-                          default_thumb_url
-                        ),
-                      ],
-                      3600 // 1 hour
-                    ))(
-                    (results.Redirect !== "" && results.Redirect) ||
-                      results.AbstractURL,
-                    (results.Redirect === "" &&
-                      `https://duckduckgo.com${
-                        (results.Image !== "" && results.Image) ||
-                        (results.RelatedTopics.length !== 0 &&
-                          results.RelatedTopics[0].Icon.URL !== "" &&
-                          results.RelatedTopics[0].Icon.URL) ||
-                        "/i/f96d4798.png"
-                      }`) ||
+            response.json().then((results: DDGQueryResponse) =>
+              ((
+                instant_answer_url,
+                thumb_url,
+                default_thumb_url = "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
+              ) =>
+                this.answerInlineQuery(
+                  update.inline_query.id,
+                  (instant_answer_url !== "" && [
+                    new TelegramInlineQueryResultArticle(
+                      `${instant_answer_url}\n\n<a href="${
+                        addSearchParams(new URL(duckduckgo_url), {
+                          q: args
+                            .slice(1)
+                            .join(" ")
+                            .replace(/^!\w* /, ""),
+                        }).href
+                      }">Results From DuckDuckGo</a>`,
+                      instant_answer_url,
+                      "HTML",
+                      thumb_url
+                    ),
+                    new TelegramInlineQueryResultArticle(
+                      duckduckgo_url,
+                      duckduckgo_url,
                       "",
-                    "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
-                  )
+                      default_thumb_url
+                    ),
+                  ]) || [
+                    new TelegramInlineQueryResultArticle(
+                      duckduckgo_url,
+                      duckduckgo_url,
+                      "",
+                      default_thumb_url
+                    ),
+                  ],
+                  3600 // 1 hour
+                ))(
+                results.Redirect || results.AbstractURL,
+                (results.Redirect === "" &&
+                  `https://duckduckgo.com${
+                    (results.Image !== "" && results.Image) ||
+                    (results.RelatedTopics.length !== 0 &&
+                      results.RelatedTopics[0].Icon.URL !== "" &&
+                      results.RelatedTopics[0].Icon.URL) ||
+                    "/i/f96d4798.png"
+                  }`) ||
+                  ""
               )
+            )
           )) ||
         this.sendMessage(update.message.chat.id, duckduckgo_url))(
         (query === "" && "https://duckduckgo.com") ||
