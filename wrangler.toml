@@ -1,4 +1,4 @@
-name = "cf-workers-telegram-bot-dev"
+name = "cf-workers-telegram-bot"
 main = "dist/worker.mjs"
 
 workers_dev = true
