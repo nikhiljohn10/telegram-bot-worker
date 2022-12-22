@@ -1,7 +1,6 @@
-name = "cf-workers-telegram-bot"
+name = "cf-workers-telegram-bot-dev"
 main = "dist/worker.mjs"
 
-account_id = ""
 workers_dev = true
 compatibility_date = "2022-11-30"
 
