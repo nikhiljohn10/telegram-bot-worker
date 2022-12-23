@@ -1,0 +1,12 @@
+pull_request_rules:
+  - name: Automatic merge dependabot
+    conditions:
+      - or:
+        - author=dependabot[bot]
+    actions:
+      merge:
+        method: merge
+commands_restrictions:
+  backport:
+    conditions:
+      - sender={{ author }}
