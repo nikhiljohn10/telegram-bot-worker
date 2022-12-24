@@ -12,7 +12,6 @@
 
 import commands from "./commands";
 import Handler from "./handler";
-import { responseToJSON } from "./libs";
 
 interface Environment {
   SECRET_TELEGRAM_API_TOKEN: string;
