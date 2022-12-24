@@ -1,7 +1,6 @@
 {
     "env": {
-        "browser": true,
-        "es2021": true
+        "worker": true
     },
     "extends": [
         "eslint:recommended",
@@ -16,5 +15,6 @@
         "@typescript-eslint"
     ],
     "rules": {
+        "curly": "error"
     }
 }
