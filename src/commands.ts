@@ -2,31 +2,31 @@ import { TelegramUpdate } from "./types";
 import TelegramBot from "./telegram_bot";
 
 export default {
-  chatInfo: async (bot: TelegramBot, update: TelegramUpdate) =>
+  chatInfo: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.getChatInfo(update),
   ping: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.ping(update, args),
-  toss: async (bot: TelegramBot, update: TelegramUpdate) =>
+  toss: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.toss(update),
   balance: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.balance(update, args),
-  epoch: async (bot: TelegramBot, update: TelegramUpdate) =>
+  epoch: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.epoch(update),
-  kanye: async (bot: TelegramBot, update: TelegramUpdate) =>
+  kanye: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.kanye(update),
-  bored: async (bot: TelegramBot, update: TelegramUpdate) =>
+  bored: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.bored(update),
-  joke: async (bot: TelegramBot, update: TelegramUpdate) =>
+  joke: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.joke(update),
-  doge: async (bot: TelegramBot, update: TelegramUpdate) =>
+  doge: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.doge(update),
-  roll: async (bot: TelegramBot, update: TelegramUpdate) =>
+  roll: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.roll(update, args),
-  recursion: async (bot: TelegramBot, update: TelegramUpdate) =>
+  recursion: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.recursion(update),
   numbers: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.numbers(update, args),
-  average: async (bot: TelegramBot, update: TelegramUpdate) =>
+  average: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.average(update),
   _get: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot._get(update, args),
@@ -37,8 +37,11 @@ export default {
     update: TelegramUpdate,
     args: string[]
   ) => bot.duckduckgo(update, args),
-  code: async (bot: TelegramBot, update: TelegramUpdate) =>
+  code: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.code(update),
-  commandList: async (bot: TelegramBot, update: TelegramUpdate) =>
-    bot.commandList(update),
+  commandList: async (
+    bot: TelegramBot,
+    update: TelegramUpdate,
+    args: string[]
+  ) => bot.commandList(update),
 };
