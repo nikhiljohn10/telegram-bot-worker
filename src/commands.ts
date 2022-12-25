@@ -8,8 +8,6 @@ export default {
     bot.ping(update, args),
   toss: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.toss(update),
-  balance: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.balance(update, args),
   epoch: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.epoch(update),
   kanye: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
