@@ -20,12 +20,6 @@ export default {
     bot.doge(update),
   roll: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.roll(update, args),
-  recursion: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.recursion(update),
-  numbers: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.numbers(update, args),
-  average: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.average(update),
   _get: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot._get(update, args),
   _set: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
