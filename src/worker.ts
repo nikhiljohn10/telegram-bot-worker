@@ -30,7 +30,6 @@ export default {
           "/chatinfo": commands.chatInfo,
           "/ping": commands.ping,
           "/toss": commands.toss,
-          "/balance": commands.balance,
           "/epoch": commands.epoch,
           "/kanye": commands.kanye,
           "/bored": commands.bored,
