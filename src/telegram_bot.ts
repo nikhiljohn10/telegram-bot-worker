@@ -8,7 +8,6 @@ import {
 import {
   Joke,
   Bored,
-  Balance,
   TelegramInlineQueryResultArticle,
   TelegramInlineQueryResultPhoto,
   TelegramUpdate,
@@ -151,8 +150,8 @@ export default class TelegramBot extends Bot {
         )
       );
 
-  // bot command: /doge
-  doge = async (update: TelegramUpdate): Promise<Response> =>
+  // bot command: /dog
+  dog = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then(
@@ -193,24 +192,6 @@ export default class TelegramBot extends Bot {
       this.sendMessage(update.message.chat.id, seconds))(
       Math.floor(Date.now() / 1000).toString()
     );
-
-  // bot command: /balance
-  balance = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    fetch(`https://blockchain.info/balance?active=${args[1]}`)
-      .then((response) => responseToJSON(response))
-      .then((json: Balance) =>
-        ((btc) =>
-          ((message) =>
-            (update.inline_query &&
-              this.answerInlineQuery(
-                update.inline_query.id,
-                [new TelegramInlineQueryResultArticle(message)],
-                7 * 60 // 7 minutes
-              )) ??
-            this.sendMessage(update.message.chat.id, message))(
-            `${args[1]}\n\n${btc} BTC`
-          ))(((json[args[1]]?.final_balance ?? 0) / 100000000).toString())
-      );
 
   // bot command: /get
   _get = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
@@ -257,26 +238,6 @@ export default class TelegramBot extends Bot {
       (
         numbers.reduce((prev, cur) => prev + cur, 0) / numbers.length || 0
       ).toFixed(2)
-    );
-
-  // bot command: /average
-  average = async (update: TelegramUpdate): Promise<Response> =>
-    this.sendMessage(
-      update.message.chat.id,
-      this._average(this._numbers(100)).toString()
-    );
-
-  _numbers = (count = 100): number[] =>
-    Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
-      parseFloat(x.toFixed(2))
-    );
-
-  // bot command: /numbers
-  numbers = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    this.sendMessage(
-      update.message.chat.id,
-      preTagString(JSON.stringify(this._numbers(parseInt(args[1])))),
-      "HTML"
     );
 
   // bot command: /recursion
@@ -355,19 +316,4 @@ export default class TelegramBot extends Bot {
       preTagString(prettyJSON(update.message.chat)),
       "HTML"
     );
-
-  // Send all the profile pictures to user_id
-  sendAllProfilePhotos = async (
-    chat_id: number,
-    user_id: number
-  ): Promise<Response[]> =>
-    this.getUserProfilePhotos(user_id)
-      .then((response) => responseToJSON(response))
-      .then((content: { result: { photos: { file_id: string }[] } }) =>
-        Promise.all(
-          content.result.photos.map((photo) =>
-            this.sendPhoto(chat_id, photo[0].file_id)
-          )
-        )
-      );
 }
