@@ -8,7 +8,6 @@ import {
 import {
   Joke,
   Bored,
-  Balance,
   TelegramInlineQueryResultArticle,
   TelegramInlineQueryResultPhoto,
   TelegramUpdate,
@@ -151,8 +150,8 @@ export default class TelegramBot extends Bot {
         )
       );
 
-  // bot command: /doge
-  doge = async (update: TelegramUpdate): Promise<Response> =>
+  // bot command: /dog
+  dog = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then(
@@ -241,26 +240,6 @@ export default class TelegramBot extends Bot {
       ).toFixed(2)
     );
 
-  // bot command: /average
-  average = async (update: TelegramUpdate): Promise<Response> =>
-    this.sendMessage(
-      update.message.chat.id,
-      this._average(this._numbers(100)).toString()
-    );
-
-  _numbers = (count = 100): number[] =>
-    Array.from({ length: count ?? 100 }, () => Math.random()).map((x) =>
-      parseFloat(x.toFixed(2))
-    );
-
-  // bot command: /numbers
-  numbers = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    this.sendMessage(
-      update.message.chat.id,
-      preTagString(JSON.stringify(this._numbers(parseInt(args[1])))),
-      "HTML"
-    );
-
   // bot command: /recursion
   recursion = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(update.message.chat.id, "/recursion");
@@ -337,19 +316,4 @@ export default class TelegramBot extends Bot {
       preTagString(prettyJSON(update.message.chat)),
       "HTML"
     );
-
-  // Send all the profile pictures to user_id
-  sendAllProfilePhotos = async (
-    chat_id: number,
-    user_id: number
-  ): Promise<Response[]> =>
-    this.getUserProfilePhotos(user_id)
-      .then((response) => responseToJSON(response))
-      .then((content: { result: { photos: { file_id: string }[] } }) =>
-        Promise.all(
-          content.result.photos.map((photo) =>
-            this.sendPhoto(chat_id, photo[0].file_id)
-          )
-        )
-      );
 }
