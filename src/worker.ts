@@ -34,7 +34,7 @@ export default {
           "/kanye": commands.kanye,
           "/bored": commands.bored,
           "/joke": commands.joke,
-          "/doge": commands.doge,
+          "/dog": commands.dog,
           "/roll": commands.roll,
           "/get": commands._get,
           "/set": commands._set,
