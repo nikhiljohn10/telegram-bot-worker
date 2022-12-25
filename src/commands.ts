@@ -16,8 +16,8 @@ export default {
     bot.bored(update),
   joke: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.joke(update),
-  doge: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.doge(update),
+  dog: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
+    bot.dog(update),
   roll: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.roll(update, args),
   _get: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
