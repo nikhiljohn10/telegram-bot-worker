@@ -1,10 +1,10 @@
-import Bot from "./bot";
 import {
   preTagString,
   prettyJSON,
   addSearchParams,
   responseToJSON,
 } from "./libs";
+import TelegramApi from "./telegram_api";
 import {
   Joke,
   Bored,
@@ -15,9 +15,14 @@ import {
   DDGQueryResponse,
 } from "./types";
 
-export default class TelegramBot extends Bot {
+export default class TelegramBot extends TelegramApi {
+  kv: KVNamespace;
+  url: URL;
+  
   constructor(config: Config) {
-    super(config);
+    super(config.commands, config.webhook, config.handler);
+    this.kv = config.kv;
+    this.url = config.url;
   }
 
   // bot command: /code

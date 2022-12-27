@@ -12,6 +12,7 @@
 
 import commands from "./commands";
 import Handler from "./handler";
+import TelegramWebhook from "./telegram_webhook";
 
 interface Environment {
   SECRET_TELEGRAM_API_TOKEN: string;
@@ -25,9 +26,8 @@ export default {
     new Handler([
       {
         bot_name: "cf-workers-telegram-bot",
-        token: env.SECRET_TELEGRAM_API_TOKEN,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}`), env.SECRET_TELEGRAM_API_TOKEN, new URL(new URL(request.url).origin)),
         commands: {
-          "/chatinfo": commands.chatInfo,
           "/ping": commands.ping,
           "/toss": commands.toss,
           "/epoch": commands.epoch,
@@ -48,7 +48,7 @@ export default {
       },
       {
         bot_name: "@duckduckbot",
-        token: env.SECRET_TELEGRAM_API_TOKEN2,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN2}`), env.SECRET_TELEGRAM_API_TOKEN2, new URL(new URL(request.url).origin)),
         commands: {
           inline: commands.duckduckgo, // default inline response
           "/duckduckgo": commands.duckduckgo,
@@ -59,7 +59,7 @@ export default {
       },
       {
         bot_name: "@ddggbot",
-        token: env.SECRET_TELEGRAM_API_TOKEN3,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN3}`), env.SECRET_TELEGRAM_API_TOKEN3, new URL(new URL(request.url).origin)),
         commands: {
           inline: commands.duckduckgo,
           "/duckduckgo": commands.duckduckgo,

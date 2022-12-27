@@ -49,3 +49,8 @@ export const responseToJSON = async (
     .catch(() => log({ error: "Failed to parse JSON of response" }));
 
 export const undefinedEmpty = <T>(obj: T) => (obj === undefined && []) || [obj];
+
+export const fetch_json = async (url: URL): Promise<Response> =>
+  fetch(url.href)
+    .then((response) => responseToJSON(response))
+    .then((json) => JSONResponse(json));

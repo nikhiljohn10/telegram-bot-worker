@@ -1,9 +1,10 @@
-import Bot from "./bot";
+import BotApi from "./bot_api";
 import Handler from "./handler";
-export { Bot };
+import Webhook from "./webhook";
+export { Webhook };
 
 export type Command = (
-  bot: Bot,
+  bot: BotApi,
   update: TelegramUpdate,
   args?: string[]
 ) => Promise<Response>;
@@ -12,14 +13,14 @@ export type Commands = Record<string, Command>;
 
 export class Config {
   bot_name: string;
-  token: string;
+  webhook: Webhook;
   commands: Record<string, Command>;
   kv: KVNamespace;
   url: URL;
   handler: Handler;
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
-    this.token = config.token || "";
+    this.webhook = config.webhook;
     this.commands = config.commands || {};
     this.kv = config.kv;
     this.url = config.url;
@@ -29,11 +30,18 @@ export class Config {
 
 export type PartialConfig = {
   bot_name?: string;
-  token?: string;
+  webhook?: Webhook;
   commands?: Record<string, Command>;
   kv?: KVNamespace;
   url?: URL;
   handler?: Handler;
+};
+
+export type WebhookCommands = {
+  get?: () => Response;
+  set?: () => Response;
+  del?: () => Response;
+  default: Response;
 };
 
 export type Joke = {
@@ -204,7 +212,11 @@ export type TelegramInlineQuery = {
   query: string;
 };
 
-export class TelegramUpdate {
+export class Update {
+  [key: string]: any;
+}
+
+export class TelegramUpdate extends Update {
   update_id: number;
   message?: TelegramMessage;
   edited_message?: TelegramMessage;
@@ -221,6 +233,7 @@ export class TelegramUpdate {
   // chat_member?: TelegramChatMemberUpdated;
   // chat_join_request: TelegramChatJoinRequest;
   constructor(update: PartialTelegramUpdate) {
+    super();
     this.update_id = update.update_id || 0;
     this.message = update.message;
     this.edited_message = update.edited_message;

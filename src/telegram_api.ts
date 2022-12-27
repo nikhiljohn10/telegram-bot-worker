@@ -1,28 +1,16 @@
-import Webhook from "./webhook";
-import { addSearchParams, log, responseToJSON } from "./libs";
+import BotApi from "./bot_api";
 import {
-  Commands,
-  Config,
-  TelegramInlineQueryResult,
-  TelegramUpdate,
-} from "./types";
+    Commands,
+    TelegramInlineQueryResult,
+    TelegramUpdate,
+    Webhook,
+  } from "./types";
+import { addSearchParams, log, responseToJSON } from "./libs";
 import Handler from "./handler";
 
-export default class Bot {
-  token: string;
-  commands: Commands;
-  api: URL;
-  webhook: Webhook;
-  kv: KVNamespace;
-  handler: Handler;
-
-  constructor(config: Config) {
-    this.token = config.token || null;
-    this.commands = config.commands;
-    this.api = new URL(`https://api.telegram.org/bot${config.token}`);
-    this.webhook = new Webhook(this.api, config.token, config.url);
-    this.kv = config.kv || null;
-    this.handler = config.handler;
+export default class TelegramApi extends BotApi {
+  constructor(commands: Commands, webhook: Webhook, handler: Handler) {
+    super(commands, webhook, handler);
   }
 
   inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
@@ -108,7 +96,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/answerInlineQuery`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/answerInlineQuery`), {
           inline_query_id: inline_query_id.toString(),
           results: JSON.stringify(results),
           cache_time: cache_time.toString(),
@@ -127,7 +115,7 @@ export default class Bot {
   ): Promise<Response> =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendMessage`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendMessage`), {
           chat_id: chat_id.toString(),
           text,
           parse_mode: parse_mode,
@@ -147,7 +135,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendMessage`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendMessage`), {
           chat_id: chat_id.toString(),
           from_chat_id: from_chat_id.toString(),
           message_id: message_id.toString(),
@@ -167,7 +155,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendPhoto`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendPhoto`), {
           chat_id: chat_id.toString(),
           photo,
           caption,
@@ -194,7 +182,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendVideo`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendVideo`), {
           chat_id: chat_id.toString(),
           video: JSON.stringify(video),
           duration: duration.toString(),
@@ -225,7 +213,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendAnimation`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendAnimation`), {
           chat_id: chat_id.toString(),
           animation: JSON.stringify(animation),
           duration: duration.toString(),
@@ -251,7 +239,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendLocation`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendLocation`), {
           chat_id: chat_id.toString(),
           latitude: latitude.toString(),
           longitude: longitude.toString(),
@@ -281,7 +269,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendPoll`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendPoll`), {
           chat_id: chat_id.toString(),
           question,
           options: options.toString(),
@@ -309,7 +297,7 @@ export default class Bot {
   ) =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/sendDice`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendDice`), {
           chat_id: chat_id.toString(),
           emoji,
           disable_notification: disable_notification.toString(),
@@ -326,7 +314,7 @@ export default class Bot {
   ): Promise<Response> =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.api.href}/getUserProfilePhotos`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/getUserProfilePhotos`), {
           user_id: user_id.toString(),
           offset: offset.toString(),
           limit: limit.toString(),

@@ -2,8 +2,6 @@ import { TelegramUpdate } from "./types";
 import TelegramBot from "./telegram_bot";
 
 export default {
-  chatInfo: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
-    bot.getChatInfo(update),
   ping: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
     bot.ping(update, args),
   toss: async (bot: TelegramBot, update: TelegramUpdate, args: string[]) =>
