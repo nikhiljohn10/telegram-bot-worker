@@ -6,4 +6,4 @@ import TelegramBot from "./telegram_bot";
 import TelegramCommands from "./telegram_commands";
 import Webhook from "./webhook";
 
-export default { BotApi, Commands, Handler, TelegramApi, TelegramBot, TelegramCommands, Webhook };
+export { BotApi, Commands, Handler, TelegramApi, TelegramBot, TelegramCommands, Webhook };
