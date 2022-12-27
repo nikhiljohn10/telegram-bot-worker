@@ -10,7 +10,7 @@
 ////  License: Apache-2.0                                       ////
 ////////////////////////////////////////////////////////////////////
 
-import commands from "./commands";
+import commands from "./telegram_commands";
 import Handler from "./handler";
 import TelegramWebhook from "./telegram_webhook";
 
