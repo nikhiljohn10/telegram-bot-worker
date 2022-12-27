@@ -1,5 +1,4 @@
 {
-  "private": true,
   "name": "cf-workers-telegram-bot",
   "version": "3.0.0",
   "description": "serverless telegram bot on cf workers",
