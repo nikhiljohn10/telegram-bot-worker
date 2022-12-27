@@ -4,6 +4,6 @@
     "module": "esnext",
     "lib": ["esnext"],
     "types": ["@cloudflare/workers-types"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
   }
 }
