@@ -1,7 +1,6 @@
-import TelegramBot from "./telegram_bot";
+import BotApi from "./bot_api";
 import { sha256, log } from "./libs";
 import { Config, PartialConfig } from "./types";
-import BotApi from "./bot_api";
 
 export default class Handler {
   configs: PartialConfig[];
@@ -36,7 +35,7 @@ export default class Handler {
   };
 
   getAccessKeys = async (): Promise<
-    Record<string, Record<string, string>> | Record<string, never>
+    Record<string, any> | Record<string, never>
   > =>
     Promise.all(
       this.configs.map((bot_config) =>
@@ -49,7 +48,7 @@ export default class Handler {
     this.getAccessKeys().then((access_keys) =>
       this.responses[request.method](
         request,
-        new TelegramBot({
+        new access_keys[new URL(request.url).pathname.substring(1)].api({
           ...new Config(),
           url: new URL(new URL(request.url).origin), // worker url
           handler: this,
