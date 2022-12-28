@@ -1,24 +1,27 @@
-const { build } = require("esbuild");
-const { devDependencies } = require("./package.json");
-const { Generator } = require("npm-dts");
+import { build } from "esbuild";
+import pack from "./package.json" assert {type: "json"};
+import { globPlugin } from "esbuild-plugin-glob";
+import dts from "npm-dts";
 
-new Generator({
+new dts.Generator({
   entry: "src/main.ts",
   output: "out/main.d.ts",
 }).generate();
 
 const sharedConfig = {
+  format: "esm",
   sourcemap: true,
   bundle: true,
-  external: Object.keys(devDependencies),
+  external: Object.keys(pack.devDependencies),
+  plugins: [globPlugin()],
 };
 
 // npm package
 build({
   ...sharedConfig,
-  entryPoints: ["src/main.ts"],
+  entryPoints: ["src/*.ts", "src/*.js"],
   platform: "node",
-  outfile: "out/main.js",
+  outdir: "out",
 });
 
 // worker
@@ -26,6 +29,5 @@ build({
   ...sharedConfig,
   entryPoints: ["src/worker.ts"],
   minify: true,
-  format: "esm",
   outfile: "dist/worker.mjs",
 });
