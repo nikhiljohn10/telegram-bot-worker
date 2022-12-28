@@ -20,7 +20,7 @@ export const JSONResponse = (obj: unknown, status = 200): Response =>
     },
   });
 
-export const log = <T>(obj: T): T => console.log(obj) === undefined && obj;
+export const log = (obj: any): any => console.log(obj) === undefined && obj;
 
 export const preTagString = (str: string): string => `<pre>${str}</pre>`;
 

@@ -1,6 +1,7 @@
 import BotApi from "./bot_api";
+import Commands from "./commands";
 import { sha256, log } from "./libs";
-import { Config, PartialConfig } from "./types";
+import { Config, PartialConfig, Update, Webhook } from "./types";
 
 export default class Handler {
   configs: PartialConfig[];
@@ -9,29 +10,31 @@ export default class Handler {
     this.configs = configs;
   }
 
-  getResponse = async (request: Request, bot: BotApi): Promise<Response> =>
-    (this.getAccessKeys().then((access_keys) =>
-      Object.keys(access_keys).forEach((key) =>
-        log(
-          `${access_keys[key].bot_name} ${new URL(request.url).origin}/${key}`
-        )
-      )
-    ) &&
-      bot.webhook.token &&
-      bot.webhook.process(new URL(request.url))) ??
-    this.responses.default;
+  getResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> => {
+    this.getAccessKeys().then((access_keys) => Object.keys(access_keys).forEach((key) => log(
+      `${access_keys[key].bot_name} ${new URL(_request?.url ?? '').origin}/${key}`
+    )));
+    if (_bot?.webhook.token) {
+      return _bot.webhook.process(new URL(_request?.url ?? ''));
+    }
+    return this.responses.default();
+  }
 
-  postResponse = async (request: Request, bot: BotApi): Promise<Response> =>
-    (bot.webhook.token &&
-      request
+  postResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> => {
+    const bot = _bot ?? new BotApi(new Commands(), new Webhook(new URL(''), '', new URL('')), new Handler([new Config()]))
+    if (bot.webhook.token) {
+      const request = _request ?? new Request('');
+      return request
         .json()
-        .then((update) => bot.update(update))) ??
-    this.responses.default;
+        .then((update: unknown) => bot.update(update as Update));
+    }
+    return this.responses.default();
+  }
 
-  responses = {
+  responses: Record<string, (_request?: Request, _bot?: BotApi) => Promise<Response>> = {
     GET: this.getResponse,
     POST: this.postResponse,
-    default: new Response(),
+    default: (_request?: Request, _bot?: BotApi) => new Promise(() => new Response()),
   };
 
   getAccessKeys = async (): Promise<
@@ -39,14 +42,14 @@ export default class Handler {
   > =>
     Promise.all(
       this.configs.map((bot_config) =>
-        sha256(bot_config.webhook.token).then((hash) => [hash, bot_config])
+        sha256(bot_config.webhook?.token ?? '').then((hash) => [hash, bot_config])
       )
     ).then((result) => Object.fromEntries(result));
 
   // handles the request
-  handle = async (request: Request): Promise<Response> =>
-    this.getAccessKeys().then((access_keys) =>
-      this.responses[request.method](
+  handle = async (request: Request): Promise<Response> => this.getAccessKeys().then((access_keys) => {
+    if (Object.keys(this.responses).includes(request.method)) {
+      return this.responses[request.method](
         request,
         new access_keys[new URL(request.url).pathname.substring(1)].api({
           ...new Config(),
@@ -55,5 +58,7 @@ export default class Handler {
           ...access_keys[new URL(request.url).pathname.substring(1)],
         })
       )
-    ) ?? this.responses.default;
+    }
+    return this.responses.default();
+  });
 }

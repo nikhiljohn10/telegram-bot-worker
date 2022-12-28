@@ -1,3 +1,4 @@
+import Handler from "./handler";
 import {
   preTagString,
   prettyJSON,
@@ -13,6 +14,8 @@ import {
   TelegramUpdate,
   Config,
   DDGQueryResponse,
+  Webhook,
+  Commands,
 } from "./types";
 
 export default class TelegramBot extends TelegramApi {
@@ -20,8 +23,8 @@ export default class TelegramBot extends TelegramApi {
   url: URL;
   
   constructor(config: Config) {
-    super(config.commands, config.webhook, config.handler);
-    this.kv = config.kv;
+    super(config.commands as Commands, config.webhook as Webhook, config.handler as Handler);
+    this.kv = config.kv as KVNamespace;
     this.url = config.url;
   }
 
@@ -32,7 +35,7 @@ export default class TelegramBot extends TelegramApi {
         this.answerInlineQuery(update.inline_query.id, [
           new TelegramInlineQueryResultArticle(url),
         ])) ??
-      this.sendMessage(update.message.chat.id, url))(
+      this.sendMessage(update.message?.chat.id ?? 0, url))(
       "https://github.com/codebam/cf-workers-telegram-bot"
     );
 
@@ -57,14 +60,14 @@ export default class TelegramBot extends TelegramApi {
               no_redirect: "1",
             }).href
           ).then((response) =>
-            response.json().then((results: DDGQueryResponse) =>
+            response.json().then((results) => (results as DDGQueryResponse)).then((ddg_response) =>
               ((
                 instant_answer_url,
                 thumb_url,
                 default_thumb_url = "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
               ) =>
                 this.answerInlineQuery(
-                  update.inline_query.id,
+                  update.inline_query?.id ?? 0,
                   (instant_answer_url !== "" && [
                     new TelegramInlineQueryResultArticle(
                       `${instant_answer_url}\n\n<a href="${
@@ -95,20 +98,20 @@ export default class TelegramBot extends TelegramApi {
                   ],
                   3600 // 1 hour
                 ))(
-                results.Redirect || results.AbstractURL,
-                (results.Redirect === "" &&
+                ddg_response.Redirect || ddg_response.AbstractURL,
+                (ddg_response.Redirect === "" &&
                   `https://duckduckgo.com${
-                    (results.Image !== "" && results.Image) ||
-                    (results.RelatedTopics.length !== 0 &&
-                      results.RelatedTopics[0].Icon.URL !== "" &&
-                      results.RelatedTopics[0].Icon.URL) ||
+                    (ddg_response.Image !== "" && ddg_response.Image) ||
+                    (ddg_response.RelatedTopics.length !== 0 &&
+                      ddg_response.RelatedTopics[0].Icon.URL !== "" &&
+                      ddg_response.RelatedTopics[0].Icon.URL) ||
                     "/i/f96d4798.png"
                   }`) ||
                   ""
               )
             )
           )) ||
-        this.sendMessage(update.message.chat.id, duckduckgo_url))(
+        this.sendMessage(update.message?.chat.id ?? 0, duckduckgo_url))(
         (query === "" && "https://duckduckgo.com") ||
           addSearchParams(new URL("https://duckduckgo.com"), {
             q: query,
@@ -119,13 +122,13 @@ export default class TelegramBot extends TelegramApi {
   kanye = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://api.kanye.rest")
       .then((response) => responseToJSON(response))
-      .then((json: { quote: string }) =>
+      .then((json) =>
         ((message) =>
           (update.inline_query !== undefined &&
             this.answerInlineQuery(update.inline_query.id, [
               new TelegramInlineQueryResultArticle(message),
             ])) ||
-          this.sendMessage(update.message.chat.id, message))(
+          this.sendMessage(update.message?.chat.id ?? 0, message))(
           `Kanye says... ${json.quote}`
         )
       )
@@ -135,7 +138,7 @@ export default class TelegramBot extends TelegramApi {
   joke = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => responseToJSON(response))
-      .then((joke: Joke) =>
+      .then((joke) => joke as Joke).then((joke_response) =>
         ((message) =>
           (update.inline_query &&
             this.answerInlineQuery(
@@ -143,15 +146,15 @@ export default class TelegramBot extends TelegramApi {
               [
                 new TelegramInlineQueryResultArticle(
                   message,
-                  joke.joke ?? joke.setup,
+                  joke_response.joke ?? joke_response.setup,
                   "HTML"
                 ),
               ],
               0
             )) ??
-          this.sendMessage(update.message.chat.id, message, "HTML"))(
-          joke.joke ??
-            `${joke.setup}\n\n<tg-spoiler>${joke.delivery}</tg-spoiler>`
+          this.sendMessage(update.message?.chat.id ?? 0, message, "HTML"))(
+            joke_response.joke ??
+            `${joke_response.setup}\n\n<tg-spoiler>${joke_response.delivery}</tg-spoiler>`
         )
       );
 
@@ -160,14 +163,14 @@ export default class TelegramBot extends TelegramApi {
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
       .then(
-        (json: [string]) =>
+        (json) => json as [string]).then((shibe_response) =>
           (update.inline_query &&
             this.answerInlineQuery(
               update.inline_query.id,
-              [new TelegramInlineQueryResultPhoto(json[0])],
+              [new TelegramInlineQueryResultPhoto(shibe_response[0])],
               0
             )) ??
-          this.sendPhoto(update.message.chat.id, json[0])
+          this.sendPhoto(update.message?.chat.id ?? 0, shibe_response[0])
       );
 
   // bot command: /bored
@@ -175,14 +178,14 @@ export default class TelegramBot extends TelegramApi {
     fetch("https://boredapi.com/api/activity/")
       .then((response) => responseToJSON(response))
       .then(
-        (json: Bored) =>
+        (json) => json as Bored).then((bored_response) =>
           (update.inline_query &&
             this.answerInlineQuery(
               update.inline_query.id,
-              [new TelegramInlineQueryResultArticle(json.activity)],
+              [new TelegramInlineQueryResultArticle(bored_response.activity)],
               0
             )) ??
-          this.sendMessage(update.message.chat.id, json.activity)
+          this.sendMessage(update.message?.chat.id ?? 0, bored_response.activity)
       );
 
   // bot command: /epoch
@@ -194,7 +197,7 @@ export default class TelegramBot extends TelegramApi {
           [new TelegramInlineQueryResultArticle(seconds)],
           0
         )) ??
-      this.sendMessage(update.message.chat.id, seconds))(
+      this.sendMessage(update.message?.chat.id ?? 0, seconds))(
       Math.floor(Date.now() / 1000).toString()
     );
 
@@ -209,34 +212,29 @@ export default class TelegramBot extends TelegramApi {
             (update.inline_query &&
               this.answerInlineQuery(
                 update.inline_query.id,
-                [new TelegramInlineQueryResultArticle(value)],
+                [new TelegramInlineQueryResultArticle(value ?? '')],
                 0
               )) ??
-            this.sendMessage(update.message.chat.id, value)
+            this.sendMessage(update.message?.chat.id ?? 0, value ?? '')
         ))(args[1]);
 
   // bot command: /set
-  _set = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    this.kv.put &&
-    ((key) =>
-      ((value) =>
-        this.kv
-          .put(key, value)
-          .then(
-            (response) =>
-              (response === undefined &&
-                ((message) =>
-                  (update.inline_query &&
-                    this.answerInlineQuery(
-                      update.inline_query.id,
-                      [new TelegramInlineQueryResultArticle(message)],
-                      0
-                    )) ??
-                  this.sendMessage(update.message.chat.id, message))(
-                  `set ${key} to ${value}`
-                )) ??
-              new Response()
-          ))(args.slice(2).join(" ")))(args[1]);
+  _set = async (update: TelegramUpdate, args: string[]): Promise<Response> => {
+    const key = args[1];
+    const value = args.slice(2).join(" ");
+    const message = `set ${key} to ${value}`;
+    this.kv.put(key, value).then((response) => {
+      if (update.inline_query) {
+        return this.answerInlineQuery(
+          update.inline_query.id,
+          [new TelegramInlineQueryResultArticle(message)],
+          0
+        );
+      }
+      return this.sendMessage(update.message?.chat.id ?? 0, message);
+    })
+    return new Response();
+  }
 
   _average = (numbers: number[]): number =>
     parseFloat(
@@ -247,7 +245,7 @@ export default class TelegramBot extends TelegramApi {
 
   // bot command: /recursion
   recursion = async (update: TelegramUpdate): Promise<Response> =>
-    this.sendMessage(update.message.chat.id, "/recursion");
+    this.sendMessage(update.message?.chat.id ?? 0, "/recursion");
   // .then((response) => responseToJSON(response))
   // .then((result: { ok: boolean; result: { text: string } }) =>
   //   this.handler.postResponse(
@@ -278,10 +276,10 @@ export default class TelegramBot extends TelegramApi {
           ),
         ])) ??
       this.sendMessage(
-        update.message.chat.id,
+        update.message?.chat.id ?? 0,
         message(
-          update.message.from.username,
-          update.message.from.first_name,
+          update.message?.from.username ?? '',
+          update.message?.from.first_name ?? '',
           outcome
         )
       ))(
@@ -295,7 +293,7 @@ export default class TelegramBot extends TelegramApi {
   // bot command: /commandList
   commandList = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
-      update.message.chat.id,
+      update.message?.chat.id ?? 0,
       `<pre>${JSON.stringify(Object.keys(this.commands))}</pre>`,
       "HTML"
     );
@@ -303,22 +301,22 @@ export default class TelegramBot extends TelegramApi {
   // bot command: /toss
   toss = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
-      update.message.chat.id,
+      update.message?.chat.id ?? 0,
       Math.floor(Math.random() * 2) == 0 ? "heads" : "tails"
     );
 
   // bot command: /ping
   ping = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
     this.sendMessage(
-      update.message.chat.id,
+      update.message?.chat.id ?? 0,
       args.length === 1 ? "pong" : args.slice(1).join(" ")
     );
 
   // bot command: /chatInfo
   getChatInfo = async (update: TelegramUpdate): Promise<Response> =>
     this.sendMessage(
-      update.message.chat.id,
-      preTagString(prettyJSON(update.message.chat)),
+      update.message?.chat.id ?? 0,
+      preTagString(prettyJSON(update.message?.chat ?? 0)),
       "HTML"
     );
 }

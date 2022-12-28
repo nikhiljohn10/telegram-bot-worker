@@ -5,9 +5,6 @@
   "main": "./out/main.js",
   "module": "./out/main.js",
   "type": "module",
-  "files": [
-    "out"
-  ],
   "scripts": {
     "build": "node build.js",
     "lint": "eslint src"
