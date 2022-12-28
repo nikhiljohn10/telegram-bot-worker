@@ -54,5 +54,3 @@ export const fetch_json = async (url: URL): Promise<Response> =>
   fetch(url.href)
     .then((response) => responseToJSON(response))
     .then((json) => JSONResponse(json));
-
-export default { sha256, prettyJSON, JSONResponse, log, preTagString, addSearchParams, responseToJSON, undefinedEmpty, fetch_json }
