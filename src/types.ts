@@ -39,7 +39,7 @@ export class Config {
 
 export type PartialConfig = {
   bot_name?: string;
-  api?: Object;
+  api?: object;
   webhook?: Webhook;
   commands?: Record<string, Command>;
   kv?: KVNamespace;
