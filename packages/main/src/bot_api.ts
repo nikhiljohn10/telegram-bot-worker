@@ -1,5 +1,6 @@
 import Handler from "./handler";
-import { Commands, Config, Update, Webhook } from "./types";
+import { Commands, Update, Webhook } from "./types";
+import { Config } from "./handler";
 
 export default class BotApi {
   commands: Commands;
