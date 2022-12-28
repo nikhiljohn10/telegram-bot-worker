@@ -20,7 +20,7 @@ export type Commands = Record<string, Command>;
 
 export class Config {
   bot_name: string;
-  api: Object;
+  api: object;
   webhook: Webhook;
   commands: Record<string, Command>;
   kv: KVNamespace;
@@ -39,7 +39,7 @@ export class Config {
 
 export type PartialConfig = {
   bot_name?: string;
-  api?: Object;
+  api?: object;
   webhook?: Webhook;
   commands?: Record<string, Command>;
   kv?: KVNamespace;
@@ -223,7 +223,7 @@ export type TelegramInlineQuery = {
 };
 
 export class Update {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class TelegramUpdate extends Update {
