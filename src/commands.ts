@@ -1,5 +1,4 @@
-import { Command, Update } from "./types";
-import BotApi from "./bot_api";
+import { Command } from "./types";
 
 export default class Commands {
   [key: string]: Command;
