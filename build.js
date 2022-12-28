@@ -8,9 +8,8 @@ new Generator({
 }).generate();
 
 const sharedConfig = {
-  bundle: true,
-  minify: true,
   sourcemap: true,
+  bundle: true,
   external: Object.keys(devDependencies),
 };
 
@@ -26,6 +25,7 @@ build({
 build({
   ...sharedConfig,
   entryPoints: ["src/worker.ts"],
+  minify: true,
   format: "esm",
   outfile: "dist/worker.mjs",
 });
