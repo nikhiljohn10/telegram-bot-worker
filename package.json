@@ -1,6 +1,6 @@
 {
   "name": "cf-workers-telegram-bot",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "description": "serverless telegram bot on cf workers",
   "main": "./out/main.js",
   "module": "./out/main.js",
