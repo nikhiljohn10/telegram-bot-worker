@@ -1,0 +1,16 @@
+name: test pr
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org/
+      - name: npm run build
+        run: |
+          npm install
+          npm run build

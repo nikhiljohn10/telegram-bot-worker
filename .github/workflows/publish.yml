@@ -1,49 +1,47 @@
 name: publish
-on:
-  push:
-  pull_request:
-  repository_dispatch:
+on: push
+
 jobs:
-    deploy:
-      runs-on: ubuntu-latest
-      timeout-minutes: 60
-      steps:
-        - uses: actions/checkout@v3
-        - name: github release
-          if: startsWith(github.ref, 'refs/tags/')
-          uses: softprops/action-gh-release@v1
-          with:
-            token: ${{ secrets.GH_TOKEN }}
-        - uses: actions/setup-node@v3
-          if: startsWith(github.ref, 'refs/tags/')
-          with:
-            node-version: latest
-            registry-url: https://registry.npmjs.org/
-        - name: npm release
-          if: startsWith(github.ref, 'refs/tags/')
-          run: |
-            npm install
-            npm run build
-            npm run publish
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-        - name: cloudflare workers publish
-          uses: cloudflare/wrangler-action@2.0.0
-          with:
-            accountId: ${{ secrets.CF_ACCOUNT_ID }}
-            apiToken: ${{ secrets.CF_API_TOKEN }}
-            preCommands: |
-              # wrangler kv:namespace create KV_BOT_STORAGE
-              # uncomment this for one build to enable KV
-              echo 'import process from"process";let a="";process.stdin.on("readable",()=>{const b=process.stdin.read();a+=null==b?"":b}),process.stdin.on("end",()=>{process.stdout.write(JSON.stringify(JSON.parse(a).filter(b=>b.title.includes("KV_BOT_STORAGE"))[0].id))});' > get_kv_id.mjs
-              export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node get_kv_id.mjs)
-              echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
-              [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
-            secrets: |
-              SECRET_TELEGRAM_API_TOKEN
-              SECRET_TELEGRAM_API_TOKEN2
-              SECRET_TELEGRAM_API_TOKEN3
-          env:
-            SECRET_TELEGRAM_API_TOKEN: ${{ secrets.SECRET_TELEGRAM_API_TOKEN }}
-            SECRET_TELEGRAM_API_TOKEN2: ${{ secrets.SECRET_TELEGRAM_API_TOKEN2 }}
-            SECRET_TELEGRAM_API_TOKEN3: ${{ secrets.SECRET_TELEGRAM_API_TOKEN3 }}
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: github release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/setup-node@v3
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org/
+      - name: npm release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          npm install
+          npm run build
+          npm run publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: cloudflare workers publish
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          preCommands: |
+            # wrangler kv:namespace create KV_BOT_STORAGE
+            # uncomment this for one build to enable KV
+            echo 'import process from"process";let a="";process.stdin.on("readable",()=>{const b=process.stdin.read();a+=null==b?"":b}),process.stdin.on("end",()=>{process.stdout.write(JSON.stringify(JSON.parse(a).filter(b=>b.title.includes("KV_BOT_STORAGE"))[0].id))});' > get_kv_id.mjs
+            export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node get_kv_id.mjs)
+            echo "kv_namespaces = [{binding=\"KV_BOT_STORAGE\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
+            [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
+          secrets: |
+            SECRET_TELEGRAM_API_TOKEN
+            SECRET_TELEGRAM_API_TOKEN2
+            SECRET_TELEGRAM_API_TOKEN3
+        env:
+          SECRET_TELEGRAM_API_TOKEN: ${{ secrets.SECRET_TELEGRAM_API_TOKEN }}
+          SECRET_TELEGRAM_API_TOKEN2: ${{ secrets.SECRET_TELEGRAM_API_TOKEN2 }}
+          SECRET_TELEGRAM_API_TOKEN3: ${{ secrets.SECRET_TELEGRAM_API_TOKEN3 }}
