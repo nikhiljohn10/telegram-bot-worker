@@ -2,7 +2,10 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "build:worker": "lerna run build --scope=worker",
+    "release": "lerna version minor -y",
+    "publish": "lerna publish --scope=main"
   },
   "devDependencies": {
     "lerna": "^6.3.0"

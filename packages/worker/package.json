@@ -1,9 +1,10 @@
 {
   "name": "worker",
   "version": "3.14.0",
+  "private": true,
   "description": "serverless telegram bot on cf workers",
-  "main": "./out/main.js",
-  "module": "./out/main.js",
+  "main": "./dist/worker.mjs",
+  "module": "./dist/worker.mjs",
   "type": "module",
   "scripts": {
     "build": "node build.js",

@@ -1,5 +1,5 @@
 {
-  "name": "main",
+  "name": "cf-workers-telegram-bot",
   "version": "3.14.0",
   "description": "serverless telegram bot on cf workers",
   "main": "./out/main.js",
