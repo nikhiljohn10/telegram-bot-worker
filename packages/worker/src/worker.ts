@@ -35,6 +35,7 @@ export default {
           "/bored": TelegramCommands.bored as Command,
           "/joke": TelegramCommands.joke as Command,
           "/dog": TelegramCommands.dog as Command,
+          "/cat": TelegramCommands.cat as Command,
           "/roll": TelegramCommands.roll as Command,
           "/get": TelegramCommands._get as Command,
           "/set": TelegramCommands._set as Command,

@@ -38,6 +38,11 @@ export default class TelegramCommands extends Commands {
     update: TelegramUpdate,
     _args: string[]
   ) => bot.dog(update);
+  static cat = async (
+    bot: TelegramBot,
+    update: TelegramUpdate,
+    _args: string[]
+  ) => bot.cat(update);
   static roll = async (
     bot: TelegramBot,
     update: TelegramUpdate,

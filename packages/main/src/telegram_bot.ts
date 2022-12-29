@@ -173,6 +173,14 @@ export default class TelegramBot extends TelegramApi {
           this.sendPhoto(update.message?.chat.id ?? 0, shibe_response[0])
       );
 
+  // bot command: /cat
+  cat = async (update: TelegramUpdate): Promise<Response> =>
+    fetch("https://cataas.com/cat")
+      .then((response) => response.blob())
+      .then((cat_pic) =>
+          this.sendPhoto(update.message?.chat.id ?? 0, cat_pic, undefined, undefined, undefined, undefined, true)
+      );
+
   // bot command: /bored
   bored = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://boredapi.com/api/activity/")
