@@ -5,6 +5,7 @@
   "main": "./out/main.js",
   "module": "./out/main.js",
   "type": "module",
+  "private": false,
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "lint": "eslint src"
