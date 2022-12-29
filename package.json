@@ -1,28 +1,16 @@
 {
-  "name": "cf-workers-telegram-bot",
-  "version": "3.14.0",
-  "description": "serverless telegram bot on cf workers",
-  "main": "./out/main.js",
-  "module": "./out/main.js",
-  "type": "module",
-  "files": [
-    "out"
-  ],
+  "name": "root",
+  "private": true,
   "scripts": {
-    "build": "node build.js",
-    "lint": "eslint src"
+    "build": "lerna run build",
+    "build:worker": "lerna run build --scope=worker",
+    "release": "lerna version minor -y",
+    "publish": "lerna publish --scope=main"
   },
-  "author": "codebam",
-  "license": "(MIT OR Apache-2.0)",
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20221111.1",
-    "@typescript-eslint/eslint-plugin": "^5.47.1",
-    "@typescript-eslint/parser": "^5.47.1",
-    "esbuild": "^0.16.11",
-    "esbuild-plugin-glob": "^2.2.0",
-    "eslint": "^8.30.0",
-    "npm-dts": "^1.3.12",
-    "prettier": "^2.8.1",
-    "typescript": "^4.9.4"
-  }
+    "lerna": "^6.3.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

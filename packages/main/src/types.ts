@@ -23,19 +23,19 @@ export class Config {
   api: object;
   webhook: Webhook;
   commands: Record<string, Command>;
-  kv: KVNamespace;
+  kv: KVNamespace | undefined;
   url: URL;
-  handler: Handler;
+  handler: Handler | undefined;
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
-    this.api = config.api;
-    this.webhook = config.webhook;
+    this.api = config.api || {};
+    this.webhook = config.webhook || new Webhook(localhost, '', localhost);
     this.commands = config.commands || {};
     this.kv = config.kv;
-    this.url = config.url;
+    this.url = config.url || new URL(localhost);
     this.handler = config.handler;
   }
-}
+};
 
 export type PartialConfig = {
   bot_name?: string;
@@ -47,11 +47,10 @@ export type PartialConfig = {
   handler?: Handler;
 };
 
-export type WebhookCommands = {
-  get?: () => Response;
-  set?: () => Response;
-  del?: () => Response;
-  default: Response;
+export const localhost = new URL('http://localhost');
+
+export class WebhookCommands {
+  [key: string]: () => Promise<Response>;
 };
 
 export type Joke = {

@@ -1,5 +1,6 @@
 import Webhook from "./webhook";
 import { sha256, addSearchParams, fetch_json } from "./libs";
+import { WebhookCommands } from "./types";
 
 export default class TelegramWebhook extends Webhook {
   constructor(api: URL, token: string, url: URL) {
@@ -24,7 +25,7 @@ export default class TelegramWebhook extends Webhook {
   delete = async (): Promise<Response> =>
     fetch_json(new URL(`${this.api.href}/deleteWebhook`));
 
-  commands = {
+  commands: WebhookCommands = {
     ...this.commands,
     set: this.set,
     get: this.get,

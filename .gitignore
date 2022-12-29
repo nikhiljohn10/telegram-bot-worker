@@ -1,12 +1,11 @@
-/target
-/dist
-/out
+target/
+dist/
+out/
 **/*.rs.bk
 Cargo.lock
 bin/
 pkg/
 wasm-pack.log
-worker/
 node_modules/
 .cargo-ok
 *.swp
