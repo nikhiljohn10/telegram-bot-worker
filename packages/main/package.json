@@ -1,6 +1,6 @@
 {
   "name": "cf-workers-telegram-bot",
-  "version": "3.20.0",
+  "version": "3.21.0",
   "description": "serverless telegram bot on cf workers",
   "main": "./dist/main/src/main.js",
   "module": "./dist/main/src/main.js",
@@ -10,7 +10,12 @@
     "LICENSE_MIT",
     "README.md"
   ],
-  "keywords": ["cloudflare", "telegram", "worker", "webhook"],
+  "keywords": [
+    "cloudflare",
+    "telegram",
+    "worker",
+    "webhook"
+  ],
   "type": "module",
   "private": false,
   "scripts": {
