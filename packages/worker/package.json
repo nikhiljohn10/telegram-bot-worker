@@ -7,7 +7,7 @@
   "module": "./dist/worker.mjs",
   "type": "module",
   "scripts": {
-    "build": "tsc --project tsconfig.json && esbuild dist/worker/src/worker.js --minify --bundle --outfile=dist/worker/src/worker.mjs",
+    "build": "tsc --project tsconfig.json && esbuild dist/worker/src/worker.js --format=esm --bundle --minify --outfile=dist/worker/src/worker.mjs",
     "lint": "eslint src"
   },
   "author": "codebam",
