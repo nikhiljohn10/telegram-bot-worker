@@ -10,7 +10,8 @@
 ////  License: Apache-2.0                                       ////
 ////////////////////////////////////////////////////////////////////
 
-import { telegram_commands, handler, telegram_webhook, telegram_bot } from "main";
+import { TelegramCommands, Handler, TelegramWebhook, TelegramBot } from "../../main/src/main";
+import { Command } from "../../main/src/types";
 
 interface Environment {
   SECRET_TELEGRAM_API_TOKEN: string;
@@ -21,52 +22,52 @@ interface Environment {
 
 export default {
   fetch: async (request: Request, env: Environment) =>
-    new handler([
+    new Handler([
       {
         bot_name: "cf-workers-telegram-bot",
-        api: telegram_bot,
-        webhook: new telegram_webhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}`), env.SECRET_TELEGRAM_API_TOKEN, new URL(new URL(request.url).origin)),
+        api: TelegramBot,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}`), env.SECRET_TELEGRAM_API_TOKEN, new URL(new URL(request.url).origin)),
         commands: {
-          "/ping": telegram_commands.ping,
-          "/toss": telegram_commands.toss,
-          "/epoch": telegram_commands.epoch,
-          "/kanye": telegram_commands.kanye,
-          "/bored": telegram_commands.bored,
-          "/joke": telegram_commands.joke,
-          "/dog": telegram_commands.dog,
-          "/roll": telegram_commands.roll,
-          "/get": telegram_commands._get,
-          "/set": telegram_commands._set,
-          "/duckduckgo": telegram_commands.duckduckgo,
-          "/code": telegram_commands.code,
-          "/commands": telegram_commands.commandList,
-          "/help": telegram_commands.commandList,
-          "/start": telegram_commands.commandList,
+          "/ping": TelegramCommands.ping as Command,
+          "/toss": TelegramCommands.toss as Command,
+          "/epoch": TelegramCommands.epoch as Command,
+          "/kanye": TelegramCommands.kanye as Command,
+          "/bored": TelegramCommands.bored as Command,
+          "/joke": TelegramCommands.joke as Command,
+          "/dog": TelegramCommands.dog as Command,
+          "/roll": TelegramCommands.roll as Command,
+          "/get": TelegramCommands._get as Command,
+          "/set": TelegramCommands._set as Command,
+          "/duckduckgo": TelegramCommands.duckduckgo as Command,
+          "/code": TelegramCommands.code as Command,
+          "/commands": TelegramCommands.commandList as Command,
+          "/help": TelegramCommands.commandList as Command,
+          "/start": TelegramCommands.commandList as Command,
         },
         kv: env.KV_BOT_STORAGE,
       },
       {
         bot_name: "@duckduckbot",
-        api: telegram_bot,
-        webhook: new telegram_bot(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN2}`), env.SECRET_TELEGRAM_API_TOKEN2, new URL(new URL(request.url).origin)),
+        api: TelegramBot,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN2}`), env.SECRET_TELEGRAM_API_TOKEN2, new URL(new URL(request.url).origin)),
         commands: {
-          inline: telegram_commands.duckduckgo, // default inline response
-          "/duckduckgo": telegram_commands.duckduckgo,
-          "/code": telegram_commands.code,
-          "/commands": telegram_commands.commandList,
-          "/start": telegram_commands.commandList,
+          inline: TelegramCommands.duckduckgo as Command, // default inline response
+          "/duckduckgo": TelegramCommands.duckduckgo as Command,
+          "/code": TelegramCommands.code as Command,
+          "/commands": TelegramCommands.commandList as Command,
+          "/start": TelegramCommands.commandList as Command,
         },
       },
       {
         bot_name: "@ddggbot",
-        api: telegram_bot,
-        webhook: new telegram_webhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN3}`), env.SECRET_TELEGRAM_API_TOKEN3, new URL(new URL(request.url).origin)),
+        api: TelegramBot,
+        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN3}`), env.SECRET_TELEGRAM_API_TOKEN3, new URL(new URL(request.url).origin)),
         commands: {
-          inline: telegram_commands.duckduckgo,
-          "/duckduckgo": telegram_commands.duckduckgo,
-          "/code": telegram_commands.code,
-          "/commands": telegram_commands.commandList,
-          "/start": telegram_commands.commandList,
+          inline: TelegramCommands.duckduckgo as Command,
+          "/duckduckgo": TelegramCommands.duckduckgo as Command,
+          "/code": TelegramCommands.code as Command,
+          "/commands": TelegramCommands.commandList as Command,
+          "/start": TelegramCommands.commandList as Command,
         },
       },
     ]).handle(request),
