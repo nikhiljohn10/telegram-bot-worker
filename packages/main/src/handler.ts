@@ -1,7 +1,7 @@
 import BotApi from "./bot_api";
 import Commands from "./commands";
 import { sha256, log } from "./libs";
-import { Config, PartialConfig, Update, Webhook } from "./types";
+import { Config, PartialConfig, Update, Webhook, localhost } from "./types";
 
 export default class Handler {
   configs: PartialConfig[];
@@ -12,16 +12,16 @@ export default class Handler {
 
   getResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> => {
     this.getAccessKeys().then((access_keys) => Object.keys(access_keys).forEach((key) => log(
-      `${access_keys[key].bot_name} ${new URL(_request?.url ?? '').origin}/${key}`
+      `${access_keys[key].bot_name} ${new URL(_request?.url ?? localhost).origin}/${key}`
     )));
     if (_bot?.webhook.token) {
-      return _bot.webhook.process(new URL(_request?.url ?? ''));
+      return _bot.webhook.process(new URL(_request?.url ?? localhost));
     }
     return this.responses.default();
   }
 
   postResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> => {
-    const bot = _bot ?? new BotApi(new Commands(), new Webhook(new URL(''), '', new URL('')), new Handler([new Config()]))
+    const bot = _bot ?? new BotApi(new Commands(), new Webhook(localhost, '', localhost), new Handler([new Config()]))
     if (bot.webhook.token) {
       const request = _request ?? new Request('');
       return request
