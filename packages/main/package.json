@@ -2,8 +2,11 @@
   "name": "cf-workers-telegram-bot",
   "version": "3.16.0",
   "description": "serverless telegram bot on cf workers",
-  "main": "./out/main.js",
-  "module": "./out/main.js",
+  "main": "./dist/main.js",
+  "module": "./dist/main.js",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "private": false,
   "scripts": {
