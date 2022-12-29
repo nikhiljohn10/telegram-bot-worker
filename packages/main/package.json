@@ -10,6 +10,7 @@
     "LICENSE_MIT",
     "README.md"
   ],
+  "keywords": ["cloudflare", "telegram", "worker", "webhook"],
   "type": "module",
   "private": false,
   "scripts": {
