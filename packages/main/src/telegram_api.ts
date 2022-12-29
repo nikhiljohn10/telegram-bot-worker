@@ -151,37 +151,23 @@ export default class TelegramApi extends BotApi {
   // trigger sendPhoto command of BotAPI
   sendPhoto = async (
     chat_id: number,
-    photo: string | Blob,
+    photo: string,
     caption = "",
     parse_mode = "",
     disable_notification = false,
     reply_to_message_id = 0,
-    multipart_form = false,
   ) =>
     fetch(
       log(
-        (() => {
-        if (multipart_form) {
-          const form = new FormData();
-          form.append("photo", photo as Blob);
-          const params = new URLSearchParams(form as any);
-          return addSearchParams(new URL(`${this.webhook.api.href}/sendPhoto`), {
-            chat_id: chat_id.toString(),
-            caption,
-            parse_mode,
-            disable_notification: disable_notification.toString(),
-            reply_to_message_id: reply_to_message_id.toString(),
-          }).href + '&' + params.toString();
-        }
-        return addSearchParams(new URL(`${this.webhook.api.href}/sendPhoto`), {
+        addSearchParams(new URL(`${this.webhook.api.href}/sendPhoto`), {
           chat_id: chat_id.toString(),
-          photo: photo as string,
+          photo,
           caption,
           parse_mode,
           disable_notification: disable_notification.toString(),
           reply_to_message_id: reply_to_message_id.toString(),
-        }).href;
-        })())
+        }).href
+      )
     );
 
   // trigger sendVideo command of BotAPI

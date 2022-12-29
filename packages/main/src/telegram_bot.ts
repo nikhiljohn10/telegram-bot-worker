@@ -175,10 +175,10 @@ export default class TelegramBot extends TelegramApi {
 
   // bot command: /cat
   cat = async (update: TelegramUpdate): Promise<Response> =>
-    fetch("https://cataas.com/cat")
-      .then((response) => response.blob())
-      .then((cat_pic) =>
-          this.sendPhoto(update.message?.chat.id ?? 0, cat_pic, undefined, undefined, undefined, undefined, true)
+    fetch("https://meow.senither.com/v1/random")
+      .then((response) => response.json())
+      .then((json) => json as { data: { url: string } }).then((json) =>
+          this.sendPhoto(update.message?.chat.id ?? 0, json.data.url)
       );
 
   // bot command: /bored
