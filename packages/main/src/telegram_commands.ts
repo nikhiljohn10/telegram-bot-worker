@@ -1,6 +1,6 @@
 import Commands from "./commands";
 import TelegramBot from "./telegram_bot";
-import { TelegramUpdate } from "./telegram_api";
+import { TelegramUpdate } from "./types";
 
 export default class TelegramCommands extends Commands {
   static ping = async (

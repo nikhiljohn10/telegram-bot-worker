@@ -1,4 +1,4 @@
-import Handler, { Config } from "./handler";
+import Handler from "./handler";
 import {
   preTagString,
   prettyJSON,
@@ -9,11 +9,14 @@ import TelegramApi from "./telegram_api";
 import {
   Joke,
   Bored,
+  TelegramInlineQueryResultArticle,
+  TelegramInlineQueryResultPhoto,
+  TelegramUpdate,
+  Config,
   DDGQueryResponse,
   Webhook,
   Commands,
 } from "./types";
-import { TelegramUpdate, TelegramInlineQueryResultArticle, TelegramInlineQueryResultPhoto } from "./telegram_api";
 
 export default class TelegramBot extends TelegramApi {
   kv: KVNamespace;
