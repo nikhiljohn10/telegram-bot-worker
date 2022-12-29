@@ -35,7 +35,7 @@ export class Config {
     this.url = config.url || new URL(localhost);
     this.handler = config.handler;
   }
-};
+}
 
 export type PartialConfig = {
   bot_name?: string;
@@ -51,7 +51,7 @@ export const localhost = new URL('http://localhost');
 
 export class WebhookCommands {
   [key: string]: () => Promise<Response>;
-};
+}
 
 export type Joke = {
   error: boolean;
