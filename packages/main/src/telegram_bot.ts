@@ -177,7 +177,14 @@ export default class TelegramBot extends TelegramApi {
   cat = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://meow.senither.com/v1/random")
       .then((response) => response.json())
-      .then((json) => json as { data: { url: string } }).then((json) =>
+      .then(
+        (json) => json as { data: { url: string } }).then((json) =>
+          (update.inline_query &&
+            this.answerInlineQuery(
+              update.inline_query.id,
+              [new TelegramInlineQueryResultPhoto(json.data.url)],
+              0
+            )) ??
           this.sendPhoto(update.message?.chat.id ?? 0, json.data.url)
       );
 
