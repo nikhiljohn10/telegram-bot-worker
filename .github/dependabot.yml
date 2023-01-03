@@ -4,8 +4,12 @@ updates:
     directory: "/packages/main"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-type: "all"
 
   - package-ecosystem: "npm"
     directory: "/packages/worker"
     schedule:
       interval: "daily"
+    allow:
+      - dependency-type: "all"
