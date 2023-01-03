@@ -19,7 +19,7 @@
     "@cloudflare/workers-types": "^4.20221111.1",
     "@typescript-eslint/eslint-plugin": "^5.47.1",
     "@typescript-eslint/parser": "^5.48.0",
-    "esbuild": "^0.16.11",
+    "esbuild": "^0.16.13",
     "esbuild-plugin-glob": "^2.2.0",
     "eslint": "^8.31.0",
     "prettier": "^2.8.1",
