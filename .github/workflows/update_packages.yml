@@ -1,0 +1,24 @@
+name: update packages
+on:
+  schedule:
+    interval: "daily"
+
+jobs:
+  update_packages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          registry-url: https://registry.npmjs.org/
+      - name: npm update --dev
+        run: |
+          npx lerna exec -- npm update --dev
+      - name: commit and push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: update dependencies
+      
