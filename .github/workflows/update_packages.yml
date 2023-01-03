@@ -1,7 +1,7 @@
 name: update packages
 on:
-  schedule:
-    interval: "daily"
+  schedule: # 12am daily
+    - cron: '0 0 * * *'
 
 jobs:
   update_packages:
