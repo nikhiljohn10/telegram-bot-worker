@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/packages/main"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     allow:
       - dependency-type: "all"
     versioning-strategy: increase
@@ -11,7 +11,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/packages/worker"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     allow:
       - dependency-type: "all"
     versioning-strategy: increase
