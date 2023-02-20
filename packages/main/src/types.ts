@@ -224,7 +224,7 @@ export type TelegramInlineQuery = {
 };
 
 export class Update {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export class TelegramUpdate extends Update {
