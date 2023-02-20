@@ -15,9 +15,12 @@ import { Command } from "../../main/src/types";
 
 interface Environment {
   SECRET_TELEGRAM_API_TOKEN: string;
+  KV_GET_SET: KVNamespace;
+  KV_UID_DATA: KVNamespace;
+
   SECRET_TELEGRAM_API_TOKEN2: string;
+
   SECRET_TELEGRAM_API_TOKEN3: string;
-  KV_BOT_STORAGE: KVNamespace;
 }
 
 export default {
@@ -45,7 +48,7 @@ export default {
           "/help": TelegramCommands.commandList as Command,
           "/start": TelegramCommands.commandList as Command,
         },
-        kv: env.KV_BOT_STORAGE,
+        kv: { get_set: env.KV_GET_SET, uid_data: env.KV_UID_DATA },
       },
       {
         bot_name: "@duckduckbot",

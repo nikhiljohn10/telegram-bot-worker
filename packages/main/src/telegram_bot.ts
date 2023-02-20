@@ -16,16 +16,19 @@ import {
   DDGQueryResponse,
   Webhook,
   Commands,
+  Kv,
 } from "./types";
 
 export default class TelegramBot extends TelegramApi {
-  kv: KVNamespace;
   url: URL;
+  kv: Kv;
+  get_set: KVNamespace;
   
   constructor(config: Config) {
     super(config.commands as Commands, config.webhook as Webhook, config.handler as Handler);
-    this.kv = config.kv as KVNamespace;
     this.url = config.url;
+    this.kv = config.kv as Kv;
+    this.get_set = config.kv?.get_set as KVNamespace;
   }
 
   // bot command: /code
@@ -218,9 +221,8 @@ export default class TelegramBot extends TelegramApi {
 
   // bot command: /get
   _get = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
-    this.kv.get &&
     ((key) =>
-      this.kv
+      this.get_set
         .get(key)
         .then(
           (value) =>
@@ -238,7 +240,7 @@ export default class TelegramBot extends TelegramApi {
     const key = args[1];
     const value = args.slice(2).join(" ");
     const message = `set ${key} to ${value}`;
-    this.kv.put(key, value).then((response) => {
+    this.get_set.put(key, value).then((_) => {
       if (update.inline_query) {
         return this.answerInlineQuery(
           update.inline_query.id,
