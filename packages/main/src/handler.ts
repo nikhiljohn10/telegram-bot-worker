@@ -1,7 +1,6 @@
 import BotApi from "./bot_api";
-import Commands from "./commands";
 import { sha256, log } from "./libs";
-import { Config, PartialConfig, Update, Webhook, localhost } from "./types";
+import { Config, PartialConfig, Update, Webhook, localhost, Command } from "./types";
 
 export default class Handler {
   configs: PartialConfig[];
@@ -36,7 +35,7 @@ export default class Handler {
     const bot =
       _bot ??
       new BotApi(
-        new Commands(),
+        {} as ({ [key: string]: Command }),
         new Webhook(localhost, "", localhost),
         new Handler([new Config()])
       );

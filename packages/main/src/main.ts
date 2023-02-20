@@ -1,5 +1,4 @@
 import BotApi from "./bot_api";
-import Commands from "./commands";
 import Handler from "./handler";
 import * as Libs from "./libs";
 import TelegramApi from "./telegram_api";
@@ -10,4 +9,4 @@ import * as Types from "./types";
 import Webhook from "./webhook";
 import worker from "../../worker/src/worker";
 
-export { BotApi, Commands, Handler, Libs, TelegramApi, TelegramBot, TelegramCommands, TelegramWebhook, Types, Webhook, worker };
+export { BotApi, Handler, Libs, TelegramApi, TelegramBot, TelegramCommands, TelegramWebhook, Types, Webhook, worker };
