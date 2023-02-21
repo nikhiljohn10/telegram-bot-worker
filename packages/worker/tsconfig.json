@@ -1,18 +1,18 @@
 {
-  "include": ["src/**/*"],
-  "compilerOptions": {
-    "strict": true,
-    "target": "esnext",
-    "module": "esnext",
-    "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types"],
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "outDir": "dist"
-  }
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"strict": true,
+		"target": "esnext",
+		"module": "esnext",
+		"lib": ["esnext"],
+		"types": ["@cloudflare/workers-types"],
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"allowJs": true,
+		"forceConsistentCasingInFileNames": true,
+		"declaration": true,
+		"outDir": "dist"
+	}
 }

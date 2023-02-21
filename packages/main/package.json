@@ -1,38 +1,38 @@
 {
-  "name": "cf-workers-telegram-bot",
-  "version": "3.31.0",
-  "description": "serverless telegram bot on cf workers",
-  "main": "./dist/main/src/main.js",
-  "module": "./dist/main/src/main.js",
-  "files": [
-    "dist",
-    "LICENSE_APACHE",
-    "LICENSE_MIT",
-    "README.md"
-  ],
-  "keywords": [
-    "cloudflare",
-    "telegram",
-    "worker",
-    "webhook"
-  ],
-  "type": "module",
-  "private": false,
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "lint": "eslint src"
-  },
-  "author": "codebam",
-  "license": "(MIT OR Apache-2.0)",
-  "dependencies": {
-    "worker": "^3.31.0"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230215.0",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
-    "eslint": "^8.34.0",
-    "prettier": "^2.8.4",
-    "typescript": "^4.9.5"
-  }
+	"name": "cf-workers-telegram-bot",
+	"version": "3.31.0",
+	"description": "serverless telegram bot on cf workers",
+	"main": "./dist/main/src/main.js",
+	"module": "./dist/main/src/main.js",
+	"files": [
+		"dist",
+		"LICENSE_APACHE",
+		"LICENSE_MIT",
+		"README.md"
+	],
+	"keywords": [
+		"cloudflare",
+		"telegram",
+		"worker",
+		"webhook"
+	],
+	"type": "module",
+	"private": false,
+	"scripts": {
+		"build": "tsc --project tsconfig.json",
+		"lint": "eslint src"
+	},
+	"author": "codebam",
+	"license": "(MIT OR Apache-2.0)",
+	"dependencies": {
+		"worker": "^3.31.0"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20230215.0",
+		"@typescript-eslint/eslint-plugin": "^5.52.0",
+		"@typescript-eslint/parser": "^5.52.0",
+		"eslint": "^8.34.0",
+		"prettier": "^2.8.4",
+		"typescript": "^4.9.5"
+	}
 }

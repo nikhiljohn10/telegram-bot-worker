@@ -31,7 +31,7 @@ export default class TelegramApi extends BotApi {
   updates = {
     inline_query: this.inlineQueryUpdate,
     message: this.messageUpdate,
-    default: (_?: TelegramUpdate) => new Response(),
+    default: () => new Response(),
   };
 
   update = async (update: Update): Promise<Response> =>
