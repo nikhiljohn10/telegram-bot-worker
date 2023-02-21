@@ -1,11 +1,11 @@
 import BotApi from "./bot_api";
 import {
-    Commands,
-    TelegramInlineQueryResult,
-    TelegramUpdate,
-    Webhook,
-    Update,
-  } from "./types";
+  Commands,
+  TelegramInlineQueryResult,
+  TelegramUpdate,
+  Webhook,
+  Update,
+} from "./types";
 import { addSearchParams, log, responseToJSON } from "./libs";
 import Handler from "./handler";
 
@@ -16,17 +16,17 @@ export default class TelegramApi extends BotApi {
 
   inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
     this.executeInlineCommand(update).then(
-      async (response) => await responseToJSON(response) && response
+      async (response) => (await responseToJSON(response)) && response
     );
 
   messageUpdate = async (update: TelegramUpdate): Promise<Response> => {
-    if (typeof (update.message?.text ?? false) === 'string') {
+    if (typeof (update.message?.text ?? false) === "string") {
       return await this.executeCommand(update).then(
         async () => await this.greetUsers(update)
-      )
+      );
     }
     return this.updates.default();
-  }
+  };
 
   updates = {
     inline_query: this.inlineQueryUpdate,
@@ -51,7 +51,7 @@ export default class TelegramApi extends BotApi {
       );
     }
     return this.updates.default();
-  }
+  };
 
   getCommand = (args: string[]): string => args[0]?.split("@")[0];
 
@@ -81,7 +81,7 @@ export default class TelegramApi extends BotApi {
 
   // execute the inline custom bot commands from bot configurations
   executeInlineCommand = async (update: TelegramUpdate): Promise<Response> =>
-    ((await this._executeCommand(update, update.inline_query?.query ?? '')) &&
+    ((await this._executeCommand(update, update.inline_query?.query ?? "")) &&
       (await this._executeCommand(
         update,
         "inline",
@@ -91,14 +91,16 @@ export default class TelegramApi extends BotApi {
 
   // execute the custom bot commands from bot configurations
   executeCommand = async (update: TelegramUpdate): Promise<Response> =>
-    this._executeCommand(update, update.message?.text ?? '') || this.updates.default;
+    this._executeCommand(update, update.message?.text ?? "") ||
+    this.updates.default;
 
   // trigger answerInlineQuery command of BotAPI
   answerInlineQuery = async (
     inline_query_id: number,
     results: TelegramInlineQueryResult[],
     cache_time = 0
-  ) => fetch(
+  ) =>
+    fetch(
       log(
         addSearchParams(new URL(`${this.webhook.api.href}/answerInlineQuery`), {
           inline_query_id: inline_query_id.toString(),
@@ -155,7 +157,7 @@ export default class TelegramApi extends BotApi {
     caption = "",
     parse_mode = "",
     disable_notification = false,
-    reply_to_message_id = 0,
+    reply_to_message_id = 0
   ) =>
     fetch(
       log(
@@ -318,11 +320,14 @@ export default class TelegramApi extends BotApi {
   ): Promise<Response> =>
     fetch(
       log(
-        addSearchParams(new URL(`${this.webhook.api.href}/getUserProfilePhotos`), {
-          user_id: user_id.toString(),
-          offset: offset.toString(),
-          limit: limit.toString(),
-        }).href
+        addSearchParams(
+          new URL(`${this.webhook.api.href}/getUserProfilePhotos`),
+          {
+            user_id: user_id.toString(),
+            offset: offset.toString(),
+            limit: limit.toString(),
+          }
+        ).href
       )
     );
 }

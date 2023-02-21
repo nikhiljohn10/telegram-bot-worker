@@ -23,9 +23,13 @@ export default class TelegramBot extends TelegramApi {
   url: URL;
   kv: Kv;
   get_set: KVNamespace;
-  
+
   constructor(config: Config) {
-    super(config.commands as Commands, config.webhook as Webhook, config.handler as Handler);
+    super(
+      config.commands as Commands,
+      config.webhook as Webhook,
+      config.handler as Handler
+    );
     this.url = config.url;
     this.kv = config.kv as Kv;
     this.get_set = config.kv?.get_set as KVNamespace;
@@ -63,56 +67,59 @@ export default class TelegramBot extends TelegramApi {
               no_redirect: "1",
             }).href
           ).then((response) =>
-            response.json().then((results) => (results as DDGQueryResponse)).then((ddg_response) =>
-              ((
-                instant_answer_url,
-                thumb_url,
-                default_thumb_url = "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
-              ) =>
-                this.answerInlineQuery(
-                  update.inline_query?.id ?? 0,
-                  (instant_answer_url !== "" && [
-                    new TelegramInlineQueryResultArticle(
-                      `${instant_answer_url}\n\n<a href="${
-                        addSearchParams(new URL(duckduckgo_url), {
-                          q: args
-                            .slice(1)
-                            .join(" ")
-                            .replace(/^!\w* /, ""),
-                        }).href
-                      }">Results From DuckDuckGo</a>`,
-                      instant_answer_url,
-                      "HTML",
-                      thumb_url
-                    ),
-                    new TelegramInlineQueryResultArticle(
-                      duckduckgo_url,
-                      duckduckgo_url,
-                      "",
-                      default_thumb_url
-                    ),
-                  ]) || [
-                    new TelegramInlineQueryResultArticle(
-                      duckduckgo_url,
-                      duckduckgo_url,
-                      "",
-                      default_thumb_url
-                    ),
-                  ],
-                  3600 // 1 hour
-                ))(
-                ddg_response.Redirect || ddg_response.AbstractURL,
-                (ddg_response.Redirect === "" &&
-                  `https://duckduckgo.com${
-                    (ddg_response.Image !== "" && ddg_response.Image) ||
-                    (ddg_response.RelatedTopics.length !== 0 &&
-                      ddg_response.RelatedTopics[0].Icon.URL !== "" &&
-                      ddg_response.RelatedTopics[0].Icon.URL) ||
-                    "/i/f96d4798.png"
-                  }`) ||
-                  ""
+            response
+              .json()
+              .then((results) => results as DDGQueryResponse)
+              .then((ddg_response) =>
+                ((
+                  instant_answer_url,
+                  thumb_url,
+                  default_thumb_url = "https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png"
+                ) =>
+                  this.answerInlineQuery(
+                    update.inline_query?.id ?? 0,
+                    (instant_answer_url !== "" && [
+                      new TelegramInlineQueryResultArticle(
+                        `${instant_answer_url}\n\n<a href="${
+                          addSearchParams(new URL(duckduckgo_url), {
+                            q: args
+                              .slice(1)
+                              .join(" ")
+                              .replace(/^!\w* /, ""),
+                          }).href
+                        }">Results From DuckDuckGo</a>`,
+                        instant_answer_url,
+                        "HTML",
+                        thumb_url
+                      ),
+                      new TelegramInlineQueryResultArticle(
+                        duckduckgo_url,
+                        duckduckgo_url,
+                        "",
+                        default_thumb_url
+                      ),
+                    ]) || [
+                      new TelegramInlineQueryResultArticle(
+                        duckduckgo_url,
+                        duckduckgo_url,
+                        "",
+                        default_thumb_url
+                      ),
+                    ],
+                    3600 // 1 hour
+                  ))(
+                  ddg_response.Redirect || ddg_response.AbstractURL,
+                  (ddg_response.Redirect === "" &&
+                    `https://duckduckgo.com${
+                      (ddg_response.Image !== "" && ddg_response.Image) ||
+                      (ddg_response.RelatedTopics.length !== 0 &&
+                        ddg_response.RelatedTopics[0].Icon.URL !== "" &&
+                        ddg_response.RelatedTopics[0].Icon.URL) ||
+                      "/i/f96d4798.png"
+                    }`) ||
+                    ""
+                )
               )
-            )
           )) ||
         this.sendMessage(update.message?.chat.id ?? 0, duckduckgo_url))(
         (query === "" && "https://duckduckgo.com") ||
@@ -141,7 +148,8 @@ export default class TelegramBot extends TelegramApi {
   joke = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://v2.jokeapi.dev/joke/Any?safe-mode")
       .then((response) => responseToJSON(response))
-      .then((joke) => joke as Joke).then((joke_response) =>
+      .then((joke) => joke as Joke)
+      .then((joke_response) =>
         ((message) =>
           (update.inline_query &&
             this.answerInlineQuery(
@@ -156,7 +164,7 @@ export default class TelegramBot extends TelegramApi {
               0
             )) ??
           this.sendMessage(update.message?.chat.id ?? 0, message, "HTML"))(
-            joke_response.joke ??
+          joke_response.joke ??
             `${joke_response.setup}\n\n<tg-spoiler>${joke_response.delivery}</tg-spoiler>`
         )
       );
@@ -165,8 +173,9 @@ export default class TelegramBot extends TelegramApi {
   dog = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://shibe.online/api/shibes")
       .then((response) => response.json())
+      .then((json) => json as [string])
       .then(
-        (json) => json as [string]).then((shibe_response) =>
+        (shibe_response) =>
           (update.inline_query &&
             this.answerInlineQuery(
               update.inline_query.id,
@@ -180,8 +189,9 @@ export default class TelegramBot extends TelegramApi {
   cat = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://meow.senither.com/v1/random")
       .then((response) => response.json())
+      .then((json) => json as { data: { url: string } })
       .then(
-        (json) => json as { data: { url: string } }).then((json) =>
+        (json) =>
           (update.inline_query &&
             this.answerInlineQuery(
               update.inline_query.id,
@@ -195,15 +205,19 @@ export default class TelegramBot extends TelegramApi {
   bored = async (update: TelegramUpdate): Promise<Response> =>
     fetch("https://boredapi.com/api/activity/")
       .then((response) => responseToJSON(response))
+      .then((json) => json as Bored)
       .then(
-        (json) => json as Bored).then((bored_response) =>
+        (bored_response) =>
           (update.inline_query &&
             this.answerInlineQuery(
               update.inline_query.id,
               [new TelegramInlineQueryResultArticle(bored_response.activity)],
               0
             )) ??
-          this.sendMessage(update.message?.chat.id ?? 0, bored_response.activity)
+          this.sendMessage(
+            update.message?.chat.id ?? 0,
+            bored_response.activity
+          )
       );
 
   // bot command: /epoch
@@ -229,10 +243,10 @@ export default class TelegramBot extends TelegramApi {
             (update.inline_query &&
               this.answerInlineQuery(
                 update.inline_query.id,
-                [new TelegramInlineQueryResultArticle(value ?? '')],
+                [new TelegramInlineQueryResultArticle(value ?? "")],
                 0
               )) ??
-            this.sendMessage(update.message?.chat.id ?? 0, value ?? '')
+            this.sendMessage(update.message?.chat.id ?? 0, value ?? "")
         ))(args[1]);
 
   // bot command: /set
@@ -249,9 +263,9 @@ export default class TelegramBot extends TelegramApi {
         );
       }
       return this.sendMessage(update.message?.chat.id ?? 0, message);
-    })
+    });
     return new Response();
-  }
+  };
 
   _average = (numbers: number[]): number =>
     parseFloat(
@@ -295,8 +309,8 @@ export default class TelegramBot extends TelegramApi {
       this.sendMessage(
         update.message?.chat.id ?? 0,
         message(
-          update.message?.from.username ?? '',
-          update.message?.from.first_name ?? '',
+          update.message?.from.username ?? "",
+          update.message?.from.first_name ?? "",
           outcome
         )
       ))(

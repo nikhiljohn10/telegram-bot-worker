@@ -31,7 +31,7 @@ export class Config {
   constructor(config: PartialConfig = {}) {
     this.bot_name = config.bot_name || "";
     this.api = config.api || {};
-    this.webhook = config.webhook || new Webhook(localhost, '', localhost);
+    this.webhook = config.webhook || new Webhook(localhost, "", localhost);
     this.commands = config.commands || {};
     this.kv = config.kv;
     this.url = config.url || new URL(localhost);
@@ -49,7 +49,7 @@ export type PartialConfig = {
   handler?: Handler;
 };
 
-export const localhost = new URL('http://localhost');
+export const localhost = new URL("http://localhost");
 
 export class WebhookCommands {
   [key: string]: () => Promise<Response>;

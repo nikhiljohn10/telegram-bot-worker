@@ -13,13 +13,13 @@ To use the deploy button:
 - Click the deploy button
 - Navigate to your new **GitHub repository &gt; Settings &gt; Secrets** and add the following secrets:
 
-   ```yaml
-   - Name: CF_API_TOKEN (should be added automatically)
-   - Name: CF_ACCOUNT_ID (should be added automatically)
+  ```yaml
+  - Name: CF_API_TOKEN (should be added automatically)
+  - Name: CF_ACCOUNT_ID (should be added automatically)
 
-   - Name: SECRET_TELEGRAM_API_TOKEN
-   - Value: your-telegram-bot-token
-   ```
+  - Name: SECRET_TELEGRAM_API_TOKEN
+  - Value: your-telegram-bot-token
+  ```
 
 - Push to `master` to trigger a deploy
 
@@ -38,14 +38,14 @@ of the following.
 
 - sha256sum(YourTelegramSecretKey) is the path to your webhook commands and
   should be put at the end of your worker URL to access commands such as
-setting your webhook
+  setting your webhook
 - Use `sha256sum <<< "your secret key"` to get the path
 - Open the Cloudflare Worker Logs under **Workers &gt; cf-workers-telegram-bot
   &gt; Logs &gt; Begin log stream** and make a GET request (open it in your browser)
-to your Worker URL and look at the logs to see your Access URL
+  to your Worker URL and look at the logs to see your Access URL
 - Run `wrangler tail --format pretty` from inside your git repository and make
   a GET request to your Worker URL
 
 Example URL for setting the Webhook and dropping pending updates:
 
-```https://cf-workers-telegram-bot.codebam.workers.dev/a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447?command=set```
+`https://cf-workers-telegram-bot.codebam.workers.dev/a948904f2f0f479b8f8197694b30184b0d2ed1c1cd2a1ec0fb85d299a192a447?command=set`

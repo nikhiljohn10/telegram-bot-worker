@@ -10,7 +10,12 @@
 ////  License: Apache-2.0                                       ////
 ////////////////////////////////////////////////////////////////////
 
-import { TelegramCommands, Handler, TelegramWebhook, TelegramBot } from "../../main/src/main";
+import {
+  TelegramCommands,
+  Handler,
+  TelegramWebhook,
+  TelegramBot,
+} from "../../main/src/main";
 import { Command } from "../../main/src/types";
 
 interface Environment {
@@ -29,7 +34,13 @@ export default {
       {
         bot_name: "cf-workers-telegram-bot",
         api: TelegramBot,
-        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}`), env.SECRET_TELEGRAM_API_TOKEN, new URL(new URL(request.url).origin)),
+        webhook: new TelegramWebhook(
+          new URL(
+            `https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN}`
+          ),
+          env.SECRET_TELEGRAM_API_TOKEN,
+          new URL(new URL(request.url).origin)
+        ),
         commands: {
           "/ping": TelegramCommands.ping as Command,
           "/toss": TelegramCommands.toss as Command,
@@ -53,7 +64,13 @@ export default {
       {
         bot_name: "@duckduckbot",
         api: TelegramBot,
-        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN2}`), env.SECRET_TELEGRAM_API_TOKEN2, new URL(new URL(request.url).origin)),
+        webhook: new TelegramWebhook(
+          new URL(
+            `https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN2}`
+          ),
+          env.SECRET_TELEGRAM_API_TOKEN2,
+          new URL(new URL(request.url).origin)
+        ),
         commands: {
           inline: TelegramCommands.duckduckgo as Command, // default inline response
           "/duckduckgo": TelegramCommands.duckduckgo as Command,
@@ -65,7 +82,13 @@ export default {
       {
         bot_name: "@ddggbot",
         api: TelegramBot,
-        webhook: new TelegramWebhook(new URL(`https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN3}`), env.SECRET_TELEGRAM_API_TOKEN3, new URL(new URL(request.url).origin)),
+        webhook: new TelegramWebhook(
+          new URL(
+            `https://api.telegram.org/bot${env.SECRET_TELEGRAM_API_TOKEN3}`
+          ),
+          env.SECRET_TELEGRAM_API_TOKEN3,
+          new URL(new URL(request.url).origin)
+        ),
         commands: {
           inline: TelegramCommands.duckduckgo as Command,
           "/duckduckgo": TelegramCommands.duckduckgo as Command,
