@@ -4,7 +4,6 @@ import {
 	prettyJSON,
 	addSearchParams,
 	responseToJSON,
-	log,
 } from "./libs";
 import TelegramApi from "./telegram_api";
 import {
