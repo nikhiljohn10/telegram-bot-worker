@@ -9,7 +9,7 @@ export default class BotApi {
 
   constructor(commands: Commands, webhook: Webhook, handler: Handler) {
     this.commands = commands;
-    this.webhook = webhook as Webhook;
+    this.webhook = webhook;
     this.handler = handler;
   }
 }

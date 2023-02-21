@@ -54,8 +54,7 @@ export default class Handler {
   > = {
     GET: this.getResponse,
     POST: this.postResponse,
-    default: (_request?: Request, _bot?: BotApi) =>
-      new Promise(() => new Response()),
+    default: () => new Promise(() => new Response()),
   };
 
   getAccessKeys = async (

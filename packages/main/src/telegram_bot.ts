@@ -240,7 +240,7 @@ export default class TelegramBot extends TelegramApi {
     const key = args[1];
     const value = args.slice(2).join(" ");
     const message = `set ${key} to ${value}`;
-    this.get_set.put(key, value).then((_) => {
+    this.get_set.put(key, value).then(() => {
       if (update.inline_query) {
         return this.answerInlineQuery(
           update.inline_query.id,
