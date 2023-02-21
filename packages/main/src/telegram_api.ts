@@ -25,13 +25,13 @@ export default class TelegramApi extends BotApi {
 				async () => await this.greetUsers(update)
 			);
 		}
-		return this.updates.default();
+		return this.updates.default;
 	};
 
 	updates = {
 		inline_query: this.inlineQueryUpdate,
 		message: this.messageUpdate,
-		default: () => new Response(),
+		default: new Response(),
 	};
 
 	update = async (update: Update): Promise<Response> =>
@@ -39,6 +39,7 @@ export default class TelegramApi extends BotApi {
 			update.message !== undefined &&
 			(await this.updates.message(update as TelegramUpdate))) ||
 		(update.inline_query !== undefined &&
+			(update.inline_query as TelegramUpdate).query !== "" &&
 			(await this.updates.inline_query(update as TelegramUpdate))) ||
 		this.updates.default;
 
@@ -50,7 +51,7 @@ export default class TelegramApi extends BotApi {
 				`Welcome to ${update.message.chat.title}, ${update.message.from.username}`
 			);
 		}
-		return this.updates.default();
+		return this.updates.default;
 	};
 
 	getCommand = (args: string[]): string => args[0]?.split("@")[0];

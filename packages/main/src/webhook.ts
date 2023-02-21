@@ -13,7 +13,9 @@ export default class Webhook {
 		this.url = url;
 		this.commands = {
 			default: () =>
-				new Promise(() => JSONResponse({ error: "Invalid command" }, 400)),
+				new Promise<Response>(() =>
+					JSONResponse({ error: "Invalid command" }, 400)
+				),
 		};
 	}
 
