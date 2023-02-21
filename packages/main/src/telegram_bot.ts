@@ -4,6 +4,7 @@ import {
 	prettyJSON,
 	addSearchParams,
 	responseToJSON,
+	log,
 } from "./libs";
 import TelegramApi from "./telegram_api";
 import {
@@ -316,7 +317,7 @@ export default class TelegramBot extends TelegramApi {
 			))(
 			Math.floor(Math.random() * (parseInt(args[1]) || 6 - 1 + 1) + 1),
 			(username: string, first_name: string, outcome: number) =>
-				`${username ?? first_name} rolled a ${
+				`${first_name ?? username} rolled a ${
 					parseInt(args[1]) || 6
 				} sided die. it landed on ${outcome}`
 		);
