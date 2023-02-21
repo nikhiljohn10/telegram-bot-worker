@@ -5,7 +5,8 @@
 		"build": "lerna run build",
 		"build:worker": "lerna run build --scope=worker",
 		"release": "lerna version minor -y",
-		"publish": "lerna publish -y from-git"
+		"publish": "lerna publish -y from-git",
+		"lint": "lerna run lint"
 	},
 	"devDependencies": {
 		"lerna": "^6.3.0"
