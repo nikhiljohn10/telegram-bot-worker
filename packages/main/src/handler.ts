@@ -48,10 +48,12 @@ export default class Handler {
 			);
 		if (bot.webhook.token) {
 			const request = _request ?? new Request("");
-			return request
-				.json()
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				.then((update: any) => bot.update(update as Update));
+			return (
+				request
+					.json()
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					.then((update: any) => bot.update(update as Update))
+			);
 		}
 		return this.responses.default();
 	};
@@ -67,7 +69,7 @@ export default class Handler {
 
 	getAccessKeys = async (
 		configs: PartialConfig[]
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	): Promise<Record<string, any> | Record<string, never>> =>
 		Promise.all(
 			configs.map((bot_config: PartialConfig) =>
