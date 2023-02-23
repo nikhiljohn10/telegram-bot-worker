@@ -1,5 +1,9 @@
-name: build pr
+name: build pull request
 on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   build:
@@ -15,3 +19,18 @@ jobs:
         run: |
           npm install
           npm run build
+  merge-dependabot:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Merge PR
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GH_TOKEN: ${{ github.token }}

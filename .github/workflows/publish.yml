@@ -1,4 +1,4 @@
-name: publish
+name: deploy to cloudflare workers
 on:
   push:
     branches:
@@ -7,29 +7,22 @@ on:
       - "*"
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
       - name: github release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GH_TOKEN }}
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          node-version: latest
-          registry-url: https://registry.npmjs.org/
-      - name: npm release
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          npm install
-          npm run build
-          npm run publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
       - name: cloudflare workers publish
         uses: cloudflare/wrangler-action@2.0.0
         with:
