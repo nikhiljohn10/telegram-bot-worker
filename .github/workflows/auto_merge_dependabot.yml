@@ -1,5 +1,9 @@
 name: dependabot auto-merge
-on: pull_request
+on:
+  workflow_run:
+    workflows: [test pr]
+    types:
+      - completed
 
 permissions:
   contents: write
