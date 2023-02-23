@@ -9,3 +9,4 @@ wasm-pack.log
 node_modules/
 .cargo-ok
 *.swp
+Session.vim
