@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: latest
-          registry-url: https://npm.pkg.github.com
+          registry-url: https://registry.npmjs.org/
       - name: publish github package
         run: |
           npm install
@@ -23,8 +23,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: latest
-          registry-url: https://registry.npmjs.org/
+          registry-url: https://npm.pkg.github.com
       - name: publish npm package
-        run: npm run publish
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
