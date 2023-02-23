@@ -11,3 +11,4 @@ node_modules/
 *.swp
 Session.vim
 lerna-debug.log
+.make_*
