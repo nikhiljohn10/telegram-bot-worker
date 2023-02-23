@@ -39,7 +39,7 @@ export default class TelegramApi extends BotApi {
 			update.message !== undefined &&
 			(await this.updates.message(update as TelegramUpdate))) ||
 		(update.inline_query !== undefined &&
-			(update.inline_query as TelegramUpdate)?.query !== "" &&
+			(update.inline_query as TelegramUpdate).query !== "" &&
 			(await this.updates.inline_query(update as TelegramUpdate))) ||
 		this.updates.default;
 
