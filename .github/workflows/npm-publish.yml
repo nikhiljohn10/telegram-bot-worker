@@ -9,22 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: publish github package
+        uses: actions/setup-node@v3
         with:
           node-version: latest
           registry-url: https://npm.pkg.github.com
-      - name: publish github package
-      - run: |
+        run: |
           npm install
           npm run build
           npm run publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
-      - uses: actions/setup-node@v3
+      - name: publish npm package
+        uses: actions/setup-node@v3
         with:
           node-version: latest
           registry-url: https://registry.npmjs.org/
-      - name: publish npm package
-      - run: npm run publish
+        run: npm run publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
