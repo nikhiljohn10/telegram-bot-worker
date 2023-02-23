@@ -1,4 +1,4 @@
-name: publish packages
+name: publish npm package
 
 on:
   release:
@@ -19,17 +19,3 @@ jobs:
           npm run publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-  github-package:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: latest
-          registry-url: https://npm.pkg.github.com/
-      - run: |
-          npm install
-          npm run build
-          npm run publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_TOKEN }}
