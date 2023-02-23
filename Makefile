@@ -1,24 +1,32 @@
+BUILD_DATE=$(shell date +%Y%m%d)
 BUILD_ID=$(shell find packages/main/src packages/worker/src -type f ! -name '*.swp' -exec sha256sum {} + | LC_ALL=C sort | sha256sum | cut -d ' ' -f1)
+NPM_INSTALL=.tmp/build_$(BUILD_DATE)
+BUILD=.tmp/build_$(BUILD_ID)
+WORKER=.tmp/build_worker_$(BUILD_ID)
 
 all: build
 
-.build_$(BUILD_ID):
+build: $(BUILD)
+worker: $(WORKER)
+npm_install: $(NPM_INSTALL)
+
+$(NPM_INSTALL):
 	npm install
-	mkdir -p .tmp; touch .tmp/build_$(BUILD_ID)
+	mkdir -p .tmp; touch $(NPM_INSTALL)
 
-build: packages/main/dist/main/src/main.js
-packages/main/dist/main/src/main.js: .build_$(BUILD_ID)
+$(BUILD): $(NPM_INSTALL)
 	npm run build
+	mkdir -p .tmp; touch $(BUILD)
 
-worker: packages/worker/src/worker/src/worker.mjs
-packages/worker/dist/worker/src/worker.mjs: .build_$(BUILD_ID)
+$(WORKER): $(NPM_INSTALL)
 	npm run build:worker
+	mkdir -p .tmp; touch $(WORKER)
 
-release: .build_$(BUILD_ID)
+release: $(NPM_INSTALL)
 	npm run release
 
 .PHONY : clean
 clean :
 	-rm -rf packages/main/dist
 	-rm -rf packages/worker/dist
-	-rm -rf .build_*
+	-rm -rf .tmp/build_*
