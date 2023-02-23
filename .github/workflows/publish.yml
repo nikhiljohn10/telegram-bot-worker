@@ -39,8 +39,8 @@ jobs:
             # wrangler kv:namespace create KV_GET_SET
             # wrangler kv:namespace create KV_UID_DATA
             # uncomment this for one build to enable KV
-            echo 'import process from"process";let a="";process.stdin.on("readable",()=>{const b=process.stdin.read();a+=null==b?"":b}),process.stdin.on("end",()=>{process.stdout.write(JSON.stringify(JSON.parse(a).filter(b=>b.title.includes("KV_GET_SET"))[0].id))});' > get_kv_id.mjs
-            echo 'import process from"process";let a="";process.stdin.on("readable",()=>{const b=process.stdin.read();a+=null==b?"":b}),process.stdin.on("end",()=>{process.stdout.write(JSON.stringify(JSON.parse(a).filter(b=>b.title.includes("KV_UID_DATA"))[0].id))});' > get_kv_id2.mjs
+            echo 'import{stdin,stdout}from"process";(async()=>{let t="";for await(const i of stdin)t+=i;return t})().then((t=>{stdout.write(JSON.stringify(JSON.parse(t).filter((t=>t.title.includes("KV_GET_SET")))[0].id))}));' > get_kv_id.mjs
+            echo 'import{stdin,stdout}from"process";(async()=>{let t="";for await(const i of stdin)t+=i;return t})().then((t=>{stdout.write(JSON.stringify(JSON.parse(t).filter((t=>t.title.includes("KV_UID_DATA")))[0].id))}));' > get_kv_id.mjs
             export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node get_kv_id.mjs)
             export KV_NAMESPACE_ID2=$(wrangler kv:namespace list | node get_kv_id.mjs)
             echo "kv_namespaces = [{binding=\"KV_GET_SET\", id=${KV_NAMESPACE_ID}},{binding=\"KV_UID_DATA\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
