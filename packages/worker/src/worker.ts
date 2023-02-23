@@ -1,15 +1,3 @@
-////////////////////////////////////////////////////////////////////
-////           Telegram Bot using Cloudflare Worker             ////
-////////////////////////////////////////////////////////////////////
-////  Author: Nikhil John                                       ////
-////  Repo: https://github.com/nikhiljohn10/telegram-bot-worker ////
-////  License: MIT                                              ////
-////                                                            ////
-////  Author: Sean Behan                                        ////
-////  Repo: https://github.com/codebam/cf-workers-telegram-bot  ////
-////  License: Apache-2.0                                       ////
-////////////////////////////////////////////////////////////////////
-
 import {
 	TelegramCommands,
 	Handler,

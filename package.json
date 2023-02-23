@@ -1,6 +1,8 @@
 {
 	"name": "root",
 	"private": true,
+	"author": "codebam",
+	"license": "Apache-2.0",
 	"scripts": {
 		"build": "lerna run build",
 		"build:worker": "lerna run build --scope=worker",

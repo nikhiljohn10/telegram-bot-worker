@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: latest
           registry-url: https://npm.pkg.github.com/
+      - run: sed -i 's/cf-workers-telegram-bot/@codebam\/\0/g' packages/main/package.json
+      - run: npm i
       - run: npm ci
       - run: npm run publish
         env:

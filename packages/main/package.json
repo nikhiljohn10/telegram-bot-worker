@@ -1,12 +1,12 @@
 {
-	"name": "cf-workers-telegram-bot",
+	"name": "@codebam/cf-workers-telegram-bot",
 	"version": "3.39.0",
 	"description": "serverless telegram bot on cf workers",
 	"main": "./dist/main/src/main.js",
 	"module": "./dist/main/src/main.js",
 	"files": [
 		"dist",
-		"LICENSE_APACHE",
+		"LICENSE",
 		"LICENSE_MIT",
 		"README.md"
 	],
@@ -23,7 +23,11 @@
 		"lint": "eslint src"
 	},
 	"author": "codebam",
-	"license": "(MIT OR Apache-2.0)",
+	"license": "Apache-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codebam/cf-workers-telegram-bot.git"
+	},
 	"dependencies": {
 		"worker": "^3.32.0"
 	},
