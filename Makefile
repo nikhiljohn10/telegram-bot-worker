@@ -1,4 +1,4 @@
-BUILD_ID=$(shell find packages/main/src packages/worker/src -type f -exec sha256sum {} + | LC_ALL=C sort | sha256sum | cut -d ' ' -f1)
+BUILD_ID=$(shell find packages/main/src packages/worker/src -type f ! -name '*.swp' -exec sha256sum {} + | LC_ALL=C sort | sha256sum | cut -d ' ' -f1)
 
 all: .make_$(BUILD_ID) build
 
