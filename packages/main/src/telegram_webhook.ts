@@ -21,10 +21,12 @@ export default class TelegramWebhook extends Webhook {
 		);
 
 	get = async (): Promise<Response> =>
-		fetch_json(new URL(`${this.api.href}/getWebhookInfo`));
+		fetch_json(
+			new URL(`${this.api.origin}${this.api.pathname}/getWebhookInfo`)
+		);
 
 	delete = async (): Promise<Response> =>
-		fetch_json(new URL(`${this.api.href}/deleteWebhook`));
+		fetch_json(new URL(`${this.api.origin}${this.api.pathname}/deleteWebhook`));
 
 	commands: WebhookCommands = {
 		...this.commands,
