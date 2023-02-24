@@ -15,6 +15,13 @@ jobs:
         with:
           node-version: latest
           registry-url: https://registry.npmjs.org/
+      - id: node-modules-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            /home/runner/work/_temp/node_modules
+          key: node-modules-${{ hashFiles('/home/runner/work/package-lock.json') }}
+          restore-keys: node-modules-
       - name: npm run build
         run: |
           npm install
