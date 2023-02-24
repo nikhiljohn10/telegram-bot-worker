@@ -25,6 +25,7 @@ jobs:
           restore-keys: node-modules-
       - run: npm i
       - run: npm ci
+      - run: npm run build
       - run: npm run publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
