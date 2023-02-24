@@ -103,11 +103,16 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/answerInlineQuery`), {
-					inline_query_id: inline_query_id.toString(),
-					results: JSON.stringify(results),
-					cache_time: cache_time.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/answerInlineQuery`
+					),
+					{
+						inline_query_id: inline_query_id.toString(),
+						results: JSON.stringify(results),
+						cache_time: cache_time.toString(),
+					}
+				).href
 			)
 		);
 
@@ -122,14 +127,19 @@ export default class TelegramApi extends BotApi {
 	): Promise<Response> =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendMessage`), {
-					chat_id: chat_id.toString(),
-					text,
-					parse_mode: parse_mode,
-					disable_web_page_preview: disable_web_page_preview.toString(),
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendMessage`
+					),
+					{
+						chat_id: chat_id.toString(),
+						text,
+						parse_mode: parse_mode,
+						disable_web_page_preview: disable_web_page_preview.toString(),
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -142,12 +152,17 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendMessage`), {
-					chat_id: chat_id.toString(),
-					from_chat_id: from_chat_id.toString(),
-					message_id: message_id.toString(),
-					disable_notification: disable_notification.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendMessage`
+					),
+					{
+						chat_id: chat_id.toString(),
+						from_chat_id: from_chat_id.toString(),
+						message_id: message_id.toString(),
+						disable_notification: disable_notification.toString(),
+					}
+				).href
 			)
 		);
 
@@ -162,14 +177,19 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendPhoto`), {
-					chat_id: chat_id.toString(),
-					photo,
-					caption,
-					parse_mode,
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendPhoto`
+					),
+					{
+						chat_id: chat_id.toString(),
+						photo,
+						caption,
+						parse_mode,
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -189,19 +209,24 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendVideo`), {
-					chat_id: chat_id.toString(),
-					video: JSON.stringify(video),
-					duration: duration.toString(),
-					width: width.toString(),
-					height: height.toString(),
-					thumb: thumb,
-					caption: caption,
-					parse_mode: parse_mode,
-					supports_streaming: supports_streaming.toString(),
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendVideo`
+					),
+					{
+						chat_id: chat_id.toString(),
+						video: JSON.stringify(video),
+						duration: duration.toString(),
+						width: width.toString(),
+						height: height.toString(),
+						thumb: thumb,
+						caption: caption,
+						parse_mode: parse_mode,
+						supports_streaming: supports_streaming.toString(),
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -220,18 +245,23 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendAnimation`), {
-					chat_id: chat_id.toString(),
-					animation: JSON.stringify(animation),
-					duration: duration.toString(),
-					width: width.toString(),
-					height: height.toString(),
-					thumb,
-					caption,
-					parse_mode,
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendAnimation`
+					),
+					{
+						chat_id: chat_id.toString(),
+						animation: JSON.stringify(animation),
+						duration: duration.toString(),
+						width: width.toString(),
+						height: height.toString(),
+						thumb,
+						caption,
+						parse_mode,
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -246,14 +276,19 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendLocation`), {
-					chat_id: chat_id.toString(),
-					latitude: latitude.toString(),
-					longitude: longitude.toString(),
-					live_period: live_period.toString(),
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendLocation`
+					),
+					{
+						chat_id: chat_id.toString(),
+						latitude: latitude.toString(),
+						longitude: longitude.toString(),
+						live_period: live_period.toString(),
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -276,22 +311,27 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendPoll`), {
-					chat_id: chat_id.toString(),
-					question,
-					options: options.toString(),
-					is_anonymous: is_anonymous.toString(),
-					type,
-					allows_multiple_answers: allows_multiple_answers.toString(),
-					correct_option_id: correct_option_id.toString(),
-					explanation: explanation,
-					explanation_parse_mode: explanation_parse_mode,
-					open_period: open_period.toString(),
-					close_date: close_date.toString(),
-					is_closed: is_closed.toString(),
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendPoll`
+					),
+					{
+						chat_id: chat_id.toString(),
+						question,
+						options: options.toString(),
+						is_anonymous: is_anonymous.toString(),
+						type,
+						allows_multiple_answers: allows_multiple_answers.toString(),
+						correct_option_id: correct_option_id.toString(),
+						explanation: explanation,
+						explanation_parse_mode: explanation_parse_mode,
+						open_period: open_period.toString(),
+						close_date: close_date.toString(),
+						is_closed: is_closed.toString(),
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -304,12 +344,17 @@ export default class TelegramApi extends BotApi {
 	) =>
 		fetch(
 			log(
-				addSearchParams(new URL(`${this.webhook.api.href}/sendDice`), {
-					chat_id: chat_id.toString(),
-					emoji,
-					disable_notification: disable_notification.toString(),
-					reply_to_message_id: reply_to_message_id.toString(),
-				}).href
+				addSearchParams(
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/sendDice`
+					),
+					{
+						chat_id: chat_id.toString(),
+						emoji,
+						disable_notification: disable_notification.toString(),
+						reply_to_message_id: reply_to_message_id.toString(),
+					}
+				).href
 			)
 		);
 
@@ -322,7 +367,9 @@ export default class TelegramApi extends BotApi {
 		fetch(
 			log(
 				addSearchParams(
-					new URL(`${this.webhook.api.href}/getUserProfilePhotos`),
+					new URL(
+						`${this.webhook.api.origin}${this.webhook.api.pathname}/getUserProfilePhotos`
+					),
 					{
 						user_id: user_id.toString(),
 						offset: offset.toString(),
