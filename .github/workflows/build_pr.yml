@@ -22,10 +22,10 @@ jobs:
             node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
-      - name: npm run build
-        run: |
-          npm install
-          npm run build
+      - run: npm i
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
   merge-dependabot:
     needs: build
     runs-on: ubuntu-latest

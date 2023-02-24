@@ -22,6 +22,7 @@ jobs:
           restore-keys: node-modules-
       - run: npm i
       - run: npm ci
+      - run: npm run lint
       - run: npm run build
       - run: npm run publish
         env:
