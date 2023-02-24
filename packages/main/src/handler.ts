@@ -24,8 +24,8 @@ export default class Handler {
 			Object.keys(access_keys).forEach((key) =>
 				log(
 					`${access_keys[key].bot_name} ${
-						new URL(_request?.url ?? localhost).origin
-					}/${key}`
+						new URL(_request?.url ?? localhost).href
+					}${key}`
 				)
 			)
 		);
