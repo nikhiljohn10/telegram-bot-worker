@@ -43,7 +43,7 @@ jobs:
             echo 'import{stdin,stdout}from"process";(async()=>{let t="";for await(const i of stdin)t+=i;return t})().then((t=>{stdout.write(JSON.stringify(JSON.parse(t).filter((t=>t.title.includes("KV_UID_DATA")))[0].id))}));' > get_kv_id2.mjs
             export KV_NAMESPACE_ID=$(wrangler kv:namespace list | node get_kv_id.mjs)
             export KV_NAMESPACE_ID2=$(wrangler kv:namespace list | node get_kv_id2.mjs)
-            echo "kv_namespaces = [{binding=\"KV_GET_SET\", id=${KV_NAMESPACE_ID}},{binding=\"KV_UID_DATA\", id=${KV_NAMESPACE_ID}}]" >> wrangler.toml
+            echo "kv_namespaces = [{binding=\"KV_GET_SET\", id=${KV_NAMESPACE_ID}},{binding=\"KV_UID_DATA\", id=${KV_NAMESPACE_ID2}}]" >> wrangler.toml
             [ -z "$SECRET_TELEGRAM_API_TOKEN" ] && echo "Secret SECRET_TELEGRAM_API_TOKEN not set, creating dummy one..." && SECRET_TELEGRAM_API_TOKEN="default-gh-action-secret" || true
           secrets: |
             SECRET_TELEGRAM_API_TOKEN
