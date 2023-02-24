@@ -1,6 +1,6 @@
 {
 	"name": "@codebam/cf-workers-telegram-bot",
-	"version": "3.42.0",
+	"version": "3.43.0",
 	"description": "serverless telegram bot on cf workers",
 	"main": "./dist/main/src/main.js",
 	"module": "./dist/main/src/main.js",
@@ -29,7 +29,7 @@
 		"url": "https://github.com/codebam/cf-workers-telegram-bot.git"
 	},
 	"dependencies": {
-		"worker": "^3.41.0"
+		"worker": "^3.43.0"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20230215.0",
