@@ -23,9 +23,10 @@ export default class Handler {
 		this.getAccessKeys(this.configs).then((access_keys) =>
 			Object.keys(access_keys).forEach((key) =>
 				log(
-					`${access_keys[key].bot_name} ${
-						new URL(_request?.url ?? localhost).href
-					}${key}`
+					`${access_keys[key].bot_name} ${((request_url) =>
+						`${request_url.origin}${request_url.pathname}`)(
+						new URL(_request?.url ?? localhost)
+					)}/${key}`
 				)
 			)
 		);
