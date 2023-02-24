@@ -21,6 +21,7 @@ jobs:
           key: node-modules-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-
       - run: npm i
+      - run: npm run build
       - run: npm ci
       - run: npm run publish
         env:
