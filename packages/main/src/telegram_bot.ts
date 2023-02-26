@@ -134,7 +134,7 @@ export default class TelegramBot extends TelegramApi {
 			.then((response) => responseToJSON(response))
 			.then((json) =>
 				((message) =>
-					(update.inline_query !== undefined &&
+					(update.inline_query &&
 						this.answerInlineQuery(update.inline_query.id, [
 							new TelegramInlineQueryResultArticle(message),
 						])) ||

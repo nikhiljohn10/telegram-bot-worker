@@ -45,15 +45,13 @@ export default class TelegramApi extends BotApi {
 		this.updates.default;
 
 	// greet new users who join
-	greetUsers = async (update: TelegramUpdate): Promise<Response> => {
-		if (update.message?.new_chat_members !== undefined) {
-			return this.sendMessage(
+	greetUsers = async (update: TelegramUpdate): Promise<Response> =>
+		(update.message?.new_chat_members &&
+			this.sendMessage(
 				update.message.chat.id,
 				`Welcome to ${update.message.chat.title}, ${update.message.from.username}`
-			);
-		}
-		return this.updates.default;
-	};
+			)) ??
+		this.updates.default;
 
 	getCommand = (args: string[]): string => args[0]?.split("@")[0];
 
