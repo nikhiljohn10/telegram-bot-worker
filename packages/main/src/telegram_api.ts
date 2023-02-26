@@ -35,12 +35,13 @@ export default class TelegramApi extends BotApi {
 	};
 
 	update = async (update: Update): Promise<Response> =>
-		(log({ update }) &&
-			update.message !== undefined &&
-			(await this.updates.message(update as TelegramUpdate))) ||
-		(update.inline_query !== undefined &&
-			(update.inline_query as TelegramUpdate).query !== "" &&
-			(await this.updates.inline_query(update as TelegramUpdate))) ||
+		((log({ update }) &&
+			update.message &&
+			this.updates.message(update as TelegramUpdate)) ||
+			(update.inline_query &&
+				(update.inline_query as TelegramUpdate).query === "" &&
+				undefined) ||
+			this.updates.inline_query(update as TelegramUpdate)) ??
 		this.updates.default;
 
 	// greet new users who join
