@@ -21,8 +21,8 @@ export default class TelegramApi extends BotApi {
 
 	messageUpdate = async (update: TelegramUpdate): Promise<Response> => {
 		if (typeof (update.message?.text ?? false) === "string") {
-			return await this.executeCommand(update).then(
-				async () => await this.greetUsers(update)
+			return this.executeCommand(update).then(async () =>
+				this.greetUsers(update)
 			);
 		}
 		return this.updates.default;
