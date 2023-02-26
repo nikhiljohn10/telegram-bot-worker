@@ -15,8 +15,8 @@ export default class TelegramApi extends BotApi {
 	}
 
 	inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
-		this.executeInlineCommand(update).then(
-			async (response) => (await responseToJSON(response)) && response
+		this.executeInlineCommand(update).then(async (response) =>
+			responseToJSON(response).then(() => response)
 		);
 
 	messageUpdate = async (update: TelegramUpdate): Promise<Response> => {
