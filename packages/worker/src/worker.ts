@@ -3,6 +3,7 @@ import {
 	Handler,
 	TelegramWebhook,
 	TelegramBot,
+	Libs,
 } from "../../main/src/main";
 import { Command } from "../../main/src/types";
 
@@ -85,5 +86,7 @@ export default {
 					"/start": TelegramCommands.commandList as Command,
 				},
 			},
-		]).handle(request),
+		])
+			.handle(request)
+			.then(Libs.log),
 };
