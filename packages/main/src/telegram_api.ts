@@ -94,7 +94,7 @@ export default class TelegramApi extends BotApi {
 
 	// execute the custom bot commands from bot configurations
 	executeCommand = async (update: TelegramUpdate): Promise<Response> =>
-		this._executeCommand(update, update.message?.text ?? "") ||
+		this._executeCommand(update, update.message?.text ?? "") ??
 		this.updates.default;
 
 	// trigger answerInlineQuery command of BotAPI
