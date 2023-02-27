@@ -10,9 +10,6 @@
 		"publish": "lerna publish -y from-git",
 		"lint": "lerna run lint"
 	},
-	"devDependencies": {
-		"lerna": "^6.3.0"
-	},
 	"workspaces": [
 		"packages/*"
 	]
