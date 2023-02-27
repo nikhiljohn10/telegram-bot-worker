@@ -1,13 +1,6 @@
 import BotApi from "./bot_api";
 import { sha256, log } from "./libs";
-import {
-	Config,
-	PartialConfig,
-	Update,
-	Webhook,
-	localhost,
-	Commands,
-} from "./types";
+import { Config, PartialConfig, Update, localhost } from "./types";
 
 export default class Handler {
 	configs: PartialConfig[];
