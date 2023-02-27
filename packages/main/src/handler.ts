@@ -36,28 +36,14 @@ export default class Handler {
 		return this.responses.default();
 	};
 
-	postResponse = async (
-		_request?: Request,
-		_bot?: BotApi
-	): Promise<Response> => {
-		const bot =
-			_bot ??
-			new BotApi(
-				{} as Commands,
-				new Webhook(localhost, "", localhost),
-				new Handler([new Config()])
-			);
-		if (bot.webhook.token) {
-			const request = _request ?? new Request("");
-			return (
-				request
+	postResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> =>
+		_bot?.webhook.token === ""
+			? this.responses.default()
+			: _request
+			? _request
 					.json()
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					.then((update: any) => bot.update(update as Update))
-			);
-		}
-		return this.responses.default();
-	};
+					.then((update) => (_bot as BotApi).update(update as Update))
+			: this.responses.default();
 
 	responses: Record<
 		string,
@@ -83,18 +69,17 @@ export default class Handler {
 
 	// handles the request
 	handle = async (request: Request): Promise<Response> =>
-		this.getAccessKeys(this.configs).then((access_keys) => {
-			if (Object.keys(this.responses).includes(request.method)) {
-				return this.responses[request.method](
-					request,
-					new access_keys[new URL(request.url).pathname.substring(1)].api({
-						...new Config(),
-						url: new URL(new URL(request.url).origin), // worker url
-						handler: this,
-						...access_keys[new URL(request.url).pathname.substring(1)],
-					})
-				);
-			}
-			return this.responses.default();
-		});
+		this.getAccessKeys(this.configs).then((access_keys) =>
+			Object.keys(this.responses).includes(request.method)
+				? this.responses[request.method](
+						request,
+						new access_keys[new URL(request.url).pathname.substring(1)].api({
+							...new Config(),
+							url: new URL(new URL(request.url).origin), // worker url
+							handler: this,
+							...access_keys[new URL(request.url).pathname.substring(1)],
+						})
+				  )
+				: this.responses.default()
+		);
 }

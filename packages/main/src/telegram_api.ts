@@ -6,7 +6,7 @@ import {
 	Webhook,
 	Update,
 } from "./types";
-import { addSearchParams, log, responseToJSON } from "./libs";
+import { addSearchParams, log } from "./libs";
 import Handler from "./handler";
 
 export default class TelegramApi extends BotApi {
@@ -15,18 +15,12 @@ export default class TelegramApi extends BotApi {
 	}
 
 	inlineQueryUpdate = async (update: TelegramUpdate): Promise<Response> =>
-		this.executeInlineCommand(update).then(async (response) =>
-			responseToJSON(response).then(() => response)
-		);
+		this.executeInlineCommand(update);
 
-	messageUpdate = async (update: TelegramUpdate): Promise<Response> => {
-		if (typeof (update.message?.text ?? false) === "string") {
-			return this.executeCommand(update).then(async () =>
-				this.greetUsers(update)
-			);
-		}
-		return this.updates.default;
-	};
+	messageUpdate = async (update: TelegramUpdate): Promise<Response> =>
+		typeof update.message?.text === "string"
+			? this.executeCommand(update).then(async () => this.greetUsers(update))
+			: this.updates.default;
 
 	updates = {
 		inline_query: this.inlineQueryUpdate,
@@ -46,12 +40,12 @@ export default class TelegramApi extends BotApi {
 
 	// greet new users who join
 	greetUsers = async (update: TelegramUpdate): Promise<Response> =>
-		(update.message?.new_chat_members &&
-			this.sendMessage(
-				update.message.chat.id,
-				`Welcome to ${update.message.chat.title}, ${update.message.from.username}`
-			)) ??
-		this.updates.default;
+		update.message?.new_chat_members
+			? this.sendMessage(
+					update.message.chat.id,
+					`Welcome to ${update.message.chat.title}, ${update.message.from.username}`
+			  )
+			: this.updates.default;
 
 	getCommand = (args: string[]): string => args[0]?.split("@")[0];
 
@@ -61,23 +55,24 @@ export default class TelegramApi extends BotApi {
 		text: string,
 		args: string[] = []
 	) =>
-		(log({ execute: { text, args } }) &&
-			(async (text_args: string[]) =>
-				((command) =>
-					((this.commands[command] ||
-						log({
-							error: `command '${command}' does not exist`,
-						})) &&
-						this.commands[command]?.(this, update, [...text_args, ...args])) ||
-					// run the command
-					this.updates.default)(this.getCommand(text_args)))(
-				// get the command to run
-				text
-					.trimStart()
-					.replace(/^([^\s]*\s)\s*/gm, "$1")
-					.split(" ")
-			)) ??
-		this.updates.default;
+		log({ execute: { text, args } })
+			? ((text_args: string[]) =>
+					((command) =>
+						this.commands[command]
+							? this.commands[command]?.(this, update, [...text_args, ...args])
+							: log({
+									error: `command '${command}' does not exist`,
+							  }))(
+						// run the command
+						this.getCommand(text_args)
+					))(
+					// get the command to run
+					text
+						.trimStart()
+						.replace(/^([^\s]*\s)\s*/gm, "$1")
+						.split(" ")
+			  )
+			: this.updates.default;
 
 	// execute the inline custom bot commands from bot configurations
 	executeInlineCommand = async (update: TelegramUpdate): Promise<Response> =>
