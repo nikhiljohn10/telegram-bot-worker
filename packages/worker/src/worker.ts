@@ -86,7 +86,5 @@ export default {
 					"/start": TelegramCommands.commandList as Command,
 				},
 			},
-		])
-			.handle(request)
-			.then(Libs.log),
+		]).handle(request),
 };
