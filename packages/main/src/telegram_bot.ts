@@ -38,11 +38,11 @@ export default class TelegramBot extends TelegramApi {
 	// bot command: /code
 	code = async (update: TelegramUpdate): Promise<Response> =>
 		((url) =>
-			(update.inline_query &&
-				this.answerInlineQuery(update.inline_query.id, [
-					new TelegramInlineQueryResultArticle(url),
-				])) ??
-			this.sendMessage(update.message?.chat.id ?? 0, url))(
+			update.inline_query
+				? this.answerInlineQuery(update.inline_query.id, [
+						new TelegramInlineQueryResultArticle(url),
+				  ])
+				: this.sendMessage(update.message?.chat.id ?? 0, url))(
 			"https://github.com/codebam/cf-workers-telegram-bot"
 		);
 
@@ -137,11 +137,11 @@ export default class TelegramBot extends TelegramApi {
 			.then((response) => responseToJSON(response))
 			.then((json) =>
 				((message) =>
-					(update.inline_query &&
-						this.answerInlineQuery(update.inline_query.id, [
-							new TelegramInlineQueryResultArticle(message),
-						])) ||
-					this.sendMessage(update.message?.chat.id ?? 0, message))(
+					update.inline_query
+						? this.answerInlineQuery(update.inline_query.id, [
+								new TelegramInlineQueryResultArticle(message),
+						  ])
+						: this.sendMessage(update.message?.chat.id ?? 0, message))(
 					`Kanye says... ${json.quote}`
 				)
 			)
@@ -154,19 +154,19 @@ export default class TelegramBot extends TelegramApi {
 			.then((joke) => joke as Joke)
 			.then((joke_response) =>
 				((message) =>
-					(update.inline_query &&
-						this.answerInlineQuery(
-							update.inline_query.id,
-							[
-								new TelegramInlineQueryResultArticle(
-									message,
-									joke_response.joke ?? joke_response.setup,
-									"HTML"
-								),
-							],
-							0
-						)) ??
-					this.sendMessage(update.message?.chat.id ?? 0, message, "HTML"))(
+					update.inline_query
+						? this.answerInlineQuery(
+								update.inline_query.id,
+								[
+									new TelegramInlineQueryResultArticle(
+										message,
+										joke_response.joke ?? joke_response.setup,
+										"HTML"
+									),
+								],
+								0
+						  )
+						: this.sendMessage(update.message?.chat.id ?? 0, message, "HTML"))(
 					joke_response.joke ??
 						`${joke_response.setup}\n\n<tg-spoiler>${joke_response.delivery}</tg-spoiler>`
 				)
@@ -177,15 +177,14 @@ export default class TelegramBot extends TelegramApi {
 		fetch("https://shibe.online/api/shibes")
 			.then((response) => response.json())
 			.then((json) => json as [string])
-			.then(
-				(shibe_response) =>
-					(update.inline_query &&
-						this.answerInlineQuery(
+			.then((shibe_response) =>
+				update.inline_query
+					? this.answerInlineQuery(
 							update.inline_query.id,
 							[new TelegramInlineQueryResultPhoto(shibe_response[0])],
 							0
-						)) ??
-					this.sendPhoto(update.message?.chat.id ?? 0, shibe_response[0])
+					  )
+					: this.sendPhoto(update.message?.chat.id ?? 0, shibe_response[0])
 			);
 
 	// bot command: /cat
@@ -193,15 +192,14 @@ export default class TelegramBot extends TelegramApi {
 		fetch("https://meow.senither.com/v1/random")
 			.then((response) => response.json())
 			.then((json) => json as { data: { url: string } })
-			.then(
-				(json) =>
-					(update.inline_query &&
-						this.answerInlineQuery(
+			.then((json) =>
+				update.inline_query
+					? this.answerInlineQuery(
 							update.inline_query.id,
 							[new TelegramInlineQueryResultPhoto(json.data.url)],
 							0
-						)) ??
-					this.sendPhoto(update.message?.chat.id ?? 0, json.data.url)
+					  )
+					: this.sendPhoto(update.message?.chat.id ?? 0, json.data.url)
 			);
 
 	// bot command: /bored
@@ -209,30 +207,29 @@ export default class TelegramBot extends TelegramApi {
 		fetch("https://boredapi.com/api/activity/")
 			.then((response) => responseToJSON(response))
 			.then((json) => json as Bored)
-			.then(
-				(bored_response) =>
-					(update.inline_query &&
-						this.answerInlineQuery(
+			.then((bored_response) =>
+				update.inline_query
+					? this.answerInlineQuery(
 							update.inline_query.id,
 							[new TelegramInlineQueryResultArticle(bored_response.activity)],
 							0
-						)) ??
-					this.sendMessage(
-						update.message?.chat.id ?? 0,
-						bored_response.activity
-					)
+					  )
+					: this.sendMessage(
+							update.message?.chat.id ?? 0,
+							bored_response.activity
+					  )
 			);
 
 	// bot command: /epoch
 	epoch = async (update: TelegramUpdate): Promise<Response> =>
 		((seconds) =>
-			(update.inline_query &&
-				this.answerInlineQuery(
-					update.inline_query.id,
-					[new TelegramInlineQueryResultArticle(seconds)],
-					0
-				)) ??
-			this.sendMessage(update.message?.chat.id ?? 0, seconds))(
+			update.inline_query
+				? this.answerInlineQuery(
+						update.inline_query.id,
+						[new TelegramInlineQueryResultArticle(seconds)],
+						0
+				  )
+				: this.sendMessage(update.message?.chat.id ?? 0, seconds))(
 			Math.floor(Date.now() / 1000).toString()
 		);
 
@@ -241,15 +238,14 @@ export default class TelegramBot extends TelegramApi {
 		((key) =>
 			this.get_set
 				.get(key)
-				.then(
-					(value) =>
-						(update.inline_query &&
-							this.answerInlineQuery(
+				.then((value) =>
+					update.inline_query
+						? this.answerInlineQuery(
 								update.inline_query.id,
 								[new TelegramInlineQueryResultArticle(value ?? "")],
 								0
-							)) ??
-						this.sendMessage(update.message?.chat.id ?? 0, value ?? "")
+						  )
+						: this.sendMessage(update.message?.chat.id ?? 0, value ?? "")
 				))(args[1]);
 
 	// bot command: /set
@@ -299,24 +295,24 @@ export default class TelegramBot extends TelegramApi {
 	// bot command: /roll
 	roll = async (update: TelegramUpdate, args: string[]): Promise<Response> =>
 		((outcome, message) =>
-			(update.inline_query &&
-				this.answerInlineQuery(update.inline_query.id, [
-					new TelegramInlineQueryResultArticle(
+			update.inline_query
+				? this.answerInlineQuery(update.inline_query.id, [
+						new TelegramInlineQueryResultArticle(
+							message(
+								update.inline_query.from.username,
+								update.inline_query.from.first_name,
+								outcome
+							)
+						),
+				  ])
+				: this.sendMessage(
+						update.message?.chat.id ?? 0,
 						message(
-							update.inline_query.from.username,
-							update.inline_query.from.first_name,
+							update.message?.from.username ?? "",
+							update.message?.from.first_name ?? "",
 							outcome
 						)
-					),
-				])) ??
-			this.sendMessage(
-				update.message?.chat.id ?? 0,
-				message(
-					update.message?.from.username ?? "",
-					update.message?.from.first_name ?? "",
-					outcome
-				)
-			))(
+				  ))(
 			Math.floor(Math.random() * (parseInt(args[1]) || 6 - 1 + 1) + 1),
 			(username: string, first_name: string, outcome: number) =>
 				`${first_name ?? username} rolled a ${
