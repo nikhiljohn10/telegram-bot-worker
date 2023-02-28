@@ -3,7 +3,6 @@ import {
 	Handler,
 	TelegramWebhook,
 	TelegramBot,
-	Libs,
 } from "../../main/src/main";
 import { Command } from "../../main/src/types";
 
