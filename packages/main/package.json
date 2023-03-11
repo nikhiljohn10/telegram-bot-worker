@@ -35,7 +35,7 @@
 		"@cloudflare/workers-types": "^4.20230307.0",
 		"@typescript-eslint/eslint-plugin": "^5.54.1",
 		"@typescript-eslint/parser": "^5.54.1",
-		"eslint": "^8.35.0",
+		"eslint": "^8.36.0",
 		"eslint-config-prettier": "^8.7.0",
 		"lerna": "^6.5.1",
 		"prettier": "^2.8.4",
