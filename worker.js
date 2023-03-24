@@ -87,7 +87,7 @@ class Webhook {
 
   async set() {
     const access_key = await sha256(this.token)
-    return await this.execute(this.url + '/setWebhook?url=' + ENV_BOT_HOST_FQDN + access_key)
+    return await this.execute(this.url + '/setWebhook?url=' + ENV_BOT_HOST_FQDN + '/' + access_key)
   }
 
   async get() {
