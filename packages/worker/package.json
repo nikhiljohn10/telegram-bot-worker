@@ -20,7 +20,7 @@
 		"esbuild-plugin-glob": "^2.2.2",
 		"eslint": "^8.42.0",
 		"eslint-config-prettier": "^8.8.0",
-		"lerna": "^6.6.2",
+		"lerna": "^7.0.0",
 		"prettier": "^2.8.8",
 		"typescript": "^5.1.3"
 	}
