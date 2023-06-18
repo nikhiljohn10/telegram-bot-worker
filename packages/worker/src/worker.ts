@@ -85,5 +85,5 @@ export default {
 					"/start": TelegramCommands.commandList as Command,
 				},
 			},
-		]).handle(request),
+		]).handle(request).then(() => new Response()),
 };
