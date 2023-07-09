@@ -1,6 +1,6 @@
 {
 	"name": "worker",
-	"version": "4.10.0",
+	"version": "4.11.0",
 	"private": true,
 	"description": "serverless telegram bot on cf workers",
 	"main": "./dist/worker.mjs",
