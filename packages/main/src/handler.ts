@@ -19,7 +19,7 @@ export default class Handler {
           `${access_keys[key].bot_name} ${((request_url) =>
             `${request_url.origin}${request_url.pathname}`)(
             new URL(_request?.url ?? localhost)
-          )}/${key}`
+          )}${key}`
         )
       )
     );
@@ -61,20 +61,23 @@ export default class Handler {
     ).then((result) => Object.fromEntries(result));
 
   // handles the request
-  handle = async (request: Request): Promise<Response> => {
-    const access_keys = await this.getAccessKeys(this.configs);
-    const access_key = new URL(request.url).pathname.substring(1);
-    if (Object.keys(access_keys).includes(access_key)) {
-      return this.responses[request.method](
-        request,
-        new access_keys[new URL(request.url).pathname.substring(1)].api({
-          ...new Config(),
-          url: new URL(new URL(request.url).origin), // worker url
-          handler: this,
-          ...access_keys[new URL(request.url).pathname.substring(1)],
-        })
-      );
-    }
-    return this.responses.default();
-  };
+  handle = async (request: Request): Promise<Response> =>
+    this.getAccessKeys(this.configs).then((access_keys) =>
+      Object.keys(this.responses).includes(request.method)
+        ? this.responses[request.method](
+            request,
+            ((key) => {
+              if (access_keys[key]) {
+                return new access_keys[key].api({
+                  ...new Config(),
+                  url: new URL(new URL(request.url).origin), // worker url
+                  handler: this,
+                  ...access_keys[key],
+                });
+              }
+              return this.responses.default();
+            })(new URL(request.url).pathname.substring(1))
+          )
+        : this.responses.default()
+    );
 }
