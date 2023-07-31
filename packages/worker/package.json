@@ -19,7 +19,7 @@
 		"esbuild": "^0.18.16",
 		"esbuild-plugin-glob": "^2.2.2",
 		"eslint": "^8.46.0",
-		"eslint-config-prettier": "^8.8.0",
+		"eslint-config-prettier": "^8.9.0",
 		"lerna": "^7.1.4",
 		"prettier": "^3.0.0",
 		"typescript": "^5.1.6"
