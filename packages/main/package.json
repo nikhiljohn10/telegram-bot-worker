@@ -1,6 +1,6 @@
 {
 	"name": "@codebam/cf-workers-telegram-bot",
-	"version": "5.1.0",
+	"version": "5.2.0",
 	"description": "serverless telegram bot on cf workers",
 	"main": "./dist/main/src/main.js",
 	"module": "./dist/main/src/main.js",
