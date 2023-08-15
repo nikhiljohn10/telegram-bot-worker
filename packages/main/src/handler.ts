@@ -1,11 +1,11 @@
 import BotApi from "./bot_api";
 import { sha256, log } from "./libs";
-import { Config, PartialConfig, Update, localhost } from "./types";
+import { Config, Update, localhost } from "./types";
 
 export default class Handler {
-  configs: PartialConfig[];
+  configs: Partial<Config>[];
 
-  constructor(configs: PartialConfig[]) {
+  constructor(configs: Partial<Config>[]) {
     this.configs = configs;
   }
 
@@ -29,7 +29,10 @@ export default class Handler {
     return this.responses.default();
   };
 
-  postResponse = async (_request?: Request, _bot?: BotApi): Promise<Response> =>
+  postResponse = async (
+    _request?: Request,
+    _bot?: BotApi
+  ): Promise<Response> =>
     _bot?.webhook.token === ""
       ? this.responses.default()
       : _request
@@ -48,11 +51,11 @@ export default class Handler {
   };
 
   getAccessKeys = async (
-    configs: PartialConfig[]
+    configs: Partial<Config>[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<Record<string, any> | Record<string, never>> =>
     Promise.all(
-      configs.map((bot_config: PartialConfig) =>
+      configs.map((bot_config: Partial<Config>) =>
         sha256(bot_config.webhook?.token ?? "").then((hash) => [
           hash,
           bot_config,
