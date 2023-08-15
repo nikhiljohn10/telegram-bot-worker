@@ -28,6 +28,7 @@ export class Config {
   kv: Kv | undefined;
   url: URL;
   handler: Handler | undefined;
+
   constructor(config: Partial<Config> = {}) {
     this.bot_name = config.bot_name || "";
     this.api = config.api || {};
