@@ -52,7 +52,6 @@ export default class Handler {
 
   getAccessKeys = async (
     configs: Partial<Config>[]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ): Promise<Record<string, Config> | Record<string, never>> =>
     Promise.all(
       configs.map((bot_config: Partial<Config>) =>

@@ -22,6 +22,7 @@ export type Kv = Record<string, KVNamespace> | undefined;
 
 export class Config {
   bot_name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   api: any;
   webhook: Webhook;
   commands: Record<string, Command>;
