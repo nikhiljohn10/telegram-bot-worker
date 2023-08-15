@@ -22,7 +22,7 @@ export type Kv = Record<string, KVNamespace> | undefined;
 
 export class Config {
   bot_name: string;
-  api: object;
+  api: any;
   webhook: Webhook;
   commands: Record<string, Command>;
   kv: Kv | undefined;
@@ -30,7 +30,7 @@ export class Config {
   handler: Handler | undefined;
   constructor(config: Partial<Config> = {}) {
     this.bot_name = config.bot_name || "";
-    this.api = config.api || (() => ({}));
+    this.api = config.api || {};
     this.webhook = config.webhook || new Webhook(localhost, "", localhost);
     this.commands = config.commands || {};
     this.kv = config.kv;

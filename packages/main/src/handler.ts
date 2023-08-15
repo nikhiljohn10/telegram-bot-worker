@@ -53,7 +53,7 @@ export default class Handler {
   getAccessKeys = async (
     configs: Partial<Config>[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ): Promise<Record<string, any> | Record<string, never>> =>
+  ): Promise<Record<string, Config> | Record<string, never>> =>
     Promise.all(
       configs.map((bot_config: Partial<Config>) =>
         sha256(bot_config.webhook?.token ?? "").then((hash) => [
@@ -73,9 +73,9 @@ export default class Handler {
               if (access_keys[key]) {
                 return new access_keys[key].api({
                   ...new Config(),
+                  ...access_keys[key],
                   url: new URL(new URL(request.url).origin), // worker url
                   handler: this,
-                  ...access_keys[key],
                 });
               }
               return this.responses.default();
