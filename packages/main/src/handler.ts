@@ -70,7 +70,7 @@ export default class Handler {
 						request,
 						((key) => {
 							if (access_keys[key]) {
-								return access_keys[key].api({
+								return new access_keys[key].api({
 									...new Config(),
 									...access_keys[key],
 									url: new URL(new URL(request.url).origin), // worker url
